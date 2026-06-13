@@ -77,8 +77,8 @@ export default function Terms() {
             <h2 className="font-display font-bold text-xl text-ink mb-2">7. Contact</h2>
             <p>
               Questions about these terms can be directed to{' '}
-              <a href="mailto:hello@sharpable.com" className="text-primary-dark hover:text-primary transition">
-                hello@sharpable.com
+              <a href="mailto:sharpablehq@gmail.com" className="text-primary-dark hover:text-primary transition">
+                sharpablehq@gmail.com
               </a>.
             </p>
           </section>

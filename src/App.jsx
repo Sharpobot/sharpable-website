@@ -258,11 +258,11 @@ function Hero() {
               <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
             </a>
             <a
-              href="tel:+15550107890"
+              href="tel:+60195806090"
               className="lift-on-hover inline-flex items-center justify-center gap-2 bg-white/10 backdrop-blur-md text-white border border-white/20 font-medium px-7 py-4 rounded-full"
             >
               <Phone className="h-4 w-4" />
-              +1 (555) 010-7890
+              +6019 580 6090
             </a>
           </div>
         </div>
@@ -321,7 +321,7 @@ function DesignShuffler() {
               </span>
               <span className="font-mono text-xs text-muted">{item.score}</span>
             </div>
-            <div className="mt-4 font-display text-lg font-semibold text-ink leading-tight">
+            <div className="mt-4 font-display text-lg font-semibold text-gray-700 leading-tight">
               {item.label}
             </div>
             <div className="mt-3 flex items-center gap-1.5">
@@ -601,7 +601,7 @@ function StrategyScheduler() {
         className={`w-full py-2.5 rounded-2xl font-medium text-xs transition-all duration-300 ${
           step === 4
             ? 'bg-accent text-deep scale-[1.02] shadow-md shadow-accent/30'
-            : 'bg-divider/40 text-muted'
+            : 'bg-divider/40 text-gray-600'
         }`}
       >
         {step >= 3 ? '✓ Strategy call booked' : 'Pick a day'}
@@ -1206,23 +1206,23 @@ function ContactForm() {
             </p>
 
             <div className="mt-10 space-y-4">
-              <a href="tel:+15550107890" className="lift-on-hover flex items-center gap-4 group">
+              <a href="tel:+60195806090" className="lift-on-hover flex items-center gap-4 group">
                 <span className="h-12 w-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center group-hover:bg-primary transition">
                   <Phone className="h-5 w-5 text-primary group-hover:text-deep" />
                 </span>
                 <span>
                   <span className="block font-mono text-[10px] uppercase tracking-widest text-muted">Call us</span>
-                  <span className="font-display font-semibold text-ink text-lg">+1 (555) 010-7890</span>
+                  <span className="font-display font-semibold text-ink text-lg">+6019 580 6090</span>
                 </span>
               </a>
 
-              <a href="mailto:hello@sharpable.com" className="lift-on-hover flex items-center gap-4 group">
+              <a href="mailto:sharpablehq@gmail.com" className="lift-on-hover flex items-center gap-4 group">
                 <span className="h-12 w-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center group-hover:bg-primary transition">
                   <Mail className="h-5 w-5 text-primary group-hover:text-deep" />
                 </span>
                 <span>
                   <span className="block font-mono text-[10px] uppercase tracking-widest text-muted">Email us</span>
-                  <span className="font-display font-semibold text-ink text-lg">hello@sharpable.com</span>
+                  <span className="font-display font-semibold text-ink text-lg">sharpablehq@gmail.com</span>
                 </span>
               </a>
 
@@ -1232,7 +1232,7 @@ function ContactForm() {
                 </span>
                 <span>
                   <span className="block font-mono text-[10px] uppercase tracking-widest text-muted">Based</span>
-                  <span className="font-display font-semibold text-ink text-lg">Remote — Worldwide</span>
+                  <span className="font-display font-semibold text-ink text-lg">Kuala Lumpur — Malaysia</span>
                 </span>
               </div>
             </div>
@@ -1430,16 +1430,16 @@ function Footer() {
             <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-primary mb-4">Contact</p>
             <ul className="space-y-2.5">
               <li>
-                <a href="tel:+15550107890" className="text-white/65 hover:text-primary transition text-sm">
-                  +1 (555) 010-7890
+                <a href="tel:+60195806090" className="text-white/65 hover:text-primary transition text-sm">
+                  +6019 580 6090
                 </a>
               </li>
               <li>
-                <a href="mailto:hello@sharpable.com" className="text-white/65 hover:text-primary transition text-sm">
-                  hello@sharpable.com
+                <a href="mailto:sharpablehq@gmail.com" className="text-white/65 hover:text-primary transition text-sm">
+                  sharpablehq@gmail.com
                 </a>
               </li>
-              <li className="text-white/65 text-sm">Remote — Worldwide</li>
+              <li className="text-white/65 text-sm">Kuala Lumpur — Malaysia</li>
             </ul>
           </div>
         </div>

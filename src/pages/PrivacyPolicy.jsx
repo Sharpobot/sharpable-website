@@ -62,8 +62,8 @@ export default function PrivacyPolicy() {
             <p>
               You can request access to, correction of, or deletion of your personal information at any
               time by contacting us at{' '}
-              <a href="mailto:hello@sharpable.com" className="text-primary-dark hover:text-primary transition">
-                hello@sharpable.com
+              <a href="mailto:sharpablehq@gmail.com" className="text-primary-dark hover:text-primary transition">
+                sharpablehq@gmail.com
               </a>.
             </p>
           </section>
@@ -72,12 +72,12 @@ export default function PrivacyPolicy() {
             <h2 className="font-display font-bold text-xl text-ink mb-2">6. Contact</h2>
             <p>
               If you have any questions about this privacy policy, reach out to us at{' '}
-              <a href="mailto:hello@sharpable.com" className="text-primary-dark hover:text-primary transition">
-                hello@sharpable.com
+              <a href="mailto:sharpablehq@gmail.com" className="text-primary-dark hover:text-primary transition">
+                sharpablehq@gmail.com
               </a>{' '}
               or call{' '}
-              <a href="tel:+15550107890" className="text-primary-dark hover:text-primary transition">
-                +1 (555) 010-7890
+              <a href="tel:+60195806090" className="text-primary-dark hover:text-primary transition">
+                +6019 580 6090
               </a>.
             </p>
           </section>
