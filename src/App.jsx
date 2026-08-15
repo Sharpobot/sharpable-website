@@ -40,7 +40,7 @@ const SERVICES_FULL = [
   {
     icon: Layout,
     title: 'Custom Website Design',
-    text: 'No templates, no shortcuts. Every site is designed from scratch around your brand, your customers, and what your business needs to achieve.',
+    text: 'A clean, modern site designed around your brand, your customers, and what your business needs to achieve — built to look sharp and convert.',
   },
   {
     icon: Sparkles,
@@ -226,8 +226,8 @@ function Hero() {
       <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
 
       {/* Content */}
-      <div className="relative z-10 flex min-h-[100dvh] flex-col items-center justify-center text-center">
-        <div className="px-6 sm:px-10 lg:px-16 max-w-4xl">
+      <div className="relative z-10 flex min-h-[100dvh] flex-col items-center justify-center text-center lg:text-left">
+        <div className="w-full px-6 sm:px-10 lg:px-16 max-w-4xl lg:max-w-7xl lg:mx-auto lg:pt-32 lg:pb-20">
           <p className="hero-meta font-mono text-xs uppercase tracking-[0.3em] text-white/60 mb-6">
             Web Design Studio
           </p>
@@ -243,13 +243,12 @@ function Hero() {
             </span>
           </h1>
 
-          <p className="hero-meta mx-auto max-w-xl text-white/75 text-base sm:text-lg mt-8 leading-relaxed">
-            Sharpable designs and builds premium, fast-loading websites for small businesses —
-            custom code, sharp animation, and design that's built to convert.
-            <span className="text-white"> No templates. Ever.</span>
+          <p className="hero-meta mx-auto lg:mx-0 max-w-xl text-white/75 text-base sm:text-lg mt-8 leading-relaxed">
+            We design and build premium, fast-loading websites for small businesses, with sharp
+            animations and design that's built to convert.
           </p>
 
-          <div className="hero-cta mt-10 flex flex-col sm:flex-row gap-4 justify-center">
+          <div className="hero-cta mt-10 flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
             <a
               href="#contact"
               className="magnetic-btn group inline-flex items-center justify-center gap-2 bg-primary text-deep font-semibold px-7 py-4 rounded-full shadow-2xl shadow-primary/40"
@@ -590,7 +589,13 @@ function StrategyScheduler() {
                 : 'bg-background text-ink'
             }`}
           >
-            <span className="font-mono text-[9px] text-muted">{d}</span>
+            <span
+              className={`font-mono text-[9px] ${
+                step >= 3 && idx === activeDay ? 'text-deep' : 'text-muted'
+              }`}
+            >
+              {d}
+            </span>
             <span className="font-display font-semibold text-sm">{idx + 7}</span>
           </div>
         ))}
@@ -600,7 +605,7 @@ function StrategyScheduler() {
       <button
         className={`w-full py-2.5 rounded-2xl font-medium text-xs transition-all duration-300 ${
           step === 4
-            ? 'bg-accent text-deep scale-[1.02] shadow-md shadow-accent/30'
+            ? 'bg-primary text-deep scale-[1.02] shadow-md shadow-primary/30'
             : 'bg-divider/40 text-gray-600'
         }`}
       >
@@ -656,9 +661,9 @@ function Features() {
   const cards = [
     {
       eyebrow: '01 / Design',
-      heading: 'Custom Websites',
-      sub: 'Built from scratch',
-      text: "Every project starts with a blank canvas. We design and build a site tailored to your brand — not a recycled template with your logo on it.",
+      heading: 'Modern Web Design',
+      sub: 'Built to convert',
+      text: "We design every site around your brand and your customers — clean, modern layouts focused on turning visitors into leads, not just looking good.",
       Component: DesignShuffler,
     },
     {
@@ -686,7 +691,7 @@ function Features() {
           </span>
           <h2 className="font-display font-extrabold text-4xl sm:text-5xl md:text-6xl text-ink mt-4 leading-[1.05] tracking-tight">
             Three pillars.
-            <span className="block font-serif italic font-medium text-primary-dark mt-1">
+            <span className="block font-serif italic font-medium text-primary-dark mt-1 text-5xl sm:text-6xl md:text-7xl">
               One studio.
             </span>
           </h2>
@@ -712,7 +717,7 @@ function Features() {
 
               <div className="mt-6">
                 <h3 className="font-display font-bold text-2xl text-ink leading-tight">{card.heading}</h3>
-                <p className="font-serif italic text-primary-dark text-sm mt-1">{card.sub}</p>
+                <p className="font-serif italic text-primary-dark text-lg mt-1">{card.sub}</p>
                 <p className="text-muted text-[15px] mt-4 leading-relaxed">{card.text}</p>
               </div>
             </article>
@@ -791,7 +796,7 @@ function Pillars() {
     {
       n: '01',
       title: 'Delivered',
-      target: 150,
+      target: 80,
       suffix: '+',
       label: 'sites launched',
       desc: 'From single-page landing sites to full multi-page builds — each one designed and coded from scratch.',
@@ -832,7 +837,7 @@ function Pillars() {
             </span>
             <h2 className="font-display font-extrabold text-4xl sm:text-5xl md:text-6xl text-ink leading-[1.05] tracking-tight">
               The numbers behind
-              <span className="block font-serif italic font-medium text-primary-dark">the work.</span>
+              <span className="block font-serif italic font-medium text-primary-dark text-5xl sm:text-6xl md:text-7xl">the work.</span>
             </h2>
           </div>
           <p className="text-muted text-lg leading-relaxed max-w-md lg:text-right">
@@ -980,9 +985,6 @@ function Protocol() {
                   <span className="font-mono text-xs uppercase tracking-[0.25em] text-muted">
                     {step.meta}
                   </span>
-                  <span className="font-mono text-[10px] uppercase tracking-widest text-primary-dark bg-primary/10 px-2.5 py-1 rounded-full">
-                    Sharpable Protocol
-                  </span>
                 </div>
 
                 <div className="my-12">
@@ -1003,12 +1005,6 @@ function Protocol() {
               <div className="lg:col-span-2 relative overflow-hidden min-h-[300px] lg:min-h-full bg-deep">
                 <img src={step.image} alt={step.alt} loading="lazy" className="absolute inset-0 w-full h-full object-cover" />
                 <div className="absolute inset-0 bg-gradient-to-t from-deep/60 via-transparent to-deep/15" />
-                <div className="absolute top-5 left-5 flex items-center gap-2 bg-white/90 backdrop-blur-sm rounded-full pl-3 pr-4 py-1.5 shadow-lg">
-                  <span className="h-1.5 w-1.5 rounded-full bg-primary" />
-                  <span className="font-mono text-[10px] uppercase tracking-widest text-ink">
-                    Step {step.num}
-                  </span>
-                </div>
                 <div className="absolute bottom-4 right-4 font-mono text-[10px] uppercase tracking-widest text-white/70">
                   {step.num} / Sharpable
                 </div>
@@ -1052,7 +1048,7 @@ function ServicesGrid() {
             <span className="font-mono text-xs uppercase tracking-[0.25em] text-primary">╱ Everything we build</span>
             <h2 className="font-display font-extrabold text-4xl sm:text-5xl md:text-6xl mt-4 leading-[1.05] tracking-tight">
               The whole package,
-              <span className="block font-serif italic font-medium text-primary">under one roof.</span>
+              <span className="block font-serif italic font-medium text-primary text-5xl sm:text-6xl md:text-7xl">under one roof.</span>
             </h2>
           </div>
           <p className="text-white/60 max-w-md text-base leading-relaxed">
@@ -1110,8 +1106,8 @@ function TrustSignals() {
   const badges = [
     {
       Icon: ShieldCheck,
-      title: '100% Custom Code',
-      text: 'No drag-and-drop templates. Every site is hand-coded, fully owned by you, and built to last.',
+      title: 'Modern, Clean Code',
+      text: "Every site is built with clean, modern code — fast to load, easy to maintain, and fully yours once it's live.",
     },
     {
       Icon: Award,
@@ -1198,7 +1194,7 @@ function ContactForm() {
             </span>
             <h2 className="font-display font-extrabold text-4xl sm:text-5xl md:text-6xl text-ink mt-4 leading-[1.05] tracking-tight">
               Let's build something
-              <span className="block font-serif italic font-medium text-primary-dark">sharp.</span>
+              <span className="block font-serif italic font-medium text-primary-dark text-5xl sm:text-6xl md:text-7xl">sharp.</span>
             </h2>
             <p className="text-muted text-lg mt-6 leading-relaxed max-w-md">
               Tell us about your business and what you're looking for, and we'll get back to you
@@ -1238,7 +1234,7 @@ function ContactForm() {
             </div>
 
             <div className="mt-10 p-5 rounded-3xl bg-primary/5 border border-primary/15">
-              <p className="font-mono text-[10px] uppercase tracking-widest text-primary-dark mb-2">
+              <p className="font-mono text-xs uppercase tracking-widest text-primary-dark mb-2">
                 Your information stays private
               </p>
               <p className="text-sm text-muted leading-relaxed">
@@ -1313,7 +1309,7 @@ function ContactForm() {
                     <button
                       type="submit"
                       disabled={status === 'sending'}
-                      className="magnetic-btn inline-flex items-center gap-2 bg-primary text-deep font-semibold px-7 py-3.5 rounded-full shadow-lg shadow-primary/30 disabled:opacity-50"
+                      className="magnetic-btn w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-primary text-deep font-semibold px-7 py-3.5 rounded-full shadow-lg shadow-primary/30 disabled:opacity-50"
                     >
                       {status === 'sending' ? 'Sending...' : 'Send message'}
                       <ArrowRight className="h-4 w-4" />
@@ -1369,11 +1365,11 @@ function Footer() {
         <div className="border-b border-white/10 pb-12 mb-12">
           <h2 className="font-display font-extrabold text-5xl sm:text-7xl md:text-8xl leading-[0.92] tracking-tight">
             Let's make it
-            <span className="font-serif italic font-medium text-primary block">Sharpable.</span>
+            <span className="font-serif italic font-medium text-primary block text-6xl sm:text-8xl md:text-9xl">Sharpable.</span>
           </h2>
           <div className="flex flex-col sm:flex-row sm:items-end justify-between mt-8 gap-6">
             <p className="text-white/50 max-w-md">
-              Sharpable — premium websites for small businesses, designed and built from scratch.
+              Sharpable designs and builds premium websites for small businesses, made to help them grow online.
             </p>
             <a href="#contact" className="magnetic-btn inline-flex items-center gap-2 bg-primary text-deep font-semibold px-7 py-3.5 rounded-full self-start sm:self-auto">
               Get a quote
@@ -1395,8 +1391,8 @@ function Footer() {
               custom code, no templates.
             </p>
             <div className="flex items-center gap-2 mt-6">
-              <span className="relative h-2 w-2 rounded-full bg-emerald-400">
-                <span className="absolute inset-0 rounded-full bg-emerald-400 animate-ping opacity-75" />
+              <span className="relative h-2 w-2 rounded-full bg-primary">
+                <span className="absolute inset-0 rounded-full bg-primary animate-ping opacity-75" />
               </span>
               <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-white/60">
                 Studio open · taking new projects
@@ -1444,17 +1440,7 @@ function Footer() {
           </div>
         </div>
 
-        <div className="mt-14 pt-8 border-t border-white/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
-          <div className="flex items-center gap-2.5">
-            <span className="relative flex h-2 w-2">
-              <span className="absolute inset-0 rounded-full bg-emerald-400 animate-ping" />
-              <span className="relative h-2 w-2 rounded-full bg-emerald-400" />
-            </span>
-            <span className="font-mono text-[10px] uppercase tracking-[0.25em] text-white/60">
-              System Operational · Ready for new work
-            </span>
-          </div>
-
+        <div className="mt-14 pt-8 border-t border-white/10 flex flex-col sm:flex-row items-start sm:items-center sm:justify-end gap-6">
           <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-white/50 text-xs font-mono">
             <Link to="/privacy" className="hover:text-primary transition">Privacy Policy</Link>
             <Link to="/terms" className="hover:text-primary transition">Terms</Link>
