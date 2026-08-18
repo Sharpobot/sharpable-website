@@ -86,12 +86,12 @@ export default function BuildScanner() {
 
       {/* Browser window bar at top */}
       <svg className="absolute left-3 right-3 top-9 h-5" viewBox="0 0 400 20" preserveAspectRatio="none">
-        <rect x="0" y="2" width="400" height="16" rx="6" fill="#D4AF37" fillOpacity="0.12" />
-        <rect x="0" y="2" width="400" height="16" rx="6" fill="none" stroke="#D4AF37" strokeOpacity="0.25" strokeWidth="1" />
-        <circle cx="14" cy="10" r="2.4" fill="#E8CC6E" fillOpacity="0.8" />
+        <rect x="0" y="2" width="400" height="16" rx="6" fill="#FFC629" fillOpacity="0.12" />
+        <rect x="0" y="2" width="400" height="16" rx="6" fill="none" stroke="#FFC629" strokeOpacity="0.25" strokeWidth="1" />
+        <circle cx="14" cy="10" r="2.4" fill="#FFDD70" fillOpacity="0.8" />
         <circle cx="24" cy="10" r="2.4" fill="#F5E6C8" fillOpacity="0.6" />
-        <circle cx="34" cy="10" r="2.4" fill="#B8941F" fillOpacity="0.6" />
-        <rect x="48" y="6.5" width="180" height="7" rx="3.5" fill="#D4AF37" fillOpacity="0.18" />
+        <circle cx="34" cy="10" r="2.4" fill="#D69600" fillOpacity="0.6" />
+        <rect x="48" y="6.5" width="180" height="7" rx="3.5" fill="#FFC629" fillOpacity="0.18" />
       </svg>
 
       {/* Falling code-bracket field */}
@@ -105,7 +105,7 @@ export default function BuildScanner() {
               width: `${d.size}px`,
               height: `${d.size}px`,
               animation: `rain-fall ${d.dur} cubic-bezier(0.55,0.05,0.7,0.45) ${d.delay} infinite`,
-              filter: 'drop-shadow(0 1px 2px rgba(212,175,55,0.35))',
+              filter: 'drop-shadow(0 1px 2px rgba(255,198,41,0.35))',
               transform: 'translateX(-50%)',
             }}
             viewBox="0 0 24 24"
@@ -114,8 +114,8 @@ export default function BuildScanner() {
             <defs>
               <linearGradient id={`bracket-${i}`} x1="0%" y1="0%" x2="0%" y2="100%">
                 <stop offset="0%" stopColor="#F5E6C8" />
-                <stop offset="50%" stopColor="#E8CC6E" />
-                <stop offset="100%" stopColor="#B8941F" />
+                <stop offset="50%" stopColor="#FFDD70" />
+                <stop offset="100%" stopColor="#D69600" />
               </linearGradient>
             </defs>
             <polyline points="16 18 22 12 16 6" stroke={`url(#bracket-${i})`} strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />

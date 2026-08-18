@@ -5,11 +5,11 @@
 @layer base {
   html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
   body { @apply bg-background text-ink font-body; overflow-x: hidden; }
-  ::selection { background-color: #D4AF37; color: #0B0B0C; }
+  ::selection { background-color: #FFC629; color: #16161A; }
   ::-webkit-scrollbar { width: 10px; }
-  ::-webkit-scrollbar-track { background: #0B0B0C; }
-  ::-webkit-scrollbar-thumb { background: #E8CC6E; border-radius: 10px; }
-  ::-webkit-scrollbar-thumb:hover { background: #D4AF37; }
+  ::-webkit-scrollbar-track { background: #1E1E22; }
+  ::-webkit-scrollbar-thumb { background: #FFDD70; border-radius: 10px; }
+  ::-webkit-scrollbar-thumb:hover { background: #FFC629; }
 }
 
 @layer components {
@@ -31,28 +31,28 @@
   .lift-on-hover { transition: transform 0.3s cubic-bezier(0.25,0.46,0.45,0.94); }
   .lift-on-hover:hover { transform: translateY(-1px); }
   .gradient-text {
-    background: linear-gradient(135deg, #E8CC6E 0%, #B8941F 100%);
+    background: linear-gradient(135deg, #FFDD70 0%, #D69600 100%);
     -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
   }
   .glass {
-    background: rgba(22,22,24,0.65);
+    background: rgba(41,41,46,0.65);
     backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(212,175,55,0.18);
+    border: 1px solid rgba(255,198,41,0.18);
   }
   .glass-dark {
-    background: rgba(5,5,5,0.75);
+    background: rgba(22,22,26,0.75);
     backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
   }
-  .ring-pulse { box-shadow: 0 0 0 0 rgba(212,175,55,0.6); animation: ring-pulse 2s infinite; }
+  .ring-pulse { box-shadow: 0 0 0 0 rgba(255,198,41,0.6); animation: ring-pulse 2s infinite; }
   @keyframes ring-pulse {
-    0%   { box-shadow: 0 0 0 0 rgba(212,175,55,0.6); }
-    70%  { box-shadow: 0 0 0 14px rgba(212,175,55,0); }
-    100% { box-shadow: 0 0 0 0 rgba(212,175,55,0); }
+    0%   { box-shadow: 0 0 0 0 rgba(255,198,41,0.6); }
+    70%  { box-shadow: 0 0 0 14px rgba(255,198,41,0); }
+    100% { box-shadow: 0 0 0 0 rgba(255,198,41,0); }
   }
   .grid-bg {
     background-image:
-      linear-gradient(rgba(212,175,55,0.07) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(212,175,55,0.07) 1px, transparent 1px);
+      linear-gradient(rgba(255,198,41,0.07) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,198,41,0.07) 1px, transparent 1px);
     background-size: 40px 40px;
   }
   .text-balance { text-wrap: balance; }

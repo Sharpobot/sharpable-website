@@ -4,17 +4,17 @@ export default {
   theme: {
     extend: {
       colors: {
-        primary: '#D4AF37',
-        'primary-dark': '#B8941F',
-        'primary-light': '#E8CC6E',
+        primary: '#FFC629',
+        'primary-dark': '#D69600',
+        'primary-light': '#FFDD70',
         accent: '#F5E6C8',
         'accent-dark': '#D9C49A',
-        background: '#0B0B0C',
-        surface: '#161618',
+        background: '#1E1E22',
+        surface: '#29292E',
         ink: '#FAFAFA',
         muted: '#9C9C9F',
-        divider: '#2A2A2D',
-        deep: '#050505',
+        divider: '#414147',
+        deep: '#16161A',
       },
       fontFamily: {
         display: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
