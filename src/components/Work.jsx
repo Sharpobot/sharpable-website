@@ -63,7 +63,7 @@ export default function Work() {
           </span>
           <h2 className="font-display font-extrabold text-4xl sm:text-5xl md:text-6xl text-ink mt-4 leading-[1.05] tracking-tight">
             Sites we've
-            <span className="block font-serif italic font-medium text-primary-dark mt-1 text-5xl sm:text-6xl md:text-7xl">
+            <span className="block font-serif italic font-medium text-primary mt-1 text-5xl sm:text-6xl md:text-7xl">
               shipped.
             </span>
           </h2>

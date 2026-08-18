@@ -30,7 +30,7 @@ export default function ContactForm() {
             </span>
             <h2 className="font-display font-extrabold text-4xl sm:text-5xl md:text-6xl text-ink mt-4 leading-[1.05] tracking-tight">
               Let's build something
-              <span className="block font-serif italic font-medium text-primary-dark text-5xl sm:text-6xl md:text-7xl">sharp.</span>
+              <span className="block font-serif italic font-medium text-primary text-5xl sm:text-6xl md:text-7xl">sharp.</span>
             </h2>
             <p className="text-muted text-lg mt-6 leading-relaxed max-w-md">
               Tell us about your business and what you're looking for, and we'll get back to you

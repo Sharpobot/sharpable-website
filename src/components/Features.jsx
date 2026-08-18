@@ -63,7 +63,7 @@ export default function Features() {
           </span>
           <h2 className="font-display font-extrabold text-4xl sm:text-5xl md:text-6xl text-ink mt-4 leading-[1.05] tracking-tight">
             Three pillars.
-            <span className="block font-serif italic font-medium text-primary-dark mt-1 text-5xl sm:text-6xl md:text-7xl">
+            <span className="block font-serif italic font-medium text-primary mt-1 text-5xl sm:text-6xl md:text-7xl">
               One studio.
             </span>
           </h2>
@@ -89,7 +89,7 @@ export default function Features() {
 
               <div className="mt-6">
                 <h3 className="font-display font-bold text-2xl text-ink leading-tight">{card.heading}</h3>
-                <p className="font-serif italic text-primary-dark text-lg mt-1">{card.sub}</p>
+                <p className="font-serif italic text-primary-dark text-2xl mt-1">{card.sub}</p>
                 <p className="text-muted text-[15px] mt-4 leading-relaxed">{card.text}</p>
               </div>
             </article>

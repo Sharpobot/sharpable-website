@@ -50,7 +50,7 @@ export default function DesignShuffler() {
                   key={idx}
                   className="h-1 w-1 rounded-full"
                   style={{
-                    background: idx < 24 - offset * 6 ? '#FFC629' : '#414147',
+                    background: idx < 24 - offset * 6 ? '#FFC629' : '#38383D',
                   }}
                 />
               ))}

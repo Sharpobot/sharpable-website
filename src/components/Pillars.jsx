@@ -66,7 +66,7 @@ export default function Pillars() {
             </span>
             <h2 className="font-display font-extrabold text-4xl sm:text-5xl md:text-6xl text-ink leading-[1.05] tracking-tight">
               The numbers behind
-              <span className="block font-serif italic font-medium text-primary-dark text-5xl sm:text-6xl md:text-7xl">the work.</span>
+              <span className="block font-serif italic font-medium text-primary text-5xl sm:text-6xl md:text-7xl">the work.</span>
             </h2>
           </div>
           <p className="text-muted text-lg leading-relaxed max-w-md lg:text-right">

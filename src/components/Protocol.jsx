@@ -65,7 +65,7 @@ export default function Protocol() {
         </span>
         <h2 className="font-display font-extrabold text-4xl sm:text-5xl md:text-6xl text-ink mt-4 leading-[1.05] tracking-tight max-w-3xl">
           Three steps.
-          <span className="block font-serif italic font-medium text-primary-dark">Zero surprises.</span>
+          <span className="block font-serif italic font-medium text-primary">Zero surprises.</span>
         </h2>
       </div>
 
