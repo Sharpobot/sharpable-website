@@ -82,7 +82,7 @@ export default function ContactForm() {
 
           {/* Right: form */}
           <div className="lg:col-span-7">
-            <form onSubmit={handleSubmit} className="bg-surface border border-divider rounded-5xl p-7 sm:p-10 shadow-xl shadow-primary/5">
+            <form onSubmit={handleSubmit} className="bg-surface border border-divider rounded-5xl p-7 sm:p-10 shadow-2xl shadow-primary/15">
               {status !== 'sent' ? (
                 <>
                   <div className="grid sm:grid-cols-2 gap-5">

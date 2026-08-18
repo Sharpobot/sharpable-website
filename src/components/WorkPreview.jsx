@@ -1,6 +1,6 @@
 export default function WorkPreview({ layout }) {
   return (
-    <div className="relative aspect-[4/3] rounded-3xl border border-divider bg-surface overflow-hidden p-5 sm:p-6 shadow-sm">
+    <div className="relative aspect-[4/3] rounded-3xl border border-divider bg-surface overflow-hidden p-5 sm:p-6 shadow-xl shadow-primary/15">
       <div className="flex items-center gap-1.5 mb-5">
         <span className="h-2.5 w-2.5 rounded-full bg-primary/50" />
         <span className="h-2.5 w-2.5 rounded-full bg-primary/30" />
