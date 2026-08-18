@@ -6,10 +6,9 @@
   html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
   body { @apply bg-background text-ink font-body; overflow-x: hidden; }
   ::selection { background-color: #FFC629; color: #0F0F12; }
-  ::-webkit-scrollbar { width: 10px; }
+  ::-webkit-scrollbar { width: 3px; }
   ::-webkit-scrollbar-track { background: #16161A; }
-  ::-webkit-scrollbar-thumb { background: #FFDD70; border-radius: 10px; }
-  ::-webkit-scrollbar-thumb:hover { background: #FFC629; }
+  ::-webkit-scrollbar-thumb { background: #FFC629; border-radius: 2px; }
 }
 
 @layer components {
