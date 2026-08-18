@@ -1,7 +1,15 @@
 import { useEffect, useRef, useState } from 'react'
+import { useLanguage } from '../useLanguage.js'
 import CountUp from './CountUp.jsx'
 
+const TARGETS = [
+  { target: 80, suffix: '+' },
+  { target: 98, suffix: '%' },
+  { target: 14, suffix: 'd' },
+]
+
 export default function Pillars() {
+  const { t } = useLanguage()
   const ref = useRef(null)
   const [visible, setVisible] = useState(false)
 
@@ -21,32 +29,12 @@ export default function Pillars() {
     return () => observer.disconnect()
   }, [])
 
-  const pillars = [
-    {
-      n: '01',
-      title: 'Delivered',
-      target: 80,
-      suffix: '+',
-      label: 'sites launched',
-      desc: 'From single-page landing sites to full multi-page builds — each one designed and coded from scratch.',
-    },
-    {
-      n: '02',
-      title: 'Satisfaction',
-      target: 98,
-      suffix: '%',
-      label: 'client satisfaction',
-      desc: 'Most of our work comes from referrals. We build long-term relationships, not one-off projects.',
-    },
-    {
-      n: '03',
-      title: 'Turnaround',
-      target: 14,
-      suffix: 'd',
-      label: 'avg. turnaround',
-      desc: 'From kickoff call to a live site in about two weeks for most small business projects.',
-    },
-  ]
+  const pillars = t.pillars.items.map((item, i) => ({
+    ...item,
+    n: String(i + 1).padStart(2, '0'),
+    target: TARGETS[i].target,
+    suffix: TARGETS[i].suffix,
+  }))
 
   return (
     <section id="approach" ref={ref} className="relative py-28 sm:py-40 px-6 sm:px-10 lg:px-16 overflow-hidden">
@@ -62,15 +50,15 @@ export default function Pillars() {
         >
           <div className="max-w-2xl">
             <span className="inline-block font-mono text-xs uppercase tracking-[0.3em] text-primary-dark mb-5">
-              ╱ Track record
+              ╱ {t.pillars.eyebrow}
             </span>
             <h2 className="font-display font-extrabold text-4xl sm:text-5xl md:text-6xl text-ink leading-[1.05] tracking-tight">
-              The numbers behind
-              <span className="block font-serif italic font-medium text-primary text-5xl sm:text-6xl md:text-7xl">the work.</span>
+              {t.pillars.heading1}
+              <span className="block font-serif italic font-medium text-primary text-5xl sm:text-6xl md:text-7xl">{t.pillars.heading2}</span>
             </h2>
           </div>
           <p className="text-muted text-lg leading-relaxed max-w-md lg:text-right">
-            Three numbers that define how we build. Not marketing — just what we deliver every time.
+            {t.pillars.sub}
           </p>
         </div>
 

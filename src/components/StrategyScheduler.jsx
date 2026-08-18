@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react'
+import { useLanguage } from '../useLanguage.js'
 
 export default function StrategyScheduler() {
-  const days = ['M', 'T', 'W', 'T', 'F', 'S', 'S']
+  const { t } = useLanguage()
+  const days = t.features.scheduler.days
   const [step, setStep] = useState(0) // 0..4
   const activeDay = 3
 
@@ -33,10 +35,10 @@ export default function StrategyScheduler() {
     <div className="relative h-44 w-full bg-white border border-divider rounded-3xl p-5 overflow-hidden">
       <div className="flex items-center justify-between mb-3">
         <span className="font-mono text-[10px] uppercase tracking-widest text-muted">
-          Week 14 · April
+          {t.features.scheduler.week}
         </span>
         <span className="font-mono text-[10px] uppercase tracking-widest text-primary-dark bg-primary/10 px-2 py-0.5 rounded-full">
-          Booking
+          {t.features.scheduler.booking}
         </span>
       </div>
 
@@ -71,7 +73,7 @@ export default function StrategyScheduler() {
             : 'bg-divider/40 text-gray-600'
         }`}
       >
-        {step >= 3 ? '✓ Strategy call booked' : 'Pick a day'}
+        {step >= 3 ? t.features.scheduler.booked : t.features.scheduler.pickDay}
       </button>
 
       {/* Animated cursor */}

@@ -1,8 +1,10 @@
 import { useRef, useState } from 'react'
 import { ArrowRight, CheckCircle2, Mail, MapPin, Phone, Upload } from 'lucide-react'
+import { useLanguage } from '../useLanguage.js'
 import Field from './Field.jsx'
 
 export default function ContactForm() {
+  const { t } = useLanguage()
   const [form, setForm] = useState({ name: '', email: '', phone: '', company: '', message: '' })
   const [files, setFiles] = useState([])
   const [status, setStatus] = useState('idle')
@@ -26,15 +28,14 @@ export default function ContactForm() {
           {/* Left: heading + info */}
           <div className="lg:col-span-5">
             <span className="font-mono text-xs uppercase tracking-[0.25em] text-primary-dark">
-              ╱ Get in touch
+              ╱ {t.contact.eyebrow}
             </span>
             <h2 className="font-display font-extrabold text-4xl sm:text-5xl md:text-6xl text-ink mt-4 leading-[1.05] tracking-tight">
-              Let's build something
-              <span className="block font-serif italic font-medium text-primary text-5xl sm:text-6xl md:text-7xl">sharp.</span>
+              {t.contact.heading1}
+              <span className="block font-serif italic font-medium text-primary text-5xl sm:text-6xl md:text-7xl">{t.contact.heading2}</span>
             </h2>
             <p className="text-muted text-lg mt-6 leading-relaxed max-w-md">
-              Tell us about your business and what you're looking for, and we'll get back to you
-              with next steps — usually within a day.
+              {t.contact.sub}
             </p>
 
             <div className="mt-10 space-y-4">
@@ -43,7 +44,7 @@ export default function ContactForm() {
                   <Phone className="h-5 w-5 text-primary group-hover:text-deep" />
                 </span>
                 <span>
-                  <span className="block font-mono text-[10px] uppercase tracking-widest text-muted">Call us</span>
+                  <span className="block font-mono text-[10px] uppercase tracking-widest text-muted">{t.contact.callUs}</span>
                   <span className="font-display font-semibold text-ink text-lg">+6019 580 6090</span>
                 </span>
               </a>
@@ -53,7 +54,7 @@ export default function ContactForm() {
                   <Mail className="h-5 w-5 text-primary group-hover:text-deep" />
                 </span>
                 <span>
-                  <span className="block font-mono text-[10px] uppercase tracking-widest text-muted">Email us</span>
+                  <span className="block font-mono text-[10px] uppercase tracking-widest text-muted">{t.contact.emailUs}</span>
                   <span className="font-display font-semibold text-ink text-lg">sharpablehq@gmail.com</span>
                 </span>
               </a>
@@ -63,19 +64,18 @@ export default function ContactForm() {
                   <MapPin className="h-5 w-5 text-primary" />
                 </span>
                 <span>
-                  <span className="block font-mono text-[10px] uppercase tracking-widest text-muted">Based</span>
-                  <span className="font-display font-semibold text-ink text-lg">Kuala Lumpur — Malaysia</span>
+                  <span className="block font-mono text-[10px] uppercase tracking-widest text-muted">{t.contact.based}</span>
+                  <span className="font-display font-semibold text-ink text-lg">{t.contact.location}</span>
                 </span>
               </div>
             </div>
 
             <div className="mt-10 p-5 rounded-3xl bg-primary/5 border border-primary/15">
               <p className="font-mono text-xs uppercase tracking-widest text-primary-dark mb-2">
-                Your information stays private
+                {t.contact.privacyTitle}
               </p>
               <p className="text-sm text-muted leading-relaxed">
-                We only use your details to respond to your inquiry, and they're stored securely.
-                We never sell or share your information with third parties.
+                {t.contact.privacyText}
               </p>
             </div>
           </div>
@@ -86,22 +86,22 @@ export default function ContactForm() {
               {status !== 'sent' ? (
                 <>
                   <div className="grid sm:grid-cols-2 gap-5">
-                    <Field label="Name" required value={form.name} onChange={(v) => setForm({ ...form, name: v })} />
-                    <Field label="Email address" type="email" required value={form.email} onChange={(v) => setForm({ ...form, email: v })} />
-                    <Field label="Phone number" type="tel" value={form.phone} onChange={(v) => setForm({ ...form, phone: v })} />
-                    <Field label="Company / Website" value={form.company} onChange={(v) => setForm({ ...form, company: v })} />
+                    <Field label={t.contact.form.name} required value={form.name} onChange={(v) => setForm({ ...form, name: v })} />
+                    <Field label={t.contact.form.email} type="email" required value={form.email} onChange={(v) => setForm({ ...form, email: v })} />
+                    <Field label={t.contact.form.phone} type="tel" value={form.phone} onChange={(v) => setForm({ ...form, phone: v })} />
+                    <Field label={t.contact.form.company} value={form.company} onChange={(v) => setForm({ ...form, company: v })} />
                   </div>
 
                   <div className="mt-5">
                     <label className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted mb-2 block">
-                      Your message *
+                      {t.contact.form.message}
                     </label>
                     <textarea
                       value={form.message}
                       onChange={(e) => setForm({ ...form, message: e.target.value })}
                       required
                       rows={5}
-                      placeholder="Tell us a bit about your business and what you need..."
+                      placeholder={t.contact.form.messagePlaceholder}
                       className="w-full bg-background border border-divider rounded-2xl px-4 py-3.5 text-ink placeholder-muted/60 focus:border-primary focus:ring-4 focus:ring-primary/15 outline-none transition resize-none font-body"
                     />
                   </div>
@@ -125,8 +125,8 @@ export default function ContactForm() {
                     <input type="file" multiple id="file-up" className="hidden" onChange={(e) => handleFiles(e.target.files)} accept="image/*" />
                     <label htmlFor="file-up" className="cursor-pointer block">
                       <Upload className="h-6 w-6 mx-auto text-primary-dark mb-2" />
-                      <p className="font-display font-semibold text-ink text-sm">Attach files (logo, brand assets, inspiration)</p>
-                      <p className="text-xs text-muted mt-1">Click or drag files here (max 5 files)</p>
+                      <p className="font-display font-semibold text-ink text-sm">{t.contact.form.upload}</p>
+                      <p className="text-xs text-muted mt-1">{t.contact.form.uploadHint}</p>
                       {files.length > 0 && (
                         <div className="mt-4 flex flex-wrap gap-2 justify-center">
                           {files.map((f, i) => (
@@ -141,13 +141,13 @@ export default function ContactForm() {
                   </div>
 
                   <div className="mt-7 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                    <p className="text-xs text-muted">We'll get back to you as soon as we can. Fields marked * are required.</p>
+                    <p className="text-xs text-muted">{t.contact.form.note}</p>
                     <button
                       type="submit"
                       disabled={status === 'sending'}
                       className="magnetic-btn w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-primary text-deep font-semibold px-7 py-3.5 rounded-full shadow-lg shadow-primary/30 disabled:opacity-50"
                     >
-                      {status === 'sending' ? 'Sending...' : 'Send message'}
+                      {status === 'sending' ? t.contact.form.sending : t.contact.form.submit}
                       <ArrowRight className="h-4 w-4" />
                     </button>
                   </div>
@@ -157,9 +157,9 @@ export default function ContactForm() {
                   <div className="h-16 w-16 mx-auto rounded-full bg-primary/15 flex items-center justify-center mb-6">
                     <CheckCircle2 className="h-8 w-8 text-primary-dark" />
                   </div>
-                  <h3 className="font-display font-bold text-2xl text-ink mb-3">Thanks — we'll be in touch</h3>
+                  <h3 className="font-display font-bold text-2xl text-ink mb-3">{t.contact.sent.title}</h3>
                   <p className="text-muted max-w-md mx-auto">
-                    We'll review your message and get back to you within one business day.
+                    {t.contact.sent.text}
                   </p>
                 </div>
               )}

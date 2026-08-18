@@ -1,9 +1,13 @@
 import { useEffect, useRef } from 'react'
 import { gsap } from 'gsap'
 import { ArrowRight } from 'lucide-react'
+import { useLanguage } from '../useLanguage.js'
 import WorkPreview from './WorkPreview.jsx'
 
+const LAYOUTS = ['list', 'grid']
+
 export default function Work() {
+  const { t } = useLanguage()
   const sectionRef = useRef(null)
 
   useEffect(() => {
@@ -37,34 +41,19 @@ export default function Work() {
     return () => ctx.revert()
   }, [])
 
-  const projects = [
-    {
-      tag: 'Landing Page',
-      title: 'Local Bakery Rebrand',
-      blurb:
-        "A clean, fast-loading site built around daily online orders and custom cake requests — simple to update, easy to browse on a phone.",
-      layout: 'list',
-    },
-    {
-      tag: 'Booking Site',
-      title: 'Boutique Fitness Studio',
-      blurb:
-        'Class schedules and membership signup built directly into the site, so customers never have to leave to book a spot.',
-      layout: 'grid',
-    },
-  ]
+  const projects = t.work.items.map((item, i) => ({ ...item, layout: LAYOUTS[i] }))
 
   return (
     <section id="work" ref={sectionRef} className="relative py-28 sm:py-40 px-6 sm:px-10 lg:px-16">
       <div className="max-w-7xl mx-auto">
         <div className="work-heading max-w-3xl mb-16 sm:mb-24">
           <span className="font-mono text-xs uppercase tracking-[0.25em] text-primary-dark">
-            ╱ Selected work
+            ╱ {t.work.eyebrow}
           </span>
           <h2 className="font-display font-extrabold text-4xl sm:text-5xl md:text-6xl text-ink mt-4 leading-[1.05] tracking-tight">
-            Sites we've
+            {t.work.heading1}
             <span className="block font-serif italic font-medium text-primary mt-1 text-5xl sm:text-6xl md:text-7xl">
-              shipped.
+              {t.work.heading2}
             </span>
           </h2>
         </div>
@@ -92,7 +81,7 @@ export default function Work() {
                   href="#contact"
                   className="lift-on-hover inline-flex items-center gap-2 text-ink font-semibold mt-7 group"
                 >
-                  Want something like this?
+                  {t.work.cta}
                   <ArrowRight className="h-4 w-4 text-primary transition-transform group-hover:translate-x-1" />
                 </a>
               </div>

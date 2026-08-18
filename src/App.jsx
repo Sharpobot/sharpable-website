@@ -8,6 +8,7 @@ import Pillars from './components/Pillars.jsx'
 import Protocol from './components/Protocol.jsx'
 import ServicesGrid from './components/ServicesGrid.jsx'
 import Work from './components/Work.jsx'
+import Transformation from './components/Transformation.jsx'
 import TrustSignals from './components/TrustSignals.jsx'
 import ContactForm from './components/ContactForm.jsx'
 import Footer from './components/Footer.jsx'
@@ -35,6 +36,7 @@ export default function App() {
         <Protocol />
         <ServicesGrid />
         <Work />
+        <Transformation />
         <TrustSignals />
         <ContactForm />
       </main>

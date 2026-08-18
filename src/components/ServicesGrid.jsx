@@ -1,8 +1,10 @@
 import { useEffect, useRef } from 'react'
 import { gsap } from 'gsap'
-import { SERVICES_FULL } from '../constants.js'
+import { useLanguage } from '../useLanguage.js'
+import { SERVICE_ICONS } from '../constants.js'
 
 export default function ServicesGrid() {
+  const { t } = useLanguage()
   const ref = useRef(null)
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -18,6 +20,8 @@ export default function ServicesGrid() {
     return () => ctx.revert()
   }, [])
 
+  const items = t.servicesGrid.items.map((item, i) => ({ ...item, icon: SERVICE_ICONS[i] }))
+
   return (
     <section ref={ref} className="relative py-24 px-6 sm:px-10 lg:px-16 bg-deep text-white overflow-hidden rounded-t-6xl">
       <div className="absolute inset-0 grid-bg opacity-20" />
@@ -27,19 +31,19 @@ export default function ServicesGrid() {
       <div className="relative max-w-7xl mx-auto">
         <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-6 mb-14">
           <div>
-            <span className="font-mono text-xs uppercase tracking-[0.25em] text-primary">╱ Everything we build</span>
+            <span className="font-mono text-xs uppercase tracking-[0.25em] text-primary">╱ {t.servicesGrid.eyebrow}</span>
             <h2 className="font-display font-extrabold text-4xl sm:text-5xl md:text-6xl mt-4 leading-[1.05] tracking-tight">
-              The whole package,
-              <span className="block font-serif italic font-medium text-primary text-5xl sm:text-6xl md:text-7xl">under one roof.</span>
+              {t.servicesGrid.heading1}
+              <span className="block font-serif italic font-medium text-primary text-5xl sm:text-6xl md:text-7xl">{t.servicesGrid.heading2}</span>
             </h2>
           </div>
           <p className="text-white/60 max-w-md text-base leading-relaxed">
-            From a single landing page to a full e-commerce build — we handle projects of every size, remotely, worldwide.
+            {t.servicesGrid.sub}
           </p>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px bg-white/10 rounded-4xl overflow-hidden">
-          {SERVICES_FULL.map((svc, i) => {
+          {items.map((svc, i) => {
             const Icon = svc.icon
             return (
               <div key={i} className="svc-tile group bg-deep p-7 sm:p-9 hover:bg-white/[0.02] transition-colors duration-500 relative">

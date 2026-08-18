@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**Sharpable** is a marketing/business website for a web design studio ("premium websites for small businesses"). It's a **React 19 + Vite + Tailwind CSS single-page site** with two extra static routes for legal pages, client-side routed via `react-router-dom`. There is no backend — the contact form is currently a UI-only stub (see Known Gaps below).
+**Sharpable** is a marketing/business website for a web design studio ("premium websites for small businesses"). It's a **React 19 + Vite + Tailwind CSS single-page site** with two extra static routes for legal pages, client-side routed via `react-router-dom`. The whole homepage is **fully bilingual (English/Bahasa Melayu)** via a custom i18n system — see the "Internationalization" section below. There is no backend — the contact form is currently a UI-only stub (see Known Gaps below).
 
 This repo was migrated from an old GitHub account (`FriezerGH/Sharpable`) to a new one (`Sharpobot/sharpable-website`) via a local bare-mirror clone+push. **The git remote `origin` currently still points to that local mirror path** (`C:\Users\Amrishak\repo-transfer\Sharpable.git`), not to GitHub — repoint it to `https://github.com/Sharpobot/sharpable-website.git` before relying on `git push`/`git pull` against GitHub.
 
@@ -24,34 +24,47 @@ No TypeScript (despite `@types/react`/`@types/react-dom` in devDependencies — 
 
 ## High-Level Architecture
 
-- **`src/main.jsx`** — entry point. Wraps everything in `BrowserRouter` with three routes:
+- **`src/main.jsx`** — entry point. Wraps everything in `LanguageProvider` (i18n context, see below) then `BrowserRouter` with three routes:
   - `/` → `App` (the entire one-page marketing site)
   - `/privacy` → `PrivacyPolicy`
   - `/terms` → `Terms`
-- **`src/App.jsx`** (~1,500 lines) — the entire marketing site lives here as a flat sequence of component functions in one file, assembled in the default-exported `App()` at the bottom. **Unlike the IntelliAgents reference project, there is no `components/` folder** — everything (including small decorative widgets) is defined inline in this single file.
-- **`src/pages/PrivacyPolicy.jsx`** / **`src/pages/Terms.jsx`** — standalone static legal pages, same visual shell (logo + "Back to home" link + dated sections), not otherwise linked into `App.jsx`'s content.
+- **`src/App.jsx`** — a slim ~35-line orchestrator: imports every section component and lays them out in order. **Refactored out of a single 1,600+ line file** into one-component-per-file under `src/components/` (each section, plus small decorative widgets like `DesignShuffler`/`BuildScanner`/`StrategyScheduler`/`CountUp`/`WorkPreview`/`Field`, all get their own file). Shared data (`SERVICE_ICONS`) lives in `src/constants.js` — the actual copy for those services lives in the translations, not constants.js.
+- **`src/pages/PrivacyPolicy.jsx`** / **`src/pages/Terms.jsx`** — standalone static legal pages, same visual shell (logo + "Back to home" link + dated sections), not otherwise linked into the main site's content, and **not translated** (English-only, matching the same choice IntelliAgents made for its own legal pages).
 
 ### Section order inside `App.jsx` (top to bottom of the page)
 
-`Navbar` (fixed/floating) → `Hero` → `Features` (3 animated feature cards) → `Pillars` (stat counters) → `Protocol` (sticky stacking 3-step process) → `ServicesGrid` (dark 6-service band) → `TrustSignals` (3 trust badges) → `ContactForm` → `Footer`.
+`Navbar` (fixed/floating) → `Hero` → `Features` (3 animated feature cards) → `Pillars` (stat counters) → `Protocol` (sticky stacking 3-step process) → `ServicesGrid` (dark 6-service band) → `Work` (2-project alternating-rows showcase) → `Transformation` (before/after peek carousel) → `TrustSignals` (3 trust badges) → `ContactForm` → `Footer`.
+
+## Internationalization (English / Bahasa Melayu)
+
+- **`src/translations.js`** — the single source of truth for every piece of user-facing copy on the homepage, nested under `en` and `ms` top-level keys, mirroring each section (`hero`, `features`, `pillars`, `protocol`, `servicesGrid`, `work`, `transformation`, `trust`, `contact`, `footer`, `nav`). **When adding a new section or piece of copy, add it here first** — both languages, kept close in length (not dramatically shorter/longer) so layouts don't visually break between languages.
+- **`src/language-context.js`** — just the `LanguageContext` (`createContext`), isolated in its own plain `.js` file.
+- **`src/useLanguage.js`** — the `useLanguage()` hook (`{ lang, t, toggleLang }`), also isolated in its own file.
+- **`src/i18n.jsx`** — just the `LanguageProvider` component (persists choice to `localStorage` under `sharpable-lang`, sets `document.documentElement.lang`).
+- **Why split across four files**: React Fast Refresh's ESLint rule (`react-refresh/only-export-components`) errors if a single file exports both components and non-component values (hooks, contexts, data) together — hence data / context / hook / provider each got their own file rather than living together like IntelliAgents' single `i18n.jsx`.
+- **Content-vs-logic separation matters here**: some widgets have data that's partly translatable (text) and partly not (icons, target numbers, tone/color). Pattern used throughout: keep a small local array of the *non-translatable* parts (e.g. `TARGETS` in `Pillars.jsx`, `TONES` in `BuildScanner.jsx`, `IMAGES` in `Protocol.jsx`, `SERVICE_ICONS` in `constants.js`) and `.map()` it together with `t.section.items` at render time — never store translated strings in component state that needs to survive a language switch (see next point).
+- **Gotcha already hit once**: don't put translated array items directly into rotating/reorderable `useState` (e.g. a carousel's "current stack order") — when the language toggles, the array reference changes but old state still holds stale-language objects, and syncing via a `useEffect(() => setState(newItems), [items])` trips the `react-hooks/set-state-in-effect` lint rule (and is a real anti-pattern). Fix used in `DesignShuffler.jsx`: store rotation as an array of **indices** (`[0,1,2]`), which are language-independent, and look up `items[idx]` fresh at render time.
+- **Toggle UI**: `Navbar.jsx` has the switcher (desktop: `EN / BM` pill button with a `Languages` icon; mobile menu: full-width "Switch to Bahasa Melayu" button) — ported from the IntelliAgents reference project's identical pattern.
 
 ## Design System
 
 Defined in `tailwind.config.js` under `theme.extend`:
 
 ```js
-primary: '#D4AF37'        // gold — the sole accent color
-primary-dark: '#B8941F'
-primary-light: '#E8CC6E'
+primary: '#FFC629'        // vibrant gold-yellow — the sole accent color
+primary-dark: '#D69600'
+primary-light: '#FFDD70'
 accent: '#F5E6C8'          // cream
 accent-dark: '#D9C49A'
-background: '#0B0B0C'      // near-black page background
-surface: '#161618'         // card/panel background
-deep: '#050505'            // darkest band background (footer, ServicesGrid)
+background: '#16161A'      // dark charcoal page background
+surface: '#202024'         // card/panel background
+deep: '#0F0F12'            // darkest band background (footer, ServicesGrid)
 ink: '#FAFAFA'              // near-white text
 muted: '#9C9C9F'            // secondary text
-divider: '#2A2A2D'          // hairline borders
+divider: '#38383D'          // hairline borders
 ```
+
+**These values have moved twice already this project** — originally a much darker/near-black, near-muted-gold palette; lightened + made more vibrant on request; then the background was pulled back darker after "too light" feedback while *keeping* the more vibrant gold (client preference, not a mistake). **If asked to touch these again**: (1) update `tailwind.config.js` first — that's the single source of truth; (2) then grep for hardcoded hex/rgba duplicates of the old values in `src/index.css` (`::selection`, scrollbar, `.glass`/`.glass-dark`, `.grid-bg`, `.ring-pulse`) and inline in `BuildScanner.jsx`/`DesignShuffler.jsx` (SVG fills can't use Tailwind classes) — these do **not** update automatically; (3) **a plain HMR update is not enough for Tailwind config color changes** — kill and restart the dev server, then hard-navigate the browser tab, or you'll keep reading stale computed colors and think the edit didn't take effect (this has happened multiple times in this project).
 
 **Fonts** (Google Fonts, loaded via `<link>` in `index.html` — not self-hosted):
 - `font-display` → **Plus Jakarta Sans** — headings
@@ -59,7 +72,7 @@ divider: '#2A2A2D'          // hairline borders
 - `font-body` → **Inter** — body copy
 - `font-mono` → **JetBrains Mono** — uppercase letter-spaced eyebrows/labels/badges throughout
 
-**Signature typographic motif**: nearly every section heading pairs a bold sans-serif line with an italic serif accent line in `primary-dark`. This pattern repeats in Hero, Features, Pillars, Protocol, ContactForm, and Footer — treat it as the site's core visual identity, not a one-off.
+**Signature typographic motif**: nearly every section heading pairs a bold sans-serif line with an italic serif accent line in `primary` (the bright gold — all such accent spans were unified onto `primary` rather than a mix of `primary`/`primary-dark`, on request, for visual consistency). This pattern repeats in Hero, Features, Pillars, Protocol, ServicesGrid, Work, Transformation, ContactForm, and Footer — treat it as the site's core visual identity, not a one-off. These accent spans also got deliberately enlarged beyond their parent heading's size (e.g. `text-4xl sm:text-5xl md:text-6xl` heading with a `text-5xl sm:text-6xl md:text-7xl` accent span) — keep new headings proportionate to this if you add one.
 
 **Custom radii** (`tailwind.config.js`): `2.5xl`/`4xl`/`5xl`/`6xl`/`7xl` — the very rounded card/section aesthetic used everywhere is deliberate, not default Tailwind.
 
@@ -78,7 +91,9 @@ divider: '#2A2A2D'          // hairline borders
 - **`Protocol`** uses **GSAP `ScrollTrigger` with `scrub`** to pin and stack its 3 process-step cards as the user scrolls — each earlier card scales down, blurs, and fades as the next one covers it. This is the most complex animation in the file; the rest of the site's scroll-reveals use plain `IntersectionObserver` (see `Pillars`, `TrustSignals`) rather than GSAP.
 - **`CountUp`** — drives the big stat numbers in `Pillars` via `requestAnimationFrame` + eased interpolation, triggered once by its own `IntersectionObserver`.
 - **`ContactForm`** is **UI-only** — `handleSubmit` fakes a 1200ms "sending" delay then flips to a static "sent" confirmation state. There is no real backend/email integration. The drag-and-drop file attachment (up to 5 images) only holds files in local component state for display — nothing is uploaded anywhere.
-- Business contact details are hardcoded in two places (`ContactForm` and `Footer`) — phone `+6019 580 6090`, email `sharpablehq@gmail.com`, "Kuala Lumpur — Malaysia". Keep both in sync if either changes.
+- Business contact details are hardcoded in two places (`ContactForm` and `Footer`) — phone `+6019 580 6090`, email `sharpablehq@gmail.com`, "Kuala Lumpur — Malaysia". Keep both in sync if either changes (these are **not** translated — a phone number/email doesn't need it, but if the display of `t.contact.location` string changes, check both spots).
+- **`Work`** — 2-project alternating-rows showcase (image alternates left/right per row via a `WorkPreview` component that draws an abstract "browser mockup" with CSS divs, not a real screenshot). **Content is intentionally fictional/placeholder** (e.g. "Local Bakery Rebrand") since the studio doesn't have real case studies loaded in yet — deliberately avoids fabricated stats (no "+68% conversions" style claims) since that would read as a false factual claim once live. Swap in real project names/results/screenshots when available.
+- **`Transformation`** (`src/components/Transformation.jsx`) — a 3-card "peek" carousel (center card full-size, left/right cards scaled-down/blurred/peeking, everything else hidden) with a draggable before/after image-comparison slider on each card's front face, and a 3D flip (only when centered) revealing case-study copy on the back. **Ported from an older, unused Sharpable site** (`D:\ALIFF MC\Website Coding\Older Sharpable Site made by Aqeel\index.html`, section `id="transformation"`, class prefix `.ba-*`) — same interaction mechanics (CSS `clip-path` slider synced to a hidden `<input type=range>`, a "locked" flag so only drags starting near the visible drag-handle actually move the slider, touch-swipe navigation, index-based left/center/right/hidden positioning), but restyled with this site's own tokens and populated with the same illustrative before/after mockup style as `WorkPreview` rather than the old site's real (and possibly now-broken — different Cloudinary account) client photos. **Deliberately stays horizontal (peek-carousel, not a stacked layout) at every breakpoint** — only the max-width and aspect-ratio scale down for mobile, matching an explicit "stay horizontal and consistent on mobile" requirement; this project's carousel also keeps the prev/next arrow buttons visible at all breakpoints (the old site hid them under `768px` and relied on swipe-only), a deliberate accessibility improvement.
 
 ## Known Gaps / Things a Future Session Should Know
 

@@ -1,28 +1,28 @@
 import { useEffect, useState } from 'react'
+import { useLanguage } from '../useLanguage.js'
+
+const TONES = ['primary', 'accent', 'primary', 'emerald']
+const SHIPPED_INDEX = 3
 
 export default function BuildScanner() {
+  const { t } = useLanguage()
   const [statusIdx, setStatusIdx] = useState(0)
   const [count, setCount] = useState(7)
 
-  const statuses = [
-    { text: 'Drafting layout · component pass', label: 'Designing', tone: 'primary' },
-    { text: 'Compiling components · staging build', label: 'Building', tone: 'accent' },
-    { text: 'Running Lighthouse · perf pass', label: 'Optimizing', tone: 'primary' },
-    { text: 'Live on production · all checks green', label: 'Shipped', tone: 'emerald' },
-  ]
+  const statuses = t.features.scanner.statuses.map((s, i) => ({ ...s, tone: TONES[i] }))
 
   useEffect(() => {
     const interval = setInterval(() => {
       setStatusIdx((idx) => {
         const next = (idx + 1) % statuses.length
-        if (statuses[next].label === 'Shipped') {
+        if (next === SHIPPED_INDEX) {
           setCount((c) => c + 1)
         }
         return next
       })
     }, 2300)
     return () => clearInterval(interval)
-  }, [])
+  }, [statuses.length])
 
   // Falling code-bracket particles
   const drops = [
@@ -71,7 +71,7 @@ export default function BuildScanner() {
             <polyline points="8 6 2 12 8 18" />
           </svg>
           <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-primary">
-            Build pipeline
+            {t.features.scanner.pipeline}
           </span>
         </div>
         <div className="flex items-baseline gap-1">
@@ -79,7 +79,7 @@ export default function BuildScanner() {
             {String(count).padStart(2, '0')}
           </span>
           <span className="font-mono text-[9px] uppercase tracking-widest text-white/40">
-            shipped today
+            {t.features.scanner.shippedToday}
           </span>
         </div>
       </div>
@@ -128,7 +128,7 @@ export default function BuildScanner() {
       <div className="absolute bottom-9 left-3 right-3 h-3 flex items-center">
         <div className="h-px w-full bg-primary/25" />
         <span className="absolute left-0 -top-2.5 font-mono text-[10px] text-primary/70 flex items-center gap-1">
-          <span className="text-white/40">$</span> building
+          <span className="text-white/40">$</span> {t.features.scanner.buildingWord}
           <span className="inline-block w-1.5 h-3 bg-primary animate-blink" />
         </span>
       </div>

@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
-import { ArrowUpRight, Menu, Sparkles, X } from 'lucide-react'
-import { NAV_LINKS } from '../constants.js'
+import { ArrowUpRight, Languages, Menu, Sparkles, X } from 'lucide-react'
+import { useLanguage } from '../useLanguage.js'
 
 export default function Navbar() {
+  const { t, lang, toggleLang } = useLanguage()
   const [scrolled, setScrolled] = useState(false)
   const [open, setOpen] = useState(false)
 
@@ -12,12 +13,22 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
+  const NAV_LINKS = [
+    { label: t.nav.home, href: '#home' },
+    { label: t.nav.services, href: '#services' },
+    { label: t.nav.approach, href: '#approach' },
+    { label: t.nav.process, href: '#process' },
+    { label: t.nav.work, href: '#work' },
+    { label: t.nav.transformation, href: '#transformation' },
+    { label: t.nav.contact, href: '#contact' },
+  ]
+
   return (
     <>
       <nav
         className={`fixed top-4 left-1/2 -translate-x-1/2 z-50 transition-all duration-500 ${
           scrolled ? 'glass shadow-lg shadow-primary/10' : 'bg-transparent'
-        } rounded-full px-4 sm:px-6 py-2.5 w-[calc(100%-2rem)] max-w-5xl`}
+        } rounded-full px-4 sm:px-6 py-2.5 w-[calc(100%-2rem)] max-w-6xl`}
       >
         <div className="flex items-center justify-between gap-6">
           <a href="#home" className="flex items-center gap-2 group">
@@ -34,7 +45,7 @@ export default function Navbar() {
             </span>
           </a>
 
-          <div className="hidden lg:flex items-center gap-7">
+          <div className="hidden lg:flex items-center gap-6">
             {NAV_LINKS.map((link) => (
               <a
                 key={link.href}
@@ -48,13 +59,27 @@ export default function Navbar() {
             ))}
           </div>
 
-          <a
-            href="#contact"
-            className="hidden lg:inline-flex magnetic-btn items-center gap-1.5 bg-primary text-deep px-4 py-2 rounded-full text-sm font-semibold shadow-lg shadow-primary/30"
-          >
-            Get a quote
-            <ArrowUpRight className="h-4 w-4" strokeWidth={2.5} />
-          </a>
+          <div className="hidden lg:flex items-center gap-3">
+            <button
+              onClick={toggleLang}
+              aria-label="Toggle language"
+              className={`lift-on-hover inline-flex items-center gap-1.5 border px-3 py-2 rounded-full text-xs font-mono uppercase tracking-widest transition-colors ${
+                scrolled
+                  ? 'border-divider text-ink/70 hover:text-primary hover:border-primary/40'
+                  : 'border-white/25 text-white/80 hover:text-white hover:border-white/50'
+              }`}
+            >
+              <Languages className="h-3.5 w-3.5" />
+              {lang === 'en' ? 'EN / BM' : 'BM / EN'}
+            </button>
+            <a
+              href="#contact"
+              className="magnetic-btn inline-flex items-center gap-1.5 bg-primary text-deep px-4 py-2 rounded-full text-sm font-semibold shadow-lg shadow-primary/30"
+            >
+              {t.nav.cta}
+              <ArrowUpRight className="h-4 w-4" strokeWidth={2.5} />
+            </a>
+          </div>
 
           <button
             onClick={() => setOpen(true)}
@@ -74,7 +99,7 @@ export default function Navbar() {
       >
         <div className="absolute inset-0 bg-deep/90 backdrop-blur-2xl" onClick={() => setOpen(false)} />
         <div
-          className={`absolute top-0 left-0 right-0 bg-background rounded-b-5xl px-6 pt-8 pb-12 transition-transform duration-500 ${
+          className={`absolute top-0 left-0 right-0 bg-background rounded-b-5xl px-6 pt-8 pb-12 transition-transform duration-500 max-h-[100dvh] overflow-y-auto ${
             open ? 'translate-y-0' : '-translate-y-full'
           }`}
         >
@@ -96,12 +121,22 @@ export default function Navbar() {
               </a>
             ))}
           </div>
+          <button
+            onClick={() => {
+              toggleLang()
+              setOpen(false)
+            }}
+            className="mt-8 inline-flex items-center justify-center gap-2 border border-divider text-ink px-6 py-4 rounded-full font-semibold w-full"
+          >
+            <Languages className="h-4 w-4" />
+            {lang === 'en' ? 'Switch to Bahasa Melayu' : 'Switch to English'}
+          </button>
           <a
             href="#contact"
             onClick={() => setOpen(false)}
-            className="mt-8 magnetic-btn flex items-center justify-center gap-2 bg-primary text-deep px-6 py-4 rounded-full font-semibold w-full"
+            className="mt-4 magnetic-btn flex items-center justify-center gap-2 bg-primary text-deep px-6 py-4 rounded-full font-semibold w-full"
           >
-            Get a quote
+            {t.nav.cta}
             <ArrowUpRight className="h-4 w-4" />
           </a>
         </div>

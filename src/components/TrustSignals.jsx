@@ -1,7 +1,11 @@
 import { useEffect, useRef, useState } from 'react'
 import { Award, ArrowRight, Clock, ShieldCheck } from 'lucide-react'
+import { useLanguage } from '../useLanguage.js'
+
+const ICONS = [ShieldCheck, Award, Clock]
 
 export default function TrustSignals() {
+  const { t } = useLanguage()
   const ref = useRef(null)
   const [visible, setVisible] = useState(false)
 
@@ -21,33 +25,17 @@ export default function TrustSignals() {
     return () => observer.disconnect()
   }, [])
 
-  const badges = [
-    {
-      Icon: ShieldCheck,
-      title: 'Modern, Clean Code',
-      text: "Every site is built with clean, modern code — fast to load, easy to maintain, and fully yours once it's live.",
-    },
-    {
-      Icon: Award,
-      title: '5-Star Client Reviews',
-      text: 'Small businesses trust us to represent their brand online — and most come back for the next project.',
-    },
-    {
-      Icon: Clock,
-      title: '2-Week Avg. Delivery',
-      text: 'A tight, focused process means most projects go from kickoff to launch in about two weeks.',
-    },
-  ]
+  const badges = t.trust.badges.map((b, i) => ({ ...b, Icon: ICONS[i] }))
 
   return (
     <section ref={ref} className="relative py-14 sm:py-20 px-6">
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-8">
           <span className="font-mono text-xs uppercase tracking-[0.25em] text-primary-dark">
-            ╱ Why teams choose us
+            ╱ {t.trust.eyebrow}
           </span>
           <h2 className="font-display font-extrabold text-3xl sm:text-4xl md:text-5xl text-ink mt-3 tracking-tight">
-            More than a website.
+            {t.trust.heading}
           </h2>
         </div>
 
@@ -72,7 +60,7 @@ export default function TrustSignals() {
             href="#contact"
             className="magnetic-btn inline-flex items-center gap-2 bg-primary text-deep font-semibold px-7 py-3.5 rounded-full shadow-xl shadow-primary/30"
           >
-            Get a quote
+            {t.trust.cta}
             <ArrowRight className="h-4 w-4" />
           </a>
         </div>

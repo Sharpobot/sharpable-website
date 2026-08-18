@@ -1,11 +1,15 @@
 import { useEffect, useRef } from 'react'
 import { gsap } from 'gsap'
 import { ArrowUpRight } from 'lucide-react'
+import { useLanguage } from '../useLanguage.js'
 import DesignShuffler from './DesignShuffler.jsx'
 import BuildScanner from './BuildScanner.jsx'
 import StrategyScheduler from './StrategyScheduler.jsx'
 
+const WIDGETS = [DesignShuffler, BuildScanner, StrategyScheduler]
+
 export default function Features() {
+  const { t } = useLanguage()
   const sectionRef = useRef(null)
 
   useEffect(() => {
@@ -30,41 +34,19 @@ export default function Features() {
     return () => ctx.revert()
   }, [])
 
-  const cards = [
-    {
-      eyebrow: '01 / Design',
-      heading: 'Modern Web Design',
-      sub: 'Built to convert',
-      text: "We design every site around your brand and your customers — clean, modern layouts focused on turning visitors into leads, not just looking good.",
-      Component: DesignShuffler,
-    },
-    {
-      eyebrow: '02 / Build',
-      heading: 'Animation & Motion',
-      sub: 'Design to deploy',
-      text: 'From first sketch to a live, polished site — our build pipeline keeps design, animation, and performance moving together.',
-      Component: BuildScanner,
-    },
-    {
-      eyebrow: '03 / Launch',
-      heading: 'Strategy Calls',
-      sub: 'Free, no pressure',
-      text: "Book a short call and we'll map out exactly what your new site needs to do — no obligation, just a clear plan.",
-      Component: StrategyScheduler,
-    },
-  ]
+  const cards = t.features.cards.map((card, i) => ({ ...card, Component: WIDGETS[i] }))
 
   return (
     <section id="services" ref={sectionRef} className="relative py-28 sm:py-40 px-6 sm:px-10 lg:px-16">
       <div className="max-w-7xl mx-auto">
         <div className="feature-heading max-w-3xl mb-16 sm:mb-24">
           <span className="font-mono text-xs uppercase tracking-[0.25em] text-primary-dark">
-            ╱ What we do
+            ╱ {t.features.eyebrow}
           </span>
           <h2 className="font-display font-extrabold text-4xl sm:text-5xl md:text-6xl text-ink mt-4 leading-[1.05] tracking-tight">
-            Three pillars.
+            {t.features.heading1}
             <span className="block font-serif italic font-medium text-primary mt-1 text-5xl sm:text-6xl md:text-7xl">
-              One studio.
+              {t.features.heading2}
             </span>
           </h2>
         </div>

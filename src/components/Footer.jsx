@@ -1,8 +1,11 @@
 import { Link } from 'react-router-dom'
 import { ArrowRight, Sparkles } from 'lucide-react'
-import { SERVICES_FULL } from '../constants.js'
+import { useLanguage } from '../useLanguage.js'
 
 export default function Footer() {
+  const { t } = useLanguage()
+  const studioHrefs = ['#approach', '#process', '#contact']
+
   return (
     <footer className="relative bg-deep text-white rounded-t-6xl mt-12 overflow-hidden">
       <div className="absolute inset-0 grid-bg opacity-15" />
@@ -11,15 +14,15 @@ export default function Footer() {
       <div className="relative px-6 sm:px-10 lg:px-16 pt-20 pb-10 max-w-7xl mx-auto">
         <div className="border-b border-white/10 pb-12 mb-12">
           <h2 className="font-display font-extrabold text-5xl sm:text-7xl md:text-8xl leading-[0.92] tracking-tight">
-            Let's make it
-            <span className="font-serif italic font-medium text-primary block text-6xl sm:text-8xl md:text-9xl">Sharpable.</span>
+            {t.footer.heading1}
+            <span className="font-serif italic font-medium text-primary block text-6xl sm:text-8xl md:text-9xl">{t.footer.heading2}</span>
           </h2>
           <div className="flex flex-col sm:flex-row sm:items-end justify-between mt-8 gap-6">
             <p className="text-white/50 max-w-md">
-              Sharpable designs and builds premium websites for small businesses, made to help them grow online.
+              {t.footer.tagline}
             </p>
             <a href="#contact" className="magnetic-btn inline-flex items-center gap-2 bg-primary text-deep font-semibold px-7 py-3.5 rounded-full self-start sm:self-auto">
-              Get a quote
+              {t.trust.cta}
               <ArrowRight className="h-4 w-4" />
             </a>
           </div>
@@ -34,23 +37,22 @@ export default function Footer() {
               <span className="font-display font-bold text-lg">Sharpable</span>
             </div>
             <p className="text-white/50 text-sm leading-relaxed max-w-xs">
-              We design and build premium, fast, conversion-focused websites for small businesses —
-              custom code, no templates.
+              {t.footer.brandBlurb}
             </p>
             <div className="flex items-center gap-2 mt-6">
               <span className="relative h-2 w-2 rounded-full bg-primary">
                 <span className="absolute inset-0 rounded-full bg-primary animate-ping opacity-75" />
               </span>
               <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-white/60">
-                Studio open · taking new projects
+                {t.footer.studioOpen}
               </span>
             </div>
           </div>
 
           <div>
-            <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-primary mb-4">Services</p>
+            <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-primary mb-4">{t.footer.servicesHeading}</p>
             <ul className="space-y-2.5">
-              {SERVICES_FULL.slice(0, 4).map((s, i) => (
+              {t.servicesGrid.items.slice(0, 4).map((s, i) => (
                 <li key={i}>
                   <a href="#services" className="text-white/65 hover:text-primary transition text-sm">
                     {s.title}
@@ -61,16 +63,18 @@ export default function Footer() {
           </div>
 
           <div>
-            <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-primary mb-4">Studio</p>
+            <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-primary mb-4">{t.footer.studioHeading}</p>
             <ul className="space-y-2.5">
-              <li><a href="#approach" className="text-white/65 hover:text-primary transition text-sm">Approach</a></li>
-              <li><a href="#process" className="text-white/65 hover:text-primary transition text-sm">Process</a></li>
-              <li><a href="#contact" className="text-white/65 hover:text-primary transition text-sm">Contact</a></li>
+              {t.footer.studioLinks.map((label, i) => (
+                <li key={i}>
+                  <a href={studioHrefs[i]} className="text-white/65 hover:text-primary transition text-sm">{label}</a>
+                </li>
+              ))}
             </ul>
           </div>
 
           <div>
-            <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-primary mb-4">Contact</p>
+            <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-primary mb-4">{t.footer.contactHeading}</p>
             <ul className="space-y-2.5">
               <li>
                 <a href="tel:+60195806090" className="text-white/65 hover:text-primary transition text-sm">
@@ -82,16 +86,16 @@ export default function Footer() {
                   sharpablehq@gmail.com
                 </a>
               </li>
-              <li className="text-white/65 text-sm">Kuala Lumpur — Malaysia</li>
+              <li className="text-white/65 text-sm">{t.contact.location}</li>
             </ul>
           </div>
         </div>
 
         <div className="mt-14 pt-8 border-t border-white/10 flex flex-col sm:flex-row items-start sm:items-center sm:justify-end gap-6">
           <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-white/50 text-xs font-mono">
-            <Link to="/privacy" className="hover:text-primary transition">Privacy Policy</Link>
-            <Link to="/terms" className="hover:text-primary transition">Terms</Link>
-            <span>© 2026 Sharpable</span>
+            <Link to="/privacy" className="hover:text-primary transition">{t.footer.privacy}</Link>
+            <Link to="/terms" className="hover:text-primary transition">{t.footer.terms}</Link>
+            <span>{t.footer.copyright}</span>
           </div>
         </div>
       </div>

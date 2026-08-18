@@ -1,16 +1,14 @@
 import { useEffect, useState } from 'react'
+import { useLanguage } from '../useLanguage.js'
 
 export default function DesignShuffler() {
-  const items = [
-    { tag: 'Homepage', label: 'Hero, services preview, and a clear call-to-action above the fold', score: '98' },
-    { tag: 'Services', label: 'Clear breakdown of offerings, pricing, and how the process works', score: '96' },
-    { tag: 'Contact', label: 'Simple form, map, and direct contact details — no friction', score: '100' },
-  ]
-  const [stack, setStack] = useState(items)
+  const { t } = useLanguage()
+  const items = t.features.shuffler.items
+  const [order, setOrder] = useState([0, 1, 2])
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setStack((prev) => {
+      setOrder((prev) => {
         const next = [...prev]
         next.unshift(next.pop())
         return next
@@ -21,12 +19,13 @@ export default function DesignShuffler() {
 
   return (
     <div className="relative h-44 w-full">
-      {stack.map((item, i) => {
+      {order.map((itemIdx, i) => {
+        const item = items[itemIdx] || items[0]
         const offset = i
-        const total = stack.length
+        const total = order.length
         return (
           <div
-            key={item.tag}
+            key={itemIdx}
             style={{
               transform: `translate(${offset * 14}px, ${offset * 14}px) scale(${1 - offset * 0.05})`,
               zIndex: total - offset,
