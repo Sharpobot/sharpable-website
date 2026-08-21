@@ -2,43 +2,56 @@ import { useRef, useState } from 'react'
 import { ArrowLeftRight, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useLanguage } from '../useLanguage.js'
 
-/* Abstract "before/after" mockups — no real client photos, just an
-   honest illustrative contrast between a generic layout and a
-   Sharpable-style one. */
-function TransformMockup({ variant }) {
-  if (variant === 'after') {
-    return (
-      <div className="absolute inset-0 bg-surface p-6 sm:p-8">
-        <div className="flex items-center gap-1.5 mb-5">
-          <span className="h-2.5 w-2.5 rounded-full bg-primary/50" />
-          <span className="h-2.5 w-2.5 rounded-full bg-primary/30" />
-          <span className="h-2.5 w-2.5 rounded-full bg-primary/15" />
-        </div>
-        <div className="h-6 w-2/3 rounded-full bg-primary/30 mb-4" />
-        <div className="h-2.5 w-5/6 rounded-full bg-divider mb-2" />
-        <div className="h-2.5 w-2/3 rounded-full bg-divider mb-6" />
-        <div className="grid grid-cols-3 gap-3 mb-6">
-          <div className="aspect-square rounded-xl bg-background border border-divider" />
-          <div className="aspect-square rounded-xl bg-background border border-divider" />
-          <div className="aspect-square rounded-xl bg-background border border-divider" />
-        </div>
-        <div className="h-9 w-32 rounded-full bg-primary" />
-      </div>
-    )
-  }
+/* Real before/after screenshots from actual Sharpable client projects. */
+const CARD_IMAGES = [
+  {
+    after: {
+      desktop: 'https://res.cloudinary.com/da3lqh4dl/image/upload/v1776159682/website_portfolio_n8mmt5.jpg',
+      mobile: 'https://res.cloudinary.com/da3lqh4dl/image/upload/v1777362779/After_mobile_Sizara_xgrbsb.png',
+    },
+    before: {
+      desktop: 'https://res.cloudinary.com/da3lqh4dl/image/upload/v1776765655/Export_Stuff_1_40_zmh897.png',
+      mobile: 'https://res.cloudinary.com/da3lqh4dl/image/upload/v1777362742/Before_mobile_Sizara_pmyuaj.png',
+    },
+  },
+  {
+    after: {
+      desktop: 'https://res.cloudinary.com/da3lqh4dl/image/upload/v1776764796/Screenshot_2026-04-21_174541_kwmv84.png',
+      mobile: 'https://res.cloudinary.com/da3lqh4dl/image/upload/v1777360777/Atfer_mobile_Aidid_qxujt9.png',
+    },
+    before: {
+      desktop: 'https://res.cloudinary.com/da3lqh4dl/image/upload/q_auto/f_auto/v1776667067/Screenshot_2026-04-20_143646_y8m4e8.png',
+      mobile: 'https://res.cloudinary.com/da3lqh4dl/image/upload/v1777360747/Before_mobile_Aidid_gl7n1l.png',
+    },
+  },
+  {
+    after: {
+      desktop: 'https://res.cloudinary.com/da3lqh4dl/image/upload/v1776766907/Export_Stuff_1_41_xa6dvq.png',
+      mobile: 'https://res.cloudinary.com/da3lqh4dl/image/upload/v1777362869/After_mobile_TS_ycocrs.png',
+    },
+    before: {
+      desktop: 'https://res.cloudinary.com/da3lqh4dl/image/upload/v1776766349/Screenshot_2026-04-21_181209_tli0ym.png',
+      mobile: 'https://res.cloudinary.com/da3lqh4dl/image/upload/v1777362832/Before_mobile_TS_jj4vzl.png',
+    },
+  },
+]
+
+function TransformImage({ src, alt, clipPercent }) {
   return (
-    <div className="absolute inset-0 bg-[#EAEAEA] p-6 sm:p-8">
-      <div className="h-4 w-1/2 bg-[#B4B4B4] mb-5" />
-      <div className="h-2 w-full bg-[#C9C9C9] mb-2" />
-      <div className="h-2 w-5/6 bg-[#C9C9C9] mb-2" />
-      <div className="h-2 w-2/3 bg-[#C9C9C9] mb-6" />
-      <div className="h-20 sm:h-24 w-full bg-[#D6D6D6] mb-6" />
-      <div className="h-8 w-28 bg-[#B4B4B4]" />
-    </div>
+    <picture>
+      <source media="(max-width: 639px)" srcSet={src.mobile} />
+      <img
+        src={src.desktop}
+        alt={alt}
+        loading="lazy"
+        className="absolute inset-0 w-full h-full object-cover"
+        style={clipPercent != null ? { clipPath: `polygon(0 0, ${clipPercent}% 0, ${clipPercent}% 100%, 0 100%)` } : undefined}
+      />
+    </picture>
   )
 }
 
-function TransformCard({ card, position, flipped, onFlip, before, after }) {
+function TransformCard({ card, images, position, flipped, onFlip, before, after }) {
   const [pos, setPos] = useState(50)
   const buttonRef = useRef(null)
   const lockedRef = useRef(true)
@@ -72,10 +85,8 @@ function TransformCard({ card, position, flipped, onFlip, before, after }) {
           className="absolute inset-0 [backface-visibility:hidden] rounded-3xl overflow-hidden border border-divider bg-surface cursor-pointer"
           onClick={() => position === 'center' && onFlip()}
         >
-          <TransformMockup variant="after" />
-          <div className="absolute inset-0" style={{ clipPath: `polygon(0 0, ${pos}% 0, ${pos}% 100%, 0 100%)` }}>
-            <TransformMockup variant="before" />
-          </div>
+          <TransformImage src={images.after} alt={`${card.title} — after`} />
+          <TransformImage src={images.before} alt={`${card.title} — before`} clipPercent={pos} />
           <div
             className="absolute top-0 bottom-0 w-[3px] bg-primary pointer-events-none"
             style={{ left: `${pos}%`, transform: 'translateX(-50%)' }}
@@ -201,7 +212,7 @@ export default function Transformation() {
           <div
             onTouchStart={onTouchStart}
             onTouchEnd={onTouchEnd}
-            className="relative w-full max-w-[280px] sm:max-w-[520px] lg:max-w-[720px] aspect-[4/3] sm:aspect-[16/10] [perspective:1200px]"
+            className="relative w-full max-w-[280px] sm:max-w-[520px] lg:max-w-[720px] aspect-[467/826] sm:aspect-[16/10] [perspective:1200px]"
           >
             {cards.map((card, i) => {
               const rel = (i - index + total) % total
@@ -210,6 +221,7 @@ export default function Transformation() {
                 <TransformCard
                   key={i}
                   card={card}
+                  images={CARD_IMAGES[i]}
                   position={position}
                   flipped={flipped[i]}
                   onFlip={() => toggleFlip(i)}

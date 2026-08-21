@@ -182,21 +182,21 @@ export const translations = {
       hint: 'Tap a card to flip it',
       cards: [
         {
-          tag: 'Landing Page',
-          title: 'A Real Transformation.',
-          text: 'From a generic profile with no real identity to a sharp, professional online presence — this is what we do for every client.',
+          tag: 'Business Website',
+          title: 'This Is The Difference.',
+          text: 'From a generic profile with no identity to a sharp, professional digital presence. This is what Sharpable does for every single client.',
           cta: 'Start your project',
         },
         {
-          tag: 'Booking Site',
+          tag: 'Personal Brand',
           title: 'Website Evolution.',
-          text: 'From a basic, outdated template to a premium site with full booking and a strong visual identity.',
+          text: 'From a boring basic template to a premium website with full e-commerce capabilities and a strong visual identity.',
           cta: 'Start your project',
         },
         {
-          tag: 'Landing Page',
-          title: 'A Stronger Identity.',
-          text: 'Consistent branding from social media to your website means your business gets taken more seriously.',
+          tag: 'Brand Identity',
+          title: 'A Strong Identity.',
+          text: 'Consistent branding from social media to your website ensures your commercial value multiplies significantly.',
           cta: 'Start your project',
         },
       ],
@@ -249,6 +249,26 @@ export const translations = {
         title: "Thanks — we'll be in touch",
         text: "We'll review your message and get back to you within one business day.",
       },
+    },
+    testimonials: {
+      eyebrow: 'Client Feedback',
+      heading1: 'What our',
+      heading2: 'clients say.',
+      rating: '5/5',
+      items: [
+        {
+          name: 'Sizara Motorsports',
+          role: 'Motorcycle Parts Retailer',
+          quote:
+            "After Sharpable built our website, a lot of new customers came in because we looked more legit. They really understood what a motorcycle shop like ours needed — we barely had to explain anything.",
+        },
+        {
+          name: 'Aidid Marcello',
+          role: 'Host & Creator',
+          quote:
+            "Honestly, Sharpable is different from the rest. I didn't have to explain my brand at length — they got the vibe straight away. The work was genuinely sharp, no exaggeration.",
+        },
+      ],
     },
     footer: {
       heading1: "Let's make it",
@@ -450,21 +470,21 @@ export const translations = {
       hint: 'Ketik kad untuk terbalikkannya',
       cards: [
         {
-          tag: 'Halaman Landing',
-          title: 'Perbezaan Sebenar.',
-          text: 'Daripada profil generik tanpa identiti sebenar kepada kehadiran dalam talian yang tajam dan profesional — inilah yang kami lakukan untuk setiap klien.',
+          tag: 'Laman Perniagaan',
+          title: 'Inilah Perbezaannya.',
+          text: 'Daripada profil biasa yang tidak mempunyai identiti kepada digital presence yang tajam dan profesional. Inilah yang Sharpable lakukan untuk setiap klien kami.',
           cta: 'Mulakan projek anda',
         },
         {
-          tag: 'Laman Tempahan',
-          title: 'Evolusi Laman Web.',
-          text: 'Daripada templat asas yang lapuk kepada laman premium dengan tempahan penuh dan identiti visual yang kukuh.',
+          tag: 'Jenama Peribadi',
+          title: 'Evolusi Website.',
+          text: 'Daripada templat asas yang kurang menarik kepada website premium dengan e-commerce penuh dan identiti visual yang kukuh.',
           cta: 'Mulakan projek anda',
         },
         {
-          tag: 'Halaman Landing',
-          title: 'Identiti Yang Lebih Kukuh.',
-          text: 'Penjenamaan yang konsisten dari media sosial hingga laman web bermakna perniagaan anda diambil lebih serius.',
+          tag: 'Identiti Jenama',
+          title: 'Identiti Yang Kukuh.',
+          text: 'Penjenamaan yang konsisten dari media sosial ke laman web memastikan nilai komersial anda meningkat berkali ganda.',
           cta: 'Mulakan projek anda',
         },
       ],
@@ -517,6 +537,26 @@ export const translations = {
         title: 'Terima kasih — kami akan hubungi anda',
         text: 'Kami akan semak mesej anda dan hubungi anda dalam tempoh satu hari bekerja.',
       },
+    },
+    testimonials: {
+      eyebrow: 'Maklum Balas Pelanggan',
+      heading1: 'Apa kata',
+      heading2: 'pelanggan kami.',
+      rating: '5/5',
+      items: [
+        {
+          name: 'Sizara Motorsports',
+          role: 'Retailer Alat Ganti',
+          quote:
+            'Lepas Sharpable buat website untuk Sizara, ramai customer baru datang sebab nampak lebih legit. Diorang memang faham apa yang kedai motor macam kita perlukan, tak payah explain banyak.',
+        },
+        {
+          name: 'Aidid Marcello',
+          role: 'Pengacara & Kreator',
+          quote:
+            'Jujur cakap, Sharpable ni lain dari yang lain. Tak payah nak terang panjang lebar pasal brand aku — diorang terus dapat the vibe. Hasil kerja pun memang sharp, serius tak tipu.',
+        },
+      ],
     },
     footer: {
       heading1: 'Jom jadikan ia',

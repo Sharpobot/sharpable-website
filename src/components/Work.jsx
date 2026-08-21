@@ -4,7 +4,10 @@ import { ArrowRight } from 'lucide-react'
 import { useLanguage } from '../useLanguage.js'
 import WorkPreview from './WorkPreview.jsx'
 
-const LAYOUTS = ['list', 'grid']
+const IMAGES = [
+  'https://images.unsplash.com/photo-1517433670267-08bbd4be890f?auto=format&fit=crop&w=1200&q=80',
+  'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=1200&q=80',
+]
 
 export default function Work() {
   const { t } = useLanguage()
@@ -41,7 +44,7 @@ export default function Work() {
     return () => ctx.revert()
   }, [])
 
-  const projects = t.work.items.map((item, i) => ({ ...item, layout: LAYOUTS[i] }))
+  const projects = t.work.items.map((item, i) => ({ ...item, image: IMAGES[i] }))
 
   return (
     <section id="work" ref={sectionRef} className="relative py-28 sm:py-40 px-6 sm:px-10 lg:px-16">
@@ -65,7 +68,7 @@ export default function Work() {
               className="work-row grid lg:grid-cols-2 gap-10 lg:gap-16 items-center"
             >
               <div className={`work-preview ${i % 2 === 1 ? 'lg:order-2' : ''}`}>
-                <WorkPreview layout={p.layout} />
+                <WorkPreview image={p.image} alt={p.title} />
               </div>
               <div className="work-copy">
                 <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-primary-dark bg-primary/10 px-2.5 py-1 rounded-full">

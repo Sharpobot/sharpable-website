@@ -81,13 +81,27 @@ export default function Navbar() {
             </a>
           </div>
 
-          <button
-            onClick={() => setOpen(true)}
-            className={`lg:hidden p-2 rounded-full ${scrolled ? 'text-ink' : 'text-white'}`}
-            aria-label="Open menu"
-          >
-            <Menu className="h-5 w-5" />
-          </button>
+          <div className="flex lg:hidden items-center gap-2">
+            <button
+              onClick={toggleLang}
+              aria-label="Toggle language"
+              className={`inline-flex items-center gap-1 border px-2.5 py-1.5 rounded-full text-[11px] font-mono uppercase tracking-widest transition-colors ${
+                scrolled
+                  ? 'border-divider text-ink/70'
+                  : 'border-white/25 text-white/80'
+              }`}
+            >
+              <Languages className="h-3 w-3" />
+              {lang === 'en' ? 'EN' : 'BM'}
+            </button>
+            <button
+              onClick={() => setOpen(true)}
+              className={`p-2 rounded-full ${scrolled ? 'text-ink' : 'text-white'}`}
+              aria-label="Open menu"
+            >
+              <Menu className="h-5 w-5" />
+            </button>
+          </div>
         </div>
       </nav>
 
@@ -121,20 +135,10 @@ export default function Navbar() {
               </a>
             ))}
           </div>
-          <button
-            onClick={() => {
-              toggleLang()
-              setOpen(false)
-            }}
-            className="mt-8 inline-flex items-center justify-center gap-2 border border-divider text-ink px-6 py-4 rounded-full font-semibold w-full"
-          >
-            <Languages className="h-4 w-4" />
-            {lang === 'en' ? 'Switch to Bahasa Melayu' : 'Switch to English'}
-          </button>
           <a
             href="#contact"
             onClick={() => setOpen(false)}
-            className="mt-4 magnetic-btn flex items-center justify-center gap-2 bg-primary text-deep px-6 py-4 rounded-full font-semibold w-full"
+            className="mt-8 magnetic-btn flex items-center justify-center gap-2 bg-primary text-deep px-6 py-4 rounded-full font-semibold w-full"
           >
             {t.nav.cta}
             <ArrowUpRight className="h-4 w-4" />

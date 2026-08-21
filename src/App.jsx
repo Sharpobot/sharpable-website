@@ -9,6 +9,7 @@ import Protocol from './components/Protocol.jsx'
 import ServicesGrid from './components/ServicesGrid.jsx'
 import Work from './components/Work.jsx'
 import Transformation from './components/Transformation.jsx'
+import Testimonials from './components/Testimonials.jsx'
 import TrustSignals from './components/TrustSignals.jsx'
 import ContactForm from './components/ContactForm.jsx'
 import Footer from './components/Footer.jsx'
@@ -37,6 +38,7 @@ export default function App() {
         <ServicesGrid />
         <Work />
         <Transformation />
+        <Testimonials />
         <TrustSignals />
         <ContactForm />
       </main>
