@@ -253,10 +253,6 @@ export default function Transformation() {
             />
           ))}
         </div>
-
-        <p className="text-center font-mono text-[10px] uppercase tracking-widest text-muted mt-6">
-          {t.transformation.hint}
-        </p>
       </div>
     </section>
   )

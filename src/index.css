@@ -30,7 +30,7 @@
   .lift-on-hover { transition: transform 0.3s cubic-bezier(0.25,0.46,0.45,0.94); }
   .lift-on-hover:hover { transform: translateY(-1px); }
   .gradient-text {
-    background: linear-gradient(135deg, #FFDD70 0%, #D69600 100%);
+    background: linear-gradient(135deg, #FFDD70 0%, #F0B300 100%);
     -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
   }
   .glass {

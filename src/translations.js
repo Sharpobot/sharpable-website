@@ -179,7 +179,6 @@ export const translations = {
       sub: 'Drag the slider to see how a plain, generic site becomes a sharp, professional one.',
       before: 'BEFORE',
       after: 'AFTER',
-      hint: 'Tap a card to flip it',
       cards: [
         {
           tag: 'Business Website',
@@ -254,7 +253,6 @@ export const translations = {
       eyebrow: 'Client Feedback',
       heading1: 'What our',
       heading2: 'clients say.',
-      rating: '5/5',
       items: [
         {
           name: 'Sizara Motorsports',
@@ -467,7 +465,6 @@ export const translations = {
       sub: 'Tarik slider untuk lihat bagaimana laman biasa dan generik bertukar menjadi laman yang tajam dan profesional.',
       before: 'SEBELUM',
       after: 'SELEPAS',
-      hint: 'Ketik kad untuk terbalikkannya',
       cards: [
         {
           tag: 'Laman Perniagaan',
@@ -542,7 +539,6 @@ export const translations = {
       eyebrow: 'Maklum Balas Pelanggan',
       heading1: 'Apa kata',
       heading2: 'pelanggan kami.',
-      rating: '5/5',
       items: [
         {
           name: 'Sizara Motorsports',
