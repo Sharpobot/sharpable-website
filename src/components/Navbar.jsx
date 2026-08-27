@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { ArrowUpRight, Languages, Menu, Sparkles, X } from 'lucide-react'
 import { useLanguage } from '../useLanguage.js'
 
@@ -6,11 +6,35 @@ export default function Navbar() {
   const { t, lang, toggleLang } = useLanguage()
   const [scrolled, setScrolled] = useState(false)
   const [open, setOpen] = useState(false)
+  const navRef = useRef(null)
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 80)
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+
+  // Mobile browsers resize the *visual* viewport (not the layout viewport) while their address bar
+  // auto-hides/shows during a scroll gesture. A plain `position: fixed` nav is anchored to the layout
+  // viewport, so on browsers where that animation isn't perfectly in sync it can visibly shift up and
+  // clip against the top edge mid-scroll. `visualViewport.offsetTop` reports exactly that mismatch —
+  // compensating the nav's own transform with it keeps the pill pinned to the real visible top edge
+  // regardless of how the browser chrome is animating.
+  useEffect(() => {
+    const vv = window.visualViewport
+    if (!vv) return
+    const sync = () => {
+      if (navRef.current) {
+        navRef.current.style.transform = `translate3d(-50%, ${vv.offsetTop}px, 0)`
+      }
+    }
+    vv.addEventListener('resize', sync)
+    vv.addEventListener('scroll', sync)
+    sync()
+    return () => {
+      vv.removeEventListener('resize', sync)
+      vv.removeEventListener('scroll', sync)
+    }
   }, [])
 
   const NAV_LINKS = [
@@ -26,6 +50,7 @@ export default function Navbar() {
   return (
     <>
       <nav
+        ref={navRef}
         className={`fixed top-4 left-1/2 z-50 transition-[background-color,box-shadow,border-color] duration-500 will-change-transform ${
           scrolled ? 'glass shadow-lg shadow-primary/10' : 'bg-transparent'
         } rounded-full px-4 sm:px-6 py-2.5 w-[calc(100%-2rem)] max-w-6xl`}
@@ -106,17 +131,22 @@ export default function Navbar() {
         </div>
       </nav>
 
-      {/* Mobile menu */}
-      <div
-        className={`fixed inset-0 z-[60] transition-all duration-500 lg:hidden ${
-          open ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
-        }`}
-      >
-        <div className="absolute inset-0 bg-deep/90 backdrop-blur-2xl" onClick={() => setOpen(false)} />
+      {/* Mobile menu — the panel reveals like a frame dropping down (clip-path growing from the
+          top edge) rather than the whole rectangle sliding + fading in from off-screen; the dimmed
+          backdrop still gets its own simple opacity fade, decoupled from the panel's own animation. */}
+      <div className={`fixed inset-0 z-[60] lg:hidden ${open ? 'pointer-events-auto' : 'pointer-events-none'}`}>
         <div
-          className={`absolute top-0 left-0 right-0 bg-background rounded-b-5xl px-6 pt-8 pb-12 transition-transform duration-500 max-h-[100dvh] overflow-y-auto ${
-            open ? 'translate-y-0' : '-translate-y-full'
+          className={`absolute inset-0 bg-deep/90 backdrop-blur-2xl transition-opacity duration-300 ${
+            open ? 'opacity-100' : 'opacity-0'
           }`}
+          onClick={() => setOpen(false)}
+        />
+        <div
+          className="absolute top-0 left-0 right-0 bg-background rounded-b-5xl px-6 pt-8 pb-12 max-h-[100dvh] overflow-y-auto"
+          style={{
+            clipPath: open ? 'inset(0 0 0% 0)' : 'inset(0 0 100% 0)',
+            transition: 'clip-path 0.55s cubic-bezier(0.65, 0, 0.35, 1)',
+          }}
         >
           <div className="flex items-center justify-between mb-10">
             <span className="font-display font-bold text-xl text-ink">Sharpable</span>

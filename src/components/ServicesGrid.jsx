@@ -7,6 +7,9 @@ export default function ServicesGrid() {
   const { t } = useLanguage()
   const ref = useRef(null)
   const journeyItemRefs = useRef([])
+  const journeyWrapRef = useRef(null)
+  const spineTrackRef = useRef(null)
+  const spineFillRef = useRef(null)
   useEffect(() => {
     const ctx = gsap.context(() => {
       gsap.from('.svc-tile', {
@@ -21,50 +24,62 @@ export default function ServicesGrid() {
     return () => ctx.revert()
   }, [])
 
-  // Mobile "journey" spine: continuously draws/undraws as the viewport midpoint travels through
-  // each item, and fades its text in/out with it — reversible, not a one-shot reveal. Ported from
-  // Aidid-Marcello/aididitmyway-website's Journey section (same technique, our own tokens/copy).
+  // Mobile "journey" spine: ONE continuous line spans from the first node's center to the last
+  // node's center (measured, not guessed — text length varies per language/translation), threading
+  // behind each circle so the circle itself masks the overlap and the line reads as fully connected
+  // rather than a series of separate segments. A single overall scroll progress (0→1 across the
+  // whole span) drives the gold fill; each node's own --jnode-active is a soft threshold around its
+  // own center so its circle/connector light up right as the line reaches it.
   useEffect(() => {
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     const items = journeyItemRefs.current.filter(Boolean)
     if (!items.length) return
 
-    if (reducedMotion) {
-      items.forEach((item) => {
-        item.style.setProperty('--jline-progress', '1')
-        item.style.setProperty('--jtext-opacity', '1')
-      })
-      return
-    }
-
     let ticking = false
     const update = () => {
       ticking = false
       if (window.innerWidth >= 640) return
-      const midY = window.innerHeight / 2
+      const midY = reducedMotion ? Infinity : window.innerHeight / 2
+      const wrap = journeyWrapRef.current
+      if (!wrap) return
+      const wrapTop = wrap.getBoundingClientRect().top
+
+      const centers = items.map((item) => {
+        const idx = item.querySelector('.svc-journey-index')
+        const r = idx.getBoundingClientRect()
+        return r.top + r.height / 2
+      })
+      const firstCenter = centers[0]
+      const lastCenter = centers[centers.length - 1]
+      const spanLength = lastCenter - firstCenter
+
+      if (spineTrackRef.current && spineFillRef.current) {
+        const topPx = firstCenter - wrapTop
+        spineTrackRef.current.style.top = `${topPx}px`
+        spineTrackRef.current.style.height = `${spanLength}px`
+        spineFillRef.current.style.top = `${topPx}px`
+        spineFillRef.current.style.height = `${spanLength}px`
+        const spineProgress = spanLength > 0 ? Math.max(0, Math.min(1, (midY - firstCenter) / spanLength)) : 0
+        spineFillRef.current.style.transform = `scaleY(${spineProgress.toFixed(3)})`
+      }
 
       items.forEach((item, i) => {
-        const isLast = i === items.length - 1
-        const indexEl = item.querySelector('.svc-journey-index')
+        let active = (midY - centers[i]) / 40 + 0.5
+        active = Math.max(0, Math.min(1, active))
+
         const itemRect = item.getBoundingClientRect()
-        let lineProgress = 1
-
-        if (!isLast && indexEl) {
-          const segStart = indexEl.getBoundingClientRect().bottom
-          const segEnd = itemRect.bottom
-          const segLength = segEnd - segStart
-          lineProgress = segLength > 0 ? (midY - segStart) / segLength : 0
-          lineProgress = Math.max(0, Math.min(1, lineProgress))
-        }
-
-        // Text becomes fully visible well before the line finishes drawing.
         const textStart = itemRect.top
         let textProgress = (midY - textStart + 40) / 90
         textProgress = Math.max(0.15, Math.min(1, textProgress))
 
-        item.style.setProperty('--jline-progress', lineProgress.toFixed(3))
+        item.style.setProperty('--jnode-active', active.toFixed(3))
         item.style.setProperty('--jtext-opacity', textProgress.toFixed(3))
       })
+    }
+
+    if (reducedMotion) {
+      update()
+      return
     }
 
     const onScroll = () => {
@@ -89,33 +104,28 @@ export default function ServicesGrid() {
   return (
     <section ref={ref} className="relative py-24 px-6 sm:px-10 lg:px-16 bg-deep text-white rounded-t-6xl">
       <style>{`
-        .svc-journey-item { position: relative; }
-        .svc-journey-item::before,
-        .svc-journey-item::after {
-          content: '';
-          position: absolute;
-          left: calc(2.5rem - 1px);
-          top: calc(1.6rem + 2.6rem);
-          bottom: 0;
-          width: 2px;
-        }
-        .svc-journey-item::before { background: rgba(255,255,255,0.1); }
-        .svc-journey-item::after {
-          background: #FFC629;
-          transform-origin: top;
-          transform: scaleY(var(--jline-progress, 0));
-          transition: transform 0.09s linear;
-        }
-        .svc-journey-item:last-child::before,
-        .svc-journey-item:last-child::after { display: none; }
-        .svc-journey-item > * {
+        .svc-journey-text {
           opacity: var(--jtext-opacity, 0.15);
           transform: translateY(calc((1 - var(--jtext-opacity, 0.15)) * 12px));
           transition: opacity 0.09s linear, transform 0.09s linear;
         }
+        .svc-journey-index {
+          position: relative;
+          z-index: 1;
+          overflow: hidden;
+        }
+        .svc-journey-index-fill {
+          opacity: var(--jnode-active, 0);
+          transition: opacity 0.15s linear;
+        }
+        .svc-journey-connector-fill {
+          opacity: var(--jnode-active, 0);
+          transition: opacity 0.15s linear;
+        }
         @media (prefers-reduced-motion: reduce) {
-          .svc-journey-item > * { opacity: 1 !important; transform: none !important; transition: none !important; }
-          .svc-journey-item::after { transform: scaleY(1) !important; }
+          .svc-journey-text { opacity: 1 !important; transform: none !important; transition: none !important; }
+          .svc-journey-index-fill,
+          .svc-journey-connector-fill { opacity: 1 !important; }
         }
       `}</style>
       {/* Clipped in its own layer (not on the section itself) — `position: sticky` inside the
@@ -162,37 +172,44 @@ export default function ServicesGrid() {
           })}
         </div>
 
-        {/* Mobile — scroll-driven "journey" list: a spine draws downward as each service scrolls
-            through the middle of the screen (and undraws on scroll back up), text fading in with it.
-            Static/inert-looking sections don't need interaction to feel alive; this one always does. */}
-        <div className="sm:hidden relative">
-          <ol className="pb-[3rem]">
+        {/* Mobile — scroll-driven "journey" list: one continuous spine threads through every node,
+            drawing/undrawing as each service scrolls through the middle of the screen (and reversing
+            on scroll back up), with the node circle and its connector to the title lighting up gold
+            as the line reaches it. Static/inert-looking sections don't need interaction to feel
+            alive; this one always does. */}
+        <div ref={journeyWrapRef} className="sm:hidden relative">
+          <span ref={spineTrackRef} className="absolute left-[calc(2.5rem-1px)] w-[2px] bg-white/10 pointer-events-none" />
+          <span
+            ref={spineFillRef}
+            className="absolute left-[calc(2.5rem-1px)] w-[2px] bg-primary pointer-events-none origin-top"
+            style={{ transform: 'scaleY(0)' }}
+          />
+          <ol>
             {items.map((svc, i) => (
               <li
                 key={i}
                 ref={(el) => (journeyItemRefs.current[i] = el)}
-                className="svc-journey-item grid grid-cols-[5rem_1fr] gap-[1.4rem] py-[1.6rem]"
+                className="grid grid-cols-[5rem_1.4rem_1fr] py-[1.6rem]"
               >
-                <span className="svc-journey-index font-serif italic font-medium text-2xl text-primary leading-tight text-center pt-0.5">
-                  {String(i + 1).padStart(2, '0')}
-                </span>
-                <div>
+                <div className="flex justify-center mt-0.5">
+                  <span className="svc-journey-index flex h-11 w-11 shrink-0 items-center justify-center rounded-full border-2 border-white/15 bg-deep font-serif italic font-medium text-base text-white/40">
+                    <span className="svc-journey-index-fill absolute inset-0 flex items-center justify-center rounded-full bg-primary text-deep">
+                      {String(i + 1).padStart(2, '0')}
+                    </span>
+                    <span className="relative">{String(i + 1).padStart(2, '0')}</span>
+                  </span>
+                </div>
+                <div className="relative h-11 mt-0.5">
+                  <span className="absolute left-0 right-0 top-1/2 h-[2px] -translate-y-1/2 bg-white/15" />
+                  <span className="svc-journey-connector-fill absolute left-0 right-0 top-1/2 h-[2px] -translate-y-1/2 bg-primary" />
+                </div>
+                <div className="svc-journey-text">
                   <h3 className="font-display font-bold text-lg text-white mb-1.5 leading-tight">{svc.title}</h3>
                   <p className="text-white/55 text-sm leading-relaxed">{svc.text}</p>
                 </div>
               </li>
             ))}
           </ol>
-          {/* -mx-6 breaks this out of the section's own px-6 mobile padding so it fades the full
-              screen width — including the side gutters where the section's ambient grid pattern
-              lives, which would otherwise sit right next to the fade unfaded, as a visible seam
-              right where the fade is supposed to be seamless. (percentage-based left/transform
-              centering was tried first but resolves unpredictably on a sticky element — this
-              margin approach is exact since the padding it's undoing is a known, fixed value.) */}
-          <div
-            className="sticky bottom-0 -mx-6 -mt-[3rem] h-[3rem] pointer-events-none z-[2]"
-            style={{ background: 'linear-gradient(to bottom, rgba(15,15,18,0) 0%, rgba(15,15,18,0) 45%, #0F0F12 100%)' }}
-          />
         </div>
       </div>
     </section>
