@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react'
 import { gsap } from 'gsap'
 import { ArrowRight, Phone } from 'lucide-react'
 import { useLanguage } from '../useLanguage.js'
+import HeroShaderBackground from './HeroShaderBackground.jsx'
 
 export default function Hero() {
   const { t } = useLanguage()
@@ -25,15 +26,10 @@ export default function Hero() {
 
   return (
     <section id="home" ref={heroRef} className="relative min-h-[100dvh] w-full overflow-hidden">
-      {/* Background image */}
+      {/* Background: animated grey flow-noise field with a gold glow that trails the cursor */}
       <div className="absolute inset-0">
-        <img
-          src="https://images.unsplash.com/photo-1558655146-d09347e92766?auto=format&fit=crop&w=2400&q=80"
-          alt="Computer monitor displaying a colorful design system interface, with plants on the desk"
-          className="w-full h-full object-cover brightness-[0.4]"
-        />
-        <div className="absolute inset-0 bg-gradient-to-tr from-deep/95 via-deep/70 to-primary/15" />
-        <div className="absolute inset-0 bg-gradient-to-t from-deep via-deep/50 to-transparent" />
+        <HeroShaderBackground />
+        <div className="absolute inset-0 bg-gradient-to-t from-deep via-deep/25 to-transparent" />
       </div>
 
       {/* Decorative floating sparks */}
