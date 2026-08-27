@@ -3,8 +3,8 @@
 @tailwind utilities;
 
 @layer base {
-  html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
-  body { @apply bg-background text-ink font-body; overflow-x: hidden; }
+  html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; overflow-x: hidden; }
+  body { @apply bg-background text-ink font-body; }
   ::selection { background-color: #FFC629; color: #0F0F12; }
   ::-webkit-scrollbar { width: 3px; }
   ::-webkit-scrollbar-track { background: #16161A; }
@@ -48,6 +48,10 @@
     70%  { box-shadow: 0 0 0 14px rgba(255,198,41,0); }
     100% { box-shadow: 0 0 0 0 rgba(255,198,41,0); }
   }
+  @keyframes slider-dot-fill {
+    from { width: 0%; }
+    to { width: 100%; }
+  }
   .grid-bg {
     background-image:
       linear-gradient(rgba(255,198,41,0.07) 1px, transparent 1px),
@@ -55,6 +59,7 @@
     background-size: 40px 40px;
   }
   .text-balance { text-wrap: balance; }
+  .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
   .scrollbar-hide::-webkit-scrollbar { display: none; }
 }
 

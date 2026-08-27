@@ -18,11 +18,17 @@ gsap.registerPlugin(ScrollTrigger)
 
 export default function App() {
   useEffect(() => {
-    const t1 = setTimeout(() => ScrollTrigger.refresh(), 200)
-    const t2 = setTimeout(() => ScrollTrigger.refresh(), 1000)
+    const refresh = () => ScrollTrigger.refresh()
+    const t1 = setTimeout(refresh, 200)
+    const t2 = setTimeout(refresh, 1000)
+    // Images loading after the timeouts above (slow network, large Cloudinary/Unsplash assets) leave
+    // ScrollTrigger's pin/scrub ranges measured against a too-short page — refresh once everything has
+    // actually finished loading, not just after a guessed delay.
+    window.addEventListener('load', refresh)
     return () => {
       clearTimeout(t1)
       clearTimeout(t2)
+      window.removeEventListener('load', refresh)
     }
   }, [])
 

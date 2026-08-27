@@ -26,9 +26,10 @@ export default function Navbar() {
   return (
     <>
       <nav
-        className={`fixed top-4 left-1/2 -translate-x-1/2 z-50 transition-all duration-500 ${
+        className={`fixed top-4 left-1/2 z-50 transition-[background-color,box-shadow,border-color] duration-500 will-change-transform ${
           scrolled ? 'glass shadow-lg shadow-primary/10' : 'bg-transparent'
         } rounded-full px-4 sm:px-6 py-2.5 w-[calc(100%-2rem)] max-w-6xl`}
+        style={{ transform: 'translate3d(-50%, 0, 0)' }}
       >
         <div className="flex items-center justify-between gap-6">
           <a href="#home" className="flex items-center gap-2 group">

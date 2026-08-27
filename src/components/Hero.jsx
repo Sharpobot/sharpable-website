@@ -28,12 +28,12 @@ export default function Hero() {
       {/* Background image */}
       <div className="absolute inset-0">
         <img
-          src="https://images.unsplash.com/photo-1517180102446-f3ece451e9d8?auto=format&fit=crop&w=2400&q=80"
-          alt="Designer working on a laptop in a dark studio"
-          className="w-full h-full object-cover brightness-[0.55]"
+          src="https://images.unsplash.com/photo-1558655146-d09347e92766?auto=format&fit=crop&w=2400&q=80"
+          alt="Computer monitor displaying a colorful design system interface, with plants on the desk"
+          className="w-full h-full object-cover brightness-[0.4]"
         />
-        <div className="absolute inset-0 bg-gradient-to-tr from-deep/85 via-deep/50 to-primary/20" />
-        <div className="absolute inset-0 bg-gradient-to-t from-deep via-deep/30 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-tr from-deep/95 via-deep/70 to-primary/15" />
+        <div className="absolute inset-0 bg-gradient-to-t from-deep via-deep/50 to-transparent" />
       </div>
 
       {/* Decorative floating sparks */}

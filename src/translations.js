@@ -266,6 +266,25 @@ export const translations = {
           quote:
             "Honestly, Sharpable is different from the rest. I didn't have to explain my brand at length — they got the vibe straight away. The work was genuinely sharp, no exaggeration.",
         },
+        // Placeholder testimonials — swap for real client quotes when available (see Work.jsx for the same convention).
+        {
+          name: 'Bloom & Co.',
+          role: 'Boutique Florist',
+          quote:
+            'Sharpable took a small idea and made it look like a proper brand overnight. Customers keep telling us the site feels premium — that\'s exactly what we wanted.',
+        },
+        {
+          name: 'The Coffee Refinery',
+          role: 'Café Owner',
+          quote:
+            "We just wanted a site that didn't look like everyone else's. Sharpable nailed the mood of our shop without us having to micromanage every detail.",
+        },
+        {
+          name: 'Roda Bicycle Co.',
+          role: 'Bicycle Shop Owner',
+          quote:
+            'Fast, sharp, and no back-and-forth headaches. The site finally matches how seriously we take the shop.',
+        },
       ],
     },
     footer: {
@@ -551,6 +570,25 @@ export const translations = {
           role: 'Pengacara & Kreator',
           quote:
             'Jujur cakap, Sharpable ni lain dari yang lain. Tak payah nak terang panjang lebar pasal brand aku — diorang terus dapat the vibe. Hasil kerja pun memang sharp, serius tak tipu.',
+        },
+        // Testimoni placeholder — tukar dengan quote client sebenar apabila ada (rujuk konvensyen sama di Work.jsx).
+        {
+          name: 'Bloom & Co.',
+          role: 'Peruncit Bunga Butik',
+          quote:
+            'Sharpable ambil idea kecil dan jadikan ia macam brand betul-betul professional overnight. Customer selalu cakap website kami nampak premium — tu memang apa yang kami nak.',
+        },
+        {
+          name: 'The Coffee Refinery',
+          role: 'Pemilik Kafe',
+          quote:
+            'Kami cuma nak website simple yang tak sama macam orang lain. Sharpable faham vibe kedai kami tanpa kena micromanage setiap detail.',
+        },
+        {
+          name: 'Roda Bicycle Co.',
+          role: 'Pemilik Kedai Basikal',
+          quote:
+            'Laju, kemas, tak payah banyak round back-and-forth. Website akhirnya match dengan betapa seriusnya kami jaga kedai ni.',
         },
       ],
     },

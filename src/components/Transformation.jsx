@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react'
 import { ArrowLeftRight, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useLanguage } from '../useLanguage.js'
+import SliderDots from './SliderDots.jsx'
 
 /* Real before/after screenshots from actual Sharpable client projects. */
 const CARD_IMAGES = [
@@ -65,10 +66,10 @@ function TransformCard({ card, images, position, flipped, onFlip, before, after 
   }
 
   const posClasses = {
-    center: 'translate-x-0 scale-100 z-20 opacity-100 blur-0 pointer-events-auto',
-    left: '-translate-x-[62%] sm:-translate-x-[58%] scale-[0.82] z-10 opacity-100 blur-[3px] pointer-events-none',
-    right: 'translate-x-[62%] sm:translate-x-[58%] scale-[0.82] z-10 opacity-100 blur-[3px] pointer-events-none',
-    hidden: 'translate-x-0 scale-[0.82] z-0 opacity-0 pointer-events-none',
+    center: 'translate-x-0 scale-100 z-20 opacity-100 blur-0 brightness-100 pointer-events-auto',
+    left: '-translate-x-[66%] sm:-translate-x-[62%] scale-[0.8] z-10 opacity-45 blur-[4px] brightness-[0.45] pointer-events-none',
+    right: 'translate-x-[66%] sm:translate-x-[62%] scale-[0.8] z-10 opacity-45 blur-[4px] brightness-[0.45] pointer-events-none',
+    hidden: 'translate-x-0 scale-[0.8] z-0 opacity-0 pointer-events-none',
   }
 
   return (
@@ -200,11 +201,11 @@ export default function Transformation() {
           </p>
         </div>
 
-        <div className="relative flex items-center justify-center gap-2 sm:gap-4">
+        <div className="relative flex items-center justify-center gap-5 sm:gap-8 lg:gap-12 -mx-3 sm:mx-0">
           <button
             onClick={prev}
             aria-label="Previous"
-            className="shrink-0 h-10 w-10 sm:h-12 sm:w-12 rounded-full bg-surface border border-divider text-ink flex items-center justify-center hover:border-primary/40 hover:text-primary transition-colors z-30"
+            className="shrink-0 h-9 w-9 sm:h-12 sm:w-12 rounded-full bg-surface border border-divider text-ink flex items-center justify-center hover:border-primary/40 hover:text-primary transition-colors z-30"
           >
             <ChevronLeft className="h-5 w-5" />
           </button>
@@ -212,7 +213,7 @@ export default function Transformation() {
           <div
             onTouchStart={onTouchStart}
             onTouchEnd={onTouchEnd}
-            className="relative w-full max-w-[280px] sm:max-w-[520px] lg:max-w-[720px] aspect-[467/826] sm:aspect-[16/10] [perspective:1200px]"
+            className="relative w-full max-w-[340px] sm:max-w-[580px] lg:max-w-[820px] aspect-[467/826] sm:aspect-[16/10] [perspective:1200px]"
           >
             {cards.map((card, i) => {
               const rel = (i - index + total) % total
@@ -235,23 +236,14 @@ export default function Transformation() {
           <button
             onClick={next}
             aria-label="Next"
-            className="shrink-0 h-10 w-10 sm:h-12 sm:w-12 rounded-full bg-surface border border-divider text-ink flex items-center justify-center hover:border-primary/40 hover:text-primary transition-colors z-30"
+            className="shrink-0 h-9 w-9 sm:h-12 sm:w-12 rounded-full bg-surface border border-divider text-ink flex items-center justify-center hover:border-primary/40 hover:text-primary transition-colors z-30"
           >
             <ChevronRight className="h-5 w-5" />
           </button>
         </div>
 
-        <div className="flex items-center justify-center gap-2 mt-10">
-          {cards.map((_, i) => (
-            <button
-              key={i}
-              onClick={() => goTo(i)}
-              aria-label={`Go to slide ${i + 1}`}
-              className={`h-2 rounded-full transition-all duration-300 ${
-                i === index ? 'w-7 bg-primary' : 'w-2 bg-divider hover:bg-muted'
-              }`}
-            />
-          ))}
+        <div className="mt-10">
+          <SliderDots length={total} active={index} onSelect={goTo} />
         </div>
       </div>
     </section>
