@@ -74,6 +74,15 @@ export default function ServicesGrid() {
 
         item.style.setProperty('--jnode-active', active.toFixed(3))
         item.style.setProperty('--jtext-opacity', textProgress.toFixed(3))
+
+        // The connector is positioned from the circle's own measured center rather than trusted to
+        // land there via matching grid/flex box heights — two independently-stretched grid cells
+        // landing on the same pixel by construction turned out not to hold in practice.
+        const connectorTop = `${centers[i] - itemRect.top}px`
+        const track = item.querySelector('.svc-journey-connector')
+        const fill = item.querySelector('.svc-journey-connector-fill')
+        if (track) track.style.top = connectorTop
+        if (fill) fill.style.top = connectorTop
       })
     }
 
@@ -189,7 +198,7 @@ export default function ServicesGrid() {
               <li
                 key={i}
                 ref={(el) => (journeyItemRefs.current[i] = el)}
-                className="grid grid-cols-[5rem_1.4rem_1fr] py-[1.6rem]"
+                className="relative grid grid-cols-[5rem_1.4rem_1fr] py-[1.6rem]"
               >
                 <div className="flex justify-center mt-0.5">
                   <span className="svc-journey-index flex h-11 w-11 shrink-0 items-center justify-center rounded-full border-2 border-white/15 bg-deep font-serif italic font-medium text-base text-white/40">
@@ -199,14 +208,13 @@ export default function ServicesGrid() {
                     <span className="relative">{String(i + 1).padStart(2, '0')}</span>
                   </span>
                 </div>
-                <div className="relative h-11 mt-0.5">
-                  <span className="absolute left-0 right-0 top-1/2 h-[2px] -translate-y-1/2 bg-white/15" />
-                  <span className="svc-journey-connector-fill absolute left-0 right-0 top-1/2 h-[2px] -translate-y-1/2 bg-primary" />
-                </div>
+                <div />
                 <div className="svc-journey-text">
                   <h3 className="font-display font-bold text-lg text-white mb-1.5 leading-tight">{svc.title}</h3>
                   <p className="text-white/55 text-sm leading-relaxed">{svc.text}</p>
                 </div>
+                <span className="svc-journey-connector absolute left-[5rem] w-[1.4rem] h-[2px] -translate-y-1/2 bg-white/15 pointer-events-none" />
+                <span className="svc-journey-connector-fill absolute left-[5rem] w-[1.4rem] h-[2px] -translate-y-1/2 bg-primary pointer-events-none" />
               </li>
             ))}
           </ol>

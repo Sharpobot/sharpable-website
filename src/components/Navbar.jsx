@@ -148,19 +148,30 @@ export default function Navbar() {
             transition: 'clip-path 0.55s cubic-bezier(0.65, 0, 0.35, 1)',
           }}
         >
-          <div className="flex items-center justify-between mb-10">
+          {/* Content fades/drops in a beat after the frame starts revealing (staggered per row),
+              rather than just appearing wherever the clip boundary happens to have reached — that
+              extra lag is what reads as depth instead of the content being flatly stuck to the frame. */}
+          <div
+            className={`flex items-center justify-between mb-10 transition-all duration-[400ms] ease-out ${
+              open ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2'
+            }`}
+            style={{ transitionDelay: open ? '140ms' : '0ms' }}
+          >
             <span className="font-display font-bold text-xl text-ink">Sharpable</span>
             <button onClick={() => setOpen(false)} className="p-2 rounded-full bg-divider/40">
               <X className="h-5 w-5" />
             </button>
           </div>
           <div className="flex flex-col gap-1">
-            {NAV_LINKS.map((link) => (
+            {NAV_LINKS.map((link, i) => (
               <a
                 key={link.href}
                 href={link.href}
                 onClick={() => setOpen(false)}
-                className="font-display text-3xl font-semibold text-ink py-3 border-b border-divider"
+                className={`font-display text-3xl font-semibold text-ink py-3 border-b border-divider transition-all duration-[400ms] ease-out ${
+                  open ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2'
+                }`}
+                style={{ transitionDelay: open ? `${180 + i * 40}ms` : '0ms' }}
               >
                 {link.label}
               </a>
@@ -169,7 +180,10 @@ export default function Navbar() {
           <a
             href="#contact"
             onClick={() => setOpen(false)}
-            className="mt-8 magnetic-btn flex items-center justify-center gap-2 bg-primary text-deep px-6 py-4 rounded-full font-semibold w-full"
+            className={`mt-8 magnetic-btn flex items-center justify-center gap-2 bg-primary text-deep px-6 py-4 rounded-full font-semibold w-full transition-all duration-[400ms] ease-out ${
+              open ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2'
+            }`}
+            style={{ transitionDelay: open ? `${180 + NAV_LINKS.length * 40 + 40}ms` : '0ms' }}
           >
             {t.nav.cta}
             <ArrowUpRight className="h-4 w-4" />
