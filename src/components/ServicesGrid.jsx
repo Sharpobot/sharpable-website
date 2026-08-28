@@ -137,14 +137,9 @@ export default function ServicesGrid() {
           opacity: var(--jnode-active, 0);
           transition: opacity 0.15s linear;
         }
-        .svc-journey-chevron {
-          transform: translate(-50%, calc(-50% + (1 - var(--jtext-opacity, 0.15)) * 12px));
-          transition: transform 0.09s linear;
-        }
         @media (prefers-reduced-motion: reduce) {
           .svc-journey-text,
           .svc-journey-marker-row { opacity: 1 !important; transform: none !important; transition: none !important; }
-          .svc-journey-chevron { transform: translate(-50%, -50%) !important; transition: none !important; }
           .svc-journey-index-fill,
           .svc-journey-num-fill,
           .svc-journey-chevron-fill { opacity: 1 !important; }
@@ -234,7 +229,13 @@ export default function ServicesGrid() {
                     <h3 className="font-display font-bold text-lg text-white mb-1.5 leading-tight">{svc.title}</h3>
                     <p className="text-white/55 text-sm leading-relaxed">{svc.text}</p>
                   </div>
-                  <span className="svc-journey-chevron absolute left-[4.55rem] text-white/25 text-base leading-none pointer-events-none">
+                  {/* Only centered via a static transform — its `top` (JS-set from the notch's own
+                      measured center every tick) already reflects the notch's current reveal-offset
+                      position, since that measurement happens after the marker row's own transform
+                      has been applied. Also animating the reveal offset here on top of that double-
+                      counted it, dragging the chevron further down than the title/notch specifically
+                      while still mid-reveal. */}
+                  <span className="svc-journey-chevron absolute left-[4.55rem] -translate-x-1/2 -translate-y-1/2 text-white/25 text-base leading-none pointer-events-none">
                     <span className="svc-journey-chevron-fill absolute inset-0 text-primary">&rsaquo;</span>
                     <span className="relative">&rsaquo;</span>
                   </span>
