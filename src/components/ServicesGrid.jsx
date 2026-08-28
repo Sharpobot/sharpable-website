@@ -207,7 +207,7 @@ export default function ServicesGrid() {
                       land on the same pixel — that assumption is exactly what broke the connector
                       before). The middle column is just a reserved gap; the chevron inside it is
                       positioned from the notch's own measured center, same reasoning as the spine. */}
-                  <div className="flex items-center gap-2 mt-0.5">
+                  <div className="flex h-[14px] items-center gap-2 mt-0.5">
                     <span className="relative w-6 shrink-0 text-right font-mono text-[11px] tracking-widest text-white/35">
                       <span className="svc-journey-num-fill absolute inset-0 text-primary">{num}</span>
                       <span className="relative">{num}</span>
