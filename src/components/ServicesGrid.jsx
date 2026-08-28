@@ -54,13 +54,18 @@ export default function ServicesGrid() {
       const spanLength = lastCenter - firstCenter
 
       if (spineTrackRef.current && spineFillRef.current) {
+        const wrapLeft = wrap.getBoundingClientRect().left
+        const firstNotchRect = items[0].querySelector('.svc-journey-index').getBoundingClientRect()
+        const leftPx = firstNotchRect.left + firstNotchRect.width / 2 - wrapLeft
         const topPx = firstCenter - wrapTop
+        spineTrackRef.current.style.left = `${leftPx}px`
         spineTrackRef.current.style.top = `${topPx}px`
         spineTrackRef.current.style.height = `${spanLength}px`
+        spineFillRef.current.style.left = `${leftPx}px`
         spineFillRef.current.style.top = `${topPx}px`
         spineFillRef.current.style.height = `${spanLength}px`
         const spineProgress = spanLength > 0 ? Math.max(0, Math.min(1, (midY - firstCenter) / spanLength)) : 0
-        spineFillRef.current.style.transform = `scaleY(${spineProgress.toFixed(3)})`
+        spineFillRef.current.style.transform = `translateX(-50%) scaleY(${spineProgress.toFixed(3)})`
       }
 
       items.forEach((item, i) => {
@@ -75,14 +80,12 @@ export default function ServicesGrid() {
         item.style.setProperty('--jnode-active', active.toFixed(3))
         item.style.setProperty('--jtext-opacity', textProgress.toFixed(3))
 
-        // The connector is positioned from the circle's own measured center rather than trusted to
-        // land there via matching grid/flex box heights — two independently-stretched grid cells
-        // landing on the same pixel by construction turned out not to hold in practice.
-        const connectorTop = `${centers[i] - itemRect.top}px`
-        const track = item.querySelector('.svc-journey-connector')
-        const fill = item.querySelector('.svc-journey-connector-fill')
-        if (track) track.style.top = connectorTop
-        if (fill) fill.style.top = connectorTop
+        // The chevron is positioned from the notch's own measured center rather than trusted to
+        // land there via matching grid/flex box heights across separate elements — that assumption
+        // is exactly what caused the earlier connector misalignment bug. (The number stays aligned
+        // to the notch "for free" since they're siblings in the same flex row.)
+        const chevron = item.querySelector('.svc-journey-chevron')
+        if (chevron) chevron.style.top = `${centers[i] - itemRect.top}px`
       })
     }
 
@@ -119,22 +122,19 @@ export default function ServicesGrid() {
           transition: opacity 0.09s linear, transform 0.09s linear;
         }
         .svc-journey-index {
-          position: relative;
           z-index: 1;
-          overflow: hidden;
         }
-        .svc-journey-index-fill {
-          opacity: var(--jnode-active, 0);
-          transition: opacity 0.15s linear;
-        }
-        .svc-journey-connector-fill {
+        .svc-journey-index-fill,
+        .svc-journey-num-fill,
+        .svc-journey-chevron-fill {
           opacity: var(--jnode-active, 0);
           transition: opacity 0.15s linear;
         }
         @media (prefers-reduced-motion: reduce) {
           .svc-journey-text { opacity: 1 !important; transform: none !important; transition: none !important; }
           .svc-journey-index-fill,
-          .svc-journey-connector-fill { opacity: 1 !important; }
+          .svc-journey-num-fill,
+          .svc-journey-chevron-fill { opacity: 1 !important; }
         }
       `}</style>
       {/* Clipped in its own layer (not on the section itself) — `position: sticky` inside the
@@ -187,36 +187,47 @@ export default function ServicesGrid() {
             as the line reaches it. Static/inert-looking sections don't need interaction to feel
             alive; this one always does. */}
         <div ref={journeyWrapRef} className="sm:hidden relative">
-          <span ref={spineTrackRef} className="absolute left-[calc(2.5rem-1px)] w-[2px] bg-white/10 pointer-events-none" />
+          <span ref={spineTrackRef} className="absolute -translate-x-1/2 w-[2px] bg-white/10 pointer-events-none" />
           <span
             ref={spineFillRef}
-            className="absolute left-[calc(2.5rem-1px)] w-[2px] bg-primary pointer-events-none origin-top"
-            style={{ transform: 'scaleY(0)' }}
+            className="absolute w-[2px] bg-primary pointer-events-none origin-top"
+            style={{ transform: 'translateX(-50%) scaleY(0)' }}
           />
           <ol>
-            {items.map((svc, i) => (
-              <li
-                key={i}
-                ref={(el) => (journeyItemRefs.current[i] = el)}
-                className="relative grid grid-cols-[5rem_1.4rem_1fr] py-[1.6rem]"
-              >
-                <div className="flex justify-center mt-0.5">
-                  <span className="svc-journey-index flex h-11 w-11 shrink-0 items-center justify-center rounded-full border-2 border-white/15 bg-deep font-serif italic font-medium text-base text-white/40">
-                    <span className="svc-journey-index-fill absolute inset-0 flex items-center justify-center rounded-full bg-primary text-deep">
-                      {String(i + 1).padStart(2, '0')}
+            {items.map((svc, i) => {
+              const num = String(i + 1).padStart(2, '0')
+              return (
+                <li
+                  key={i}
+                  ref={(el) => (journeyItemRefs.current[i] = el)}
+                  className="relative grid grid-cols-[4rem_1.1rem_1fr] py-[1.6rem]"
+                >
+                  {/* Number + notch live in the same flex row so they stay aligned to each other by
+                      construction (flex align-items, not two independently-sized boxes trusted to
+                      land on the same pixel — that assumption is exactly what broke the connector
+                      before). The middle column is just a reserved gap; the chevron inside it is
+                      positioned from the notch's own measured center, same reasoning as the spine. */}
+                  <div className="flex items-center gap-2 mt-0.5">
+                    <span className="relative w-6 shrink-0 text-right font-mono text-[11px] tracking-widest text-white/35">
+                      <span className="svc-journey-num-fill absolute inset-0 text-primary">{num}</span>
+                      <span className="relative">{num}</span>
                     </span>
-                    <span className="relative">{String(i + 1).padStart(2, '0')}</span>
+                    <span className="svc-journey-index relative h-[13px] w-[13px] shrink-0 rotate-45 rounded-[2px] border-2 border-white/20 bg-deep overflow-hidden">
+                      <span className="svc-journey-index-fill absolute inset-0 rounded-[2px] bg-primary" />
+                    </span>
+                  </div>
+                  <div />
+                  <div className="svc-journey-text">
+                    <h3 className="font-display font-bold text-lg text-white mb-1.5 leading-tight">{svc.title}</h3>
+                    <p className="text-white/55 text-sm leading-relaxed">{svc.text}</p>
+                  </div>
+                  <span className="svc-journey-chevron absolute left-[4.55rem] -translate-x-1/2 -translate-y-1/2 text-white/25 text-base leading-none pointer-events-none">
+                    <span className="svc-journey-chevron-fill absolute inset-0 text-primary">&rsaquo;</span>
+                    <span className="relative">&rsaquo;</span>
                   </span>
-                </div>
-                <div />
-                <div className="svc-journey-text">
-                  <h3 className="font-display font-bold text-lg text-white mb-1.5 leading-tight">{svc.title}</h3>
-                  <p className="text-white/55 text-sm leading-relaxed">{svc.text}</p>
-                </div>
-                <span className="svc-journey-connector absolute left-[5rem] w-[1.4rem] h-[2px] -translate-y-1/2 bg-white/15 pointer-events-none" />
-                <span className="svc-journey-connector-fill absolute left-[5rem] w-[1.4rem] h-[2px] -translate-y-1/2 bg-primary pointer-events-none" />
-              </li>
-            ))}
+                </li>
+              )
+            })}
           </ol>
         </div>
       </div>

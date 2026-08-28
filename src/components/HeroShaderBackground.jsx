@@ -69,12 +69,20 @@ void main() {
   vec3 base = mix(greyDeep, greyCharcoal, smoothstep(0.15, 0.55, n));
   base = mix(base, greyLight, smoothstep(0.62, 0.92, n) * 0.6);
 
+  // The same fbm shape re-mapped through a gold palette instead of grey, so the region near the
+  // cursor reads as the material itself shifting color — not a light shining on top of it.
+  vec3 goldDeep = vec3(0.14, 0.095, 0.02);
+  vec3 goldMid = vec3(0.52, 0.37, 0.07);
+  vec3 goldBright = vec3(1.0, 0.78, 0.16);
+  vec3 goldTone = mix(goldDeep, goldMid, smoothstep(0.15, 0.55, n));
+  goldTone = mix(goldTone, goldBright, smoothstep(0.62, 0.92, n) * 0.85);
+
   vec2 mp = uMouse;
   mp.x *= aspect;
   float dist = length(p - mp);
-  float glow = smoothstep(0.62, 0.0, dist) * uHover;
-  vec3 gold = vec3(1.0, 0.776, 0.161);
-  vec3 color = base + gold * glow * 0.5;
+  float mask = smoothstep(0.34, 0.0, dist);
+  mask = mask * mask * uHover;
+  vec3 color = mix(base, goldTone, mask);
 
   float vignette = smoothstep(1.05, 0.35, length(uv - 0.5));
   color *= mix(0.82, 1.0, vignette);
