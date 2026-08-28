@@ -1,6 +1,12 @@
 import { Link } from 'react-router-dom'
 import { ArrowRight, Sparkles } from 'lucide-react'
 import { useLanguage } from '../useLanguage.js'
+import { HOME_SCROLL_KEY } from '../scrollRestore.js'
+
+// A route change in this SPA doesn't reset scroll position on its own, so leaving from way down
+// the (long) home page and coming straight back via "Back to home" would otherwise land back at
+// scroll 0 instead of where the user actually was — stash it here, App.jsx restores it on mount.
+const saveScrollPosition = () => sessionStorage.setItem(HOME_SCROLL_KEY, String(window.scrollY))
 
 export default function Footer() {
   const { t } = useLanguage()
@@ -93,8 +99,8 @@ export default function Footer() {
 
         <div className="mt-14 pt-8 border-t border-white/10 flex flex-col sm:flex-row items-start sm:items-center sm:justify-end gap-6">
           <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-white/50 text-xs font-mono">
-            <Link to="/privacy" className="hover:text-primary transition">{t.footer.privacy}</Link>
-            <Link to="/terms" className="hover:text-primary transition">{t.footer.terms}</Link>
+            <Link to="/privacy" onClick={saveScrollPosition} className="hover:text-primary transition">{t.footer.privacy}</Link>
+            <Link to="/terms" onClick={saveScrollPosition} className="hover:text-primary transition">{t.footer.terms}</Link>
             <span>{t.footer.copyright}</span>
           </div>
         </div>

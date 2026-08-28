@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react'
-import { ArrowRight, CheckCircle2, Mail, MapPin, Phone, Upload } from 'lucide-react'
+import { ArrowRight, CheckCircle2, ChevronDown, Lock, Mail, MapPin, Phone, Upload } from 'lucide-react'
 import { useLanguage } from '../useLanguage.js'
 import Field from './Field.jsx'
 
@@ -8,6 +8,7 @@ export default function ContactForm() {
   const [form, setForm] = useState({ name: '', email: '', phone: '', company: '', message: '' })
   const [files, setFiles] = useState([])
   const [status, setStatus] = useState('idle')
+  const [privacyOpen, setPrivacyOpen] = useState(false)
   const dropRef = useRef(null)
 
   const handleSubmit = (e) => {
@@ -70,13 +71,29 @@ export default function ContactForm() {
               </div>
             </div>
 
-            <div className="mt-10 p-5 rounded-3xl bg-primary/5 border border-primary/15">
-              <p className="font-mono text-xs uppercase tracking-widest text-primary-dark mb-2">
+            <div className="mt-10">
+              <button
+                type="button"
+                onClick={() => setPrivacyOpen((v) => !v)}
+                aria-expanded={privacyOpen}
+                className="flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-primary-dark"
+              >
+                <Lock className="h-3.5 w-3.5 shrink-0" />
                 {t.contact.privacyTitle}
-              </p>
-              <p className="text-sm text-muted leading-relaxed">
-                {t.contact.privacyText}
-              </p>
+                <ChevronDown
+                  className={`h-3.5 w-3.5 shrink-0 transition-transform duration-300 ${privacyOpen ? 'rotate-180' : ''}`}
+                />
+              </button>
+              <div
+                className="grid transition-[grid-template-rows] duration-300 ease-out"
+                style={{ gridTemplateRows: privacyOpen ? '1fr' : '0fr' }}
+              >
+                <div className="overflow-hidden">
+                  <p className="text-sm text-muted leading-relaxed pt-2 max-w-sm">
+                    {t.contact.privacyText}
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -140,8 +157,7 @@ export default function ContactForm() {
                     </label>
                   </div>
 
-                  <div className="mt-7 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                    <p className="text-xs text-muted">{t.contact.form.note}</p>
+                  <div className="mt-7 flex flex-col items-center gap-3">
                     <button
                       type="submit"
                       disabled={status === 'sending'}
@@ -150,6 +166,7 @@ export default function ContactForm() {
                       {status === 'sending' ? t.contact.form.sending : t.contact.form.submit}
                       <ArrowRight className="h-4 w-4" />
                     </button>
+                    <p className="text-xs text-muted">{t.contact.form.note}</p>
                   </div>
                 </>
               ) : (

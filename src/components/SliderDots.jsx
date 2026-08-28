@@ -18,7 +18,7 @@ export default function SliderDots({ length, active, onSelect, progressMs, pause
           // just as happily clip a box-shadow glow into invisibility.
           <span key={i} className="relative">
             {isActive && (
-              <span className="absolute -inset-1.5 rounded-full bg-primary/50 blur-md pointer-events-none" />
+              <span className="absolute inset-0 rounded-full bg-primary/45 blur-[2px] pointer-events-none" />
             )}
             <button
               type="button"

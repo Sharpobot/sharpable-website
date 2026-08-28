@@ -1,10 +1,18 @@
+import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowLeft, Sparkles } from 'lucide-react'
 
 export default function Terms() {
+  // A route change in this SPA doesn't reset scroll position on its own — without this, arriving
+  // here after clicking the footer link (scrolled to the bottom of a much taller home page) lands
+  // partway/fully down this much shorter page instead of at the top.
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [])
+
   return (
     <div className="min-h-screen bg-background text-ink">
-      <div className="max-w-3xl mx-auto px-6 sm:px-10 py-16 sm:py-24">
+      <div className="animate-page-in max-w-3xl mx-auto px-6 sm:px-10 py-16 sm:py-24">
         <Link to="/" className="inline-flex items-center gap-2 text-sm font-medium text-primary-dark hover:text-primary transition mb-10">
           <ArrowLeft className="h-4 w-4" />
           Back to home
