@@ -32,13 +32,6 @@ export default function Hero() {
         <div className="absolute inset-0 bg-gradient-to-t from-deep via-deep/25 to-transparent" />
       </div>
 
-      {/* Decorative floating sparks */}
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-1/4 right-[18%] h-2 w-2 rounded-full bg-primary/60 animate-float" style={{ animationDelay: '0s' }} />
-        <div className="absolute top-[55%] right-[10%] h-1.5 w-1.5 rounded-full bg-white/40 animate-float" style={{ animationDelay: '1.5s' }} />
-        <div className="absolute top-[40%] right-[26%] h-1 w-1 rounded-full bg-primary-light/70 animate-float" style={{ animationDelay: '3s' }} />
-      </div>
-
       {/* Top frame */}
       <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
 

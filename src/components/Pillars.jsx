@@ -100,9 +100,6 @@ export default function Pillars() {
                 />
               </div>
 
-              <span className="absolute top-9 right-9 sm:top-12 sm:right-12 font-mono text-[9px] uppercase tracking-widest text-primary/30">
-                {p.n}/03
-              </span>
             </article>
           ))}
         </div>

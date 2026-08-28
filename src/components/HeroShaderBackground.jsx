@@ -63,29 +63,38 @@ void main() {
   );
   float n = fbm(p * 1.4 + 3.2 * r);
 
-  vec3 greyDeep = vec3(0.059, 0.059, 0.071);
-  vec3 greyCharcoal = vec3(0.125, 0.125, 0.145);
-  vec3 greyLight = vec3(0.22, 0.22, 0.245);
-  vec3 base = mix(greyDeep, greyCharcoal, smoothstep(0.15, 0.55, n));
-  base = mix(base, greyLight, smoothstep(0.62, 0.92, n) * 0.6);
+  vec3 greyDeep = vec3(0.05, 0.05, 0.06);
+  vec3 greyCharcoal = vec3(0.14, 0.14, 0.165);
+  vec3 greyLight = vec3(0.32, 0.32, 0.355);
+  vec3 base = mix(greyDeep, greyCharcoal, smoothstep(0.12, 0.5, n));
+  base = mix(base, greyLight, smoothstep(0.56, 0.88, n) * 0.75);
 
   // The same fbm shape re-mapped through a gold palette instead of grey, so the region near the
-  // cursor reads as the material itself shifting color — not a light shining on top of it.
-  vec3 goldDeep = vec3(0.14, 0.095, 0.02);
-  vec3 goldMid = vec3(0.52, 0.37, 0.07);
-  vec3 goldBright = vec3(1.0, 0.78, 0.16);
-  vec3 goldTone = mix(goldDeep, goldMid, smoothstep(0.15, 0.55, n));
-  goldTone = mix(goldTone, goldBright, smoothstep(0.62, 0.92, n) * 0.85);
+  // cursor reads as the material itself shifting color — not a light shining on top of it. Anchored
+  // to the site's own tokens (primary-dark/primary/primary-light) so even the shadow end stays a
+  // recognizable gold rather than sliding toward a muddy brown.
+  vec3 goldDeep = vec3(0.4, 0.3, 0.03);
+  vec3 goldMid = vec3(0.941, 0.702, 0.0);
+  vec3 goldBright = vec3(1.0, 0.867, 0.439);
+  vec3 goldTone = mix(goldDeep, goldMid, smoothstep(0.12, 0.5, n));
+  goldTone = mix(goldTone, goldBright, smoothstep(0.56, 0.88, n) * 0.85);
 
+  // The glow's boundary is a slowly morphing blob rather than a perfect circle: the radius is
+  // perturbed by noise sampled around the angle from the cursor, evolving on its own slow clock
+  // (independent of the flow field's own motion) so the shape keeps subtly changing even when the
+  // cursor sits still.
   vec2 mp = uMouse;
   mp.x *= aspect;
-  float dist = length(p - mp);
+  vec2 toMouse = p - mp;
+  float angle = atan(toMouse.y, toMouse.x);
+  float wobble = noise(vec2(cos(angle), sin(angle)) * 2.4 + uTime * 0.05) - 0.5;
+  float dist = max(length(toMouse) - wobble * 0.16, 0.0);
   float mask = smoothstep(0.34, 0.0, dist);
   mask = mask * mask * uHover;
   vec3 color = mix(base, goldTone, mask);
 
   float vignette = smoothstep(1.05, 0.35, length(uv - 0.5));
-  color *= mix(0.82, 1.0, vignette);
+  color *= mix(0.85, 1.0, vignette);
 
   gl_FragColor = vec4(color, 1.0);
 }

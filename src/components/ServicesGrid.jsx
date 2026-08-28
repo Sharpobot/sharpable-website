@@ -121,6 +121,13 @@ export default function ServicesGrid() {
           transform: translateY(calc((1 - var(--jtext-opacity, 0.15)) * 12px));
           transition: opacity 0.09s linear, transform 0.09s linear;
         }
+        /* The marker row and chevron rise into place in lockstep with the title (same var, same
+           12px reveal distance) instead of sitting statically while only the title animates — that
+           mismatch was exactly why they only looked aligned once a title finished settling. */
+        .svc-journey-marker-row {
+          transform: translateY(calc((1 - var(--jtext-opacity, 0.15)) * 12px));
+          transition: transform 0.09s linear;
+        }
         .svc-journey-index {
           z-index: 1;
         }
@@ -130,8 +137,14 @@ export default function ServicesGrid() {
           opacity: var(--jnode-active, 0);
           transition: opacity 0.15s linear;
         }
+        .svc-journey-chevron {
+          transform: translate(-50%, calc(-50% + (1 - var(--jtext-opacity, 0.15)) * 12px));
+          transition: transform 0.09s linear;
+        }
         @media (prefers-reduced-motion: reduce) {
-          .svc-journey-text { opacity: 1 !important; transform: none !important; transition: none !important; }
+          .svc-journey-text,
+          .svc-journey-marker-row { opacity: 1 !important; transform: none !important; transition: none !important; }
+          .svc-journey-chevron { transform: translate(-50%, -50%) !important; transition: none !important; }
           .svc-journey-index-fill,
           .svc-journey-num-fill,
           .svc-journey-chevron-fill { opacity: 1 !important; }
@@ -207,7 +220,7 @@ export default function ServicesGrid() {
                       land on the same pixel — that assumption is exactly what broke the connector
                       before). The middle column is just a reserved gap; the chevron inside it is
                       positioned from the notch's own measured center, same reasoning as the spine. */}
-                  <div className="flex h-[14px] items-center gap-2 mt-0.5">
+                  <div className="svc-journey-marker-row flex h-[14px] items-center gap-2 mt-0.5">
                     <span className="relative w-6 shrink-0 text-right font-mono text-[11px] tracking-widest text-white/35">
                       <span className="svc-journey-num-fill absolute inset-0 text-primary">{num}</span>
                       <span className="relative">{num}</span>
@@ -221,7 +234,7 @@ export default function ServicesGrid() {
                     <h3 className="font-display font-bold text-lg text-white mb-1.5 leading-tight">{svc.title}</h3>
                     <p className="text-white/55 text-sm leading-relaxed">{svc.text}</p>
                   </div>
-                  <span className="svc-journey-chevron absolute left-[4.55rem] -translate-x-1/2 -translate-y-1/2 text-white/25 text-base leading-none pointer-events-none">
+                  <span className="svc-journey-chevron absolute left-[4.55rem] text-white/25 text-base leading-none pointer-events-none">
                     <span className="svc-journey-chevron-fill absolute inset-0 text-primary">&rsaquo;</span>
                     <span className="relative">&rsaquo;</span>
                   </span>

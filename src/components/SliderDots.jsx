@@ -13,29 +13,36 @@ export default function SliderDots({ length, active, onSelect, progressMs, pause
         const isPast = i < active
         const isActive = i === active
         return (
-          <button
-            key={i}
-            type="button"
-            onClick={() => onSelect(i)}
-            aria-label={`${label} ${i + 1}`}
-            className="relative h-[3px] w-8 sm:w-10 rounded-full overflow-hidden bg-divider"
-          >
-            {isPast && <span className="absolute inset-0 rounded-full bg-primary-dark" />}
+          // The glow lives on a sibling behind the button rather than on the button itself — the
+          // button needs overflow-hidden to clip its own fill bar to the rounded shape, which would
+          // just as happily clip a box-shadow glow into invisibility.
+          <span key={i} className="relative">
             {isActive && (
-              <span
-                key={progressMs ? active : 'static'}
-                className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-primary to-primary-light"
-                style={
-                  progressMs
-                    ? {
-                        animation: `slider-dot-fill ${progressMs}ms linear forwards`,
-                        animationPlayState: paused ? 'paused' : 'running',
-                      }
-                    : { width: '100%' }
-                }
-              />
+              <span className="absolute -inset-1.5 rounded-full bg-primary/50 blur-md pointer-events-none" />
             )}
-          </button>
+            <button
+              type="button"
+              onClick={() => onSelect(i)}
+              aria-label={`${label} ${i + 1}`}
+              className="relative h-[3px] w-8 sm:w-10 rounded-full overflow-hidden bg-divider"
+            >
+              {isPast && <span className="absolute inset-0 rounded-full bg-primary-dark" />}
+              {isActive && (
+                <span
+                  key={progressMs ? active : 'static'}
+                  className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-primary to-primary-light"
+                  style={
+                    progressMs
+                      ? {
+                          animation: `slider-dot-fill ${progressMs}ms linear forwards`,
+                          animationPlayState: paused ? 'paused' : 'running',
+                        }
+                      : { width: '100%' }
+                  }
+                />
+              )}
+            </button>
+          </span>
         )
       })}
     </div>
