@@ -81,20 +81,26 @@ void main() {
   vec3 goldTone = mix(goldDeep, goldMid, smoothstep(0.12, 0.5, n));
   goldTone = mix(goldTone, goldBright, smoothstep(0.56, 0.88, n) * 0.85);
 
-  // A short comet trail rather than a single glowing dot: uTrail holds the last ${TRAIL_LENGTH}
-  // eased cursor positions (newest first), each contributing a plain circular glow that shrinks and
-  // fades further back in the array — so the highlight visibly streaks behind the cursor's motion
-  // instead of just following it as one static shape.
+  // A continuous ribbon rather than stacked circles: uTrail holds the last ${TRAIL_LENGTH} eased
+  // cursor positions (newest first). Each consecutive pair forms a segment, and every pixel takes
+  // its distance to the *nearest point on that segment* (not just the endpoints) — so the glow
+  // tapers smoothly along the whole path instead of reading as a string of separate blobs.
   float mask = 0.0;
-  for (int i = 0; i < ${TRAIL_LENGTH}; i++) {
-    vec2 tp = uTrail[i];
-    tp.x *= aspect;
-    float d = length(p - tp);
-    float fi = float(i);
-    float weight = pow(0.72, fi);
-    float radius = mix(0.34, 0.16, fi / float(${TRAIL_LENGTH} - 1));
-    float m = smoothstep(radius, 0.0, d);
-    mask = max(mask, m * m * weight);
+  for (int i = 0; i < ${TRAIL_LENGTH - 1}; i++) {
+    vec2 a = uTrail[i];
+    a.x *= aspect;
+    vec2 b = uTrail[i + 1];
+    b.x *= aspect;
+    vec2 pa = p - a;
+    vec2 ba = b - a;
+    float baLen2 = dot(ba, ba);
+    float segT = baLen2 > 0.00001 ? clamp(dot(pa, ba) / baLen2, 0.0, 1.0) : 0.0;
+    float d = length(pa - ba * segT);
+    float globalT = (float(i) + segT) / float(${TRAIL_LENGTH - 1});
+    float width = mix(0.32, 0.05, globalT);
+    float intensity = pow(1.0 - globalT, 1.8);
+    float m = smoothstep(width, 0.0, d);
+    mask = max(mask, m * m * intensity);
   }
   mask *= uHover;
   vec3 color = mix(base, goldTone, mask);

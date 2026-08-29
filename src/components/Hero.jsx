@@ -26,10 +26,16 @@ export default function Hero() {
 
   return (
     <section id="home" ref={heroRef} className="relative min-h-[100dvh] w-full overflow-hidden">
-      {/* Background: animated grey flow-noise field with a gold glow that trails the cursor */}
+      {/* Background: animated grey flow-noise field with a gold glow that trails the cursor. The
+          fade-to-deep is deliberately concentrated in the bottom ~35% (explicit stops, not Tailwind's
+          default 0/50/100 split) so most of the hero shows the shader clearly instead of darkening
+          well before the actual section boundary. */}
       <div className="absolute inset-0">
         <HeroShaderBackground />
-        <div className="absolute inset-0 bg-gradient-to-t from-deep via-deep/25 to-transparent" />
+        <div
+          className="absolute inset-0"
+          style={{ background: 'linear-gradient(to top, #0F0F12 0%, rgba(15,15,18,0.35) 14%, rgba(15,15,18,0) 38%)' }}
+        />
       </div>
 
       {/* Top frame */}
