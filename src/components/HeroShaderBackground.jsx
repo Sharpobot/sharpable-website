@@ -14,13 +14,11 @@ void main() {
 }
 `
 
-const TRAIL_LENGTH = 8
-
 const FRAGMENT_SRC = `
 precision highp float;
 uniform vec2 uResolution;
 uniform float uTime;
-uniform vec2 uTrail[${TRAIL_LENGTH}];
+uniform vec2 uMouse;
 uniform float uHover;
 
 float hash(vec2 p) {
@@ -81,28 +79,11 @@ void main() {
   vec3 goldTone = mix(goldDeep, goldMid, smoothstep(0.12, 0.5, n));
   goldTone = mix(goldTone, goldBright, smoothstep(0.56, 0.88, n) * 0.85);
 
-  // A continuous ribbon rather than stacked circles: uTrail holds the last ${TRAIL_LENGTH} eased
-  // cursor positions (newest first). Each consecutive pair forms a segment, and every pixel takes
-  // its distance to the *nearest point on that segment* (not just the endpoints) — so the glow
-  // tapers smoothly along the whole path instead of reading as a string of separate blobs.
-  float mask = 0.0;
-  for (int i = 0; i < ${TRAIL_LENGTH - 1}; i++) {
-    vec2 a = uTrail[i];
-    a.x *= aspect;
-    vec2 b = uTrail[i + 1];
-    b.x *= aspect;
-    vec2 pa = p - a;
-    vec2 ba = b - a;
-    float baLen2 = dot(ba, ba);
-    float segT = baLen2 > 0.00001 ? clamp(dot(pa, ba) / baLen2, 0.0, 1.0) : 0.0;
-    float d = length(pa - ba * segT);
-    float globalT = (float(i) + segT) / float(${TRAIL_LENGTH - 1});
-    float width = mix(0.32, 0.05, globalT);
-    float intensity = pow(1.0 - globalT, 1.8);
-    float m = smoothstep(width, 0.0, d);
-    mask = max(mask, m * m * intensity);
-  }
-  mask *= uHover;
+  vec2 mp = uMouse;
+  mp.x *= aspect;
+  float dist = length(p - mp);
+  float mask = smoothstep(0.34, 0.0, dist);
+  mask = mask * mask * uHover;
   vec3 color = mix(base, goldTone, mask);
 
   float vignette = smoothstep(1.05, 0.35, length(uv - 0.5));
@@ -156,7 +137,7 @@ export default function HeroShaderBackground() {
 
     const uResolution = gl.getUniformLocation(program, 'uResolution')
     const uTime = gl.getUniformLocation(program, 'uTime')
-    const uTrail = gl.getUniformLocation(program, 'uTrail')
+    const uMouse = gl.getUniformLocation(program, 'uMouse')
     const uHover = gl.getUniformLocation(program, 'uHover')
 
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -164,13 +145,11 @@ export default function HeroShaderBackground() {
     const state = {
       mouseTarget: [0.5, 0.35],
       mouse: [0.5, 0.35],
-      trail: Array.from({ length: TRAIL_LENGTH }, () => [0.5, 0.35]),
       hoverTarget: 0,
       hover: 0,
       width: 0,
       height: 0,
     }
-    const trailBuffer = new Float32Array(TRAIL_LENGTH * 2)
 
     const resize = () => {
       const rect = canvas.getBoundingClientRect()
@@ -209,18 +188,9 @@ export default function HeroShaderBackground() {
       state.mouse[1] += (state.mouseTarget[1] - state.mouse[1]) * 0.07
       state.hover += (state.hoverTarget - state.hover) * 0.08
 
-      // Trail: each frame's eased position gets pushed onto a short history, so the comet tail is
-      // built from where the (already-lagging) glow has recently been, not just the live cursor.
-      state.trail.pop()
-      state.trail.unshift([state.mouse[0], state.mouse[1]])
-      for (let i = 0; i < TRAIL_LENGTH; i++) {
-        trailBuffer[i * 2] = state.trail[i][0]
-        trailBuffer[i * 2 + 1] = state.trail[i][1]
-      }
-
       gl.uniform2f(uResolution, state.width, state.height)
       gl.uniform1f(uTime, t)
-      gl.uniform2fv(uTrail, trailBuffer)
+      gl.uniform2f(uMouse, state.mouse[0], state.mouse[1])
       gl.uniform1f(uHover, state.hover)
       gl.drawArrays(gl.TRIANGLES, 0, 3)
 
