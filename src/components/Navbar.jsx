@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
-import { ArrowUpRight, Languages, Menu, Sparkles, X } from 'lucide-react'
+import { ArrowUpRight, Languages, Menu, X } from 'lucide-react'
 import { useLanguage } from '../useLanguage.js'
+import Logo from './Logo.jsx'
 
 export default function Navbar() {
   const { t, lang, toggleLang } = useLanguage()
@@ -57,18 +58,8 @@ export default function Navbar() {
         style={{ transform: 'translate3d(-50%, 0, 0)' }}
       >
         <div className="flex items-center justify-between gap-6">
-          <a href="#home" className="flex items-center gap-2 group">
-            <span className="relative flex h-9 w-9 items-center justify-center rounded-full bg-primary">
-              <Sparkles className="h-5 w-5 text-deep" strokeWidth={2.4} />
-              <span className="absolute inset-0 rounded-full ring-2 ring-primary/30 group-hover:ring-primary/50 transition" />
-            </span>
-            <span
-              className={`font-display font-bold tracking-tight text-lg ${
-                scrolled ? 'text-ink' : 'text-white'
-              } transition-colors`}
-            >
-              Sharpable
-            </span>
+          <a href="#home" className="flex items-center group">
+            <Logo className="h-8" />
           </a>
 
           <div className="hidden lg:flex items-center gap-6">
@@ -157,7 +148,7 @@ export default function Navbar() {
             }`}
             style={{ transitionDelay: open ? '140ms' : '0ms' }}
           >
-            <span className="font-display font-bold text-xl text-ink">Sharpable</span>
+            <Logo className="h-7" />
             <button onClick={() => setOpen(false)} className="p-2 rounded-full bg-divider/40">
               <X className="h-5 w-5" />
             </button>

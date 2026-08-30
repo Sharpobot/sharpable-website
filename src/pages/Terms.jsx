@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
-import { ArrowLeft, Sparkles } from 'lucide-react'
+import { ArrowLeft } from 'lucide-react'
 import { useLegalPageTransition } from './useLegalPageTransition.js'
+import Logo from '../components/Logo.jsx'
 
 export default function Terms() {
   const { pageClassName, handleBack } = useLegalPageTransition()
@@ -14,10 +15,7 @@ export default function Terms() {
         </Link>
 
         <div className="flex items-center gap-2 mb-6">
-          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-primary">
-            <Sparkles className="h-5 w-5 text-deep" strokeWidth={2.4} />
-          </span>
-          <span className="font-display font-bold text-lg">Sharpable</span>
+          <Logo className="h-8" />
         </div>
 
         <h1 className="font-display font-extrabold text-4xl sm:text-5xl tracking-tight mb-3">Terms of Service</h1>

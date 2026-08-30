@@ -1,7 +1,8 @@
 import { Link } from 'react-router-dom'
-import { ArrowRight, Sparkles } from 'lucide-react'
+import { ArrowRight } from 'lucide-react'
 import { useLanguage } from '../useLanguage.js'
 import { HOME_SCROLL_KEY } from '../scrollRestore.js'
+import Logo from './Logo.jsx'
 
 // A route change in this SPA doesn't reset scroll position on its own, so leaving from way down
 // the (long) home page and coming straight back via "Back to home" would otherwise land back at
@@ -21,7 +22,7 @@ export default function Footer() {
         <div className="border-b border-white/10 pb-12 mb-12">
           <h2 className="font-display font-extrabold text-5xl sm:text-7xl md:text-8xl leading-[0.92] tracking-tight">
             {t.footer.heading1}
-            <span className="font-serif italic font-medium text-primary block text-6xl sm:text-8xl md:text-9xl">{t.footer.heading2}</span>
+            <Logo gold alt={t.footer.heading2} className="!block mt-2 h-14 sm:h-24 md:h-32 text-primary" />
           </h2>
           <div className="flex flex-col sm:flex-row sm:items-end justify-between mt-8 gap-6">
             <p className="text-white/50 max-w-md">
@@ -37,10 +38,7 @@ export default function Footer() {
         <div className="grid grid-cols-2 lg:grid-cols-5 gap-10">
           <div className="col-span-2">
             <div className="flex items-center gap-2 mb-4">
-              <span className="h-9 w-9 rounded-full bg-primary flex items-center justify-center">
-                <Sparkles className="h-5 w-5 text-deep" strokeWidth={2.4} />
-              </span>
-              <span className="font-display font-bold text-lg">Sharpable</span>
+              <Logo className="h-8" />
             </div>
             <p className="text-white/50 text-sm leading-relaxed max-w-xs">
               {t.footer.brandBlurb}

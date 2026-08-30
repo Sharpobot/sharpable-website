@@ -114,6 +114,7 @@ divider: '#38383D'          // hairline borders
   - **Shape/motion history — worth knowing before trying either again**: two different embellishments were built on top of the plain circular glow and **both were tried and explicitly reverted per feedback**, so don't re-add either without asking first. (1) An organic "morphing blob" edge — the mask distance was perturbed by noise sampled around the angle from the cursor (`atan(toMouse.y, toMouse.x)`) so the boundary slowly wobbled even with the cursor still. Reverted when a comet trail was requested instead ("boring... make it dynamic" led to the wobble; a later ask to add a trail explicitly said to put the *shape* back to a plain circle first). (2) A comet trail — first as `TRAIL_LENGTH=8` discrete stacked circles (`max()` of per-point `smoothstep` masks, decreasing radius/weight going back in the array), then refined into a genuinely continuous ribbon (each pixel's distance to the *nearest point on the segment* between consecutive trail positions, not just the discrete points, tapering `width`/`intensity` by the segment's interpolated position `globalT` along the whole path — verified via `gl.readPixels` on a simulated diagonal trail to confirm the brightness fell off smoothly and monotonically, e.g. `240→158→77→44→36`, not in visible steps). **Explicitly undone per feedback** ("doesn't look very good") back to the original single easing point (`uMouse`, not an array) with no distance perturbation — the current shader has no `uTrail` uniform and no trail/wobble code at all. If asked to revisit either direction again, the git history around the "hero comet trail" / "hero glow rework" commits has both full implementations to start from rather than reinventing them.
   - **Bottom gradient overlay** (the `<div>` sitting on top of `HeroShaderBackground` in `Hero.jsx`) uses an inline `style={{ background: 'linear-gradient(...) }}` with **explicit stop percentages** (`#0F0F12 0%, rgba(15,15,18,0.35) 14%, rgba(15,15,18,0) 38%`) rather than Tailwind's `bg-gradient-to-t from-deep via-deep/25 to-transparent` (which defaults to an even 0/50/100 stop split) — the default split was darkening the shader by the vertical middle of the hero, well before the section's actual bottom edge, per "it fades too early" feedback. Concentrating the fade into roughly the bottom third leaves most of the hero showing the shader clearly. If asked to push it further in either direction, adjust the `14%`/`38%` stop positions directly (the hex/rgba color values don't need to change, just where they land).
   - **Decorative floating-spark dots removed** — three small `animate-float` dots that predated the shader background were dropped once the animated background made them redundant/visually competing.
+- **`Logo`** (`src/components/Logo.jsx`) — the real Sharpable wordmark (a white PNG, transparent background, hosted on the `da3lqh4dl` Cloudinary account, natural ratio ≈2.95:1) replacing the earlier gold-circle + `Sparkles`-icon placeholder lockup. Used in `Navbar` (desktop lockup + mobile menu header), `Footer` (brand block), `PrivacyPolicy`, and `Terms` — all as the plain white `<img>` default. A `gold` prop switches to a recolored variant for the Footer's big "Let's make it **Sharpable**" accent heading: instead of an `<img>`, it renders the same PNG as a `mask-image`/`-webkit-mask-image` on a `background-color: currentColor` element, so it inherits whatever `text-*` class is applied (`text-primary` here) — an exact color match with no filter/hue-tuning needed, unlike trying to tint a white image with CSS `filter`. That variant needs an explicit `aspectRatio` style (a masked element has no intrinsic size the way an `<img>` does) and `!block` on the consumer's className to reliably force it onto its own line — Tailwind's own `inline-block` vs `block` utility classes have equal specificity, so which one wins isn't determined by their order in the JSX, only by `!important`. The heading's old trailing period (`t.footer.heading2` is literally `"Sharpable."`) was dropped rather than kept as separate punctuation after the image — that translation key is now only read for the image's `alt`/`aria-label`. There's no graphic/icon logo yet (only this text wordmark) — see the "Original placeholder logo" backup further down this file if a future icon logo needs to restore the old circle-icon lockup shape.
 - **`Navbar`** — mobile floating-pill nav could visibly clip/jump during scroll on some mobile browsers as their address bar auto-hides (a real cross-browser rendering quirk, not device-specific): `html`/`body` overflow handling and `position: fixed` interact in ways that make the fixed nav's containing-block resolution unstable mid-scroll. Fixed several ways over time: (1) `overflow-x: hidden` moved from `body` to `html` in `index.css` (the combination of `overflow-x:hidden` on `body` specifically plus `position:fixed` descendants is the more failure-prone pairing on WebKit); (2) the nav itself is forced onto its own GPU-composited layer via an explicit `translate3d(-50%, 0, 0)` inline transform (replacing the old `-translate-x-1/2` Tailwind class, which resolves to a 2D-only transform) plus `will-change-transform`; (3) most recently, the nav's own transform is continuously synced to `window.visualViewport.offsetTop` via a `resize`/`scroll` listener on `visualViewport` — mobile browsers resize the *visual* viewport separately from the *layout* viewport during the address-bar collapse animation, and a plain `position:fixed` element (anchored to the layout viewport) can visibly shift/clip against that mismatch on some browsers; compensating with the real `visualViewport.offsetTop` keeps it pinned to the actual visible top edge regardless of how the browser chrome animates. This class of bug is inherently hard to fully verify in this tool's Browser pane (no real mobile browser chrome to animate), so treat the `visualViewport` fix as the best-reasoned defensive fix rather than something visually confirmed here.
 - **Mobile menu** (in `Navbar.jsx`) — the slide-down panel uses a `clip-path: inset(0 0 X% 0)` reveal (growing down from the top edge, "a frame dropping down") rather than a `translateY` slide, so it doesn't read as the whole rectangle flying in from off-screen. The dimmed backdrop has its own separate `opacity` transition, deliberately decoupled from the panel so the two don't visually blend into one generic fade. **Content inside the panel** (header row, each nav link, the CTA) fades/drops in with a **staggered `transitionDelay`** (starting ~140ms after the clip-path reveal begins, +40ms per subsequent row) rather than appearing instantly wherever the clip boundary happens to have reached — this is what reads as "depth" instead of content being flatly stuck to the revealing frame. Close (`open` → `false`) resets `transitionDelay` to `0ms` so the content doesn't lag on the way out.
 - **`DesignShuffler`, `BuildScanner`, `StrategyScheduler`** (inside `Features`) — three self-contained decorative widgets, each auto-cycling on its own `setInterval` to simulate a "live product" (shuffling mockup cards, a fake CI build pipeline, an animated calendar-booking flow). None use GSAP — plain CSS transitions/keyframes and React state.
@@ -161,6 +162,54 @@ divider: '#38383D'          // hairline borders
 ## Layout Backups / Alternates
 
 Kept here so a previous layout can be restored on request without digging through git history. The full pre-redesign state is also always retrievable via `git show 276ebc4:src/App.jsx` (the commit right before the hero/copy/polish pass).
+
+### Original placeholder logo (circle icon + Sparkles + text)
+
+Replaced (2026) once the real wordmark PNG became available (see the `Logo` entry in Notable Component Behaviors above) — we only have a text logo so far, no graphic/icon mark. If a graphic icon logo is designed in the future, restore this shape (swap the `lucide-react` `Sparkles` icon for the real one) rather than reinventing the icon-slot placement from scratch — the exact sizing (`h-9 w-9` icon, `gap-2`, `text-lg` wordmark) is what was tuned to fit the navbar/footer/legal-page contexts. All five spots below imported `Sparkles` from `lucide-react` — restore that import too if reverting.
+
+**`Navbar.jsx` desktop lockup:**
+```jsx
+<a href="#home" className="flex items-center gap-2 group">
+  <span className="relative flex h-9 w-9 items-center justify-center rounded-full bg-primary">
+    <Sparkles className="h-5 w-5 text-deep" strokeWidth={2.4} />
+    <span className="absolute inset-0 rounded-full ring-2 ring-primary/30 group-hover:ring-primary/50 transition" />
+  </span>
+  <span
+    className={`font-display font-bold tracking-tight text-lg ${
+      scrolled ? 'text-ink' : 'text-white'
+    } transition-colors`}
+  >
+    Sharpable
+  </span>
+</a>
+```
+
+**`Navbar.jsx` mobile menu header** (no icon, text only):
+```jsx
+<span className="font-display font-bold text-xl text-ink">Sharpable</span>
+```
+
+**`Footer.jsx` brand block:**
+```jsx
+<div className="flex items-center gap-2 mb-4">
+  <span className="h-9 w-9 rounded-full bg-primary flex items-center justify-center">
+    <Sparkles className="h-5 w-5 text-deep" strokeWidth={2.4} />
+  </span>
+  <span className="font-display font-bold text-lg">Sharpable</span>
+</div>
+```
+
+**`PrivacyPolicy.jsx` / `Terms.jsx` header lockup** (identical in both files):
+```jsx
+<div className="flex items-center gap-2 mb-6">
+  <span className="flex h-9 w-9 items-center justify-center rounded-full bg-primary">
+    <Sparkles className="h-5 w-5 text-deep" strokeWidth={2.4} />
+  </span>
+  <span className="font-display font-bold text-lg">Sharpable</span>
+</div>
+```
+
+The Footer's big gold "Let's make it **Sharpable**" heading didn't use this icon lockup (it was plain text, `<span className="font-serif italic font-medium text-primary block text-6xl sm:text-8xl md:text-9xl">{t.footer.heading2}</span>`) — restoring that instance just means reverting to that span instead of `<Logo gold ... />`, no icon involved.
 
 ### Original centered Hero (pre "IntelliAgents-style" desktop layout)
 
