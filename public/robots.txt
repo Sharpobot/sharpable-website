@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://sharpable.com/sitemap.xml
+Sitemap: https://sharpable.netlify.app/sitemap.xml
