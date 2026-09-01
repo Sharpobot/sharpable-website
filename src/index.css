@@ -3,8 +3,15 @@
 @tailwind utilities;
 
 @layer base {
+  /* overflow-x:hidden on html alone doesn't reliably stop this: the page has decorative blur/glow
+     elements that intentionally bleed past the viewport edge, and in at least one browser engine that
+     real (if visually clipped) horizontal overflow was still inflating the "layout viewport" that
+     `window.innerWidth` and a `position:fixed` element's containing block resolve against — by
+     exactly the overflow amount, ~12px in testing. That silently pushed the mobile navbar off-center
+     and let its right edge/border fall past the true edge and get clipped. Setting overflow-x:hidden
+     on body too (not just html) is the standard fix for this specific class of bug. */
   html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; overflow-x: hidden; }
-  body { @apply bg-background text-ink font-body; }
+  body { @apply bg-background text-ink font-body; overflow-x: hidden; }
   ::selection { background-color: #FFC629; color: #0F0F12; }
   ::-webkit-scrollbar { width: 3px; }
   ::-webkit-scrollbar-track { background: #16161A; }

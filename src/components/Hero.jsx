@@ -44,7 +44,7 @@ export default function Hero() {
       {/* Content */}
       <div className="relative z-10 flex min-h-[100dvh] flex-col items-center justify-center text-center lg:text-left">
         <div className="w-full px-6 sm:px-10 lg:px-16 max-w-4xl lg:max-w-7xl lg:mx-auto lg:pt-32 lg:pb-20">
-          <p className="hero-meta font-mono text-xs uppercase tracking-[0.3em] text-white/60 mb-6">
+          <p className="hero-meta font-mono text-[11px] sm:text-xs uppercase tracking-[0.12em] sm:tracking-[0.3em] text-white/60 mb-6">
             {t.hero.eyebrow}
           </p>
           <h1 className="font-display font-extrabold text-white leading-[0.95] tracking-tight">
