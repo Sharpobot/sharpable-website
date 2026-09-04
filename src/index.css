@@ -8,10 +8,25 @@
      real (if visually clipped) horizontal overflow was still inflating the "layout viewport" that
      `window.innerWidth` and a `position:fixed` element's containing block resolve against — by
      exactly the overflow amount, ~12px in testing. That silently pushed the mobile navbar off-center
-     and let its right edge/border fall past the true edge and get clipped. Setting overflow-x:hidden
-     on body too (not just html) is the standard fix for this specific class of bug. */
+     and let its right edge/border fall past the true edge and get clipped. Containing it on body too
+     (not just html) is the fix for that class of bug — but doing it with `overflow-x: hidden` on BOTH
+     html and body broke something unrelated and much worse: EVERY `position: sticky` element on the
+     page silently stopped sticking (Protocol's scroll-stacking cards rendered fully flat/overlapping,
+     with no scroll-driven separation at all). Root cause: setting a non-'visible' overflow on `body`
+     makes body itself register as an ancestor "scroll container" per spec, even though the page's
+     real scrolling happens on `html` (confirmed via `document.scrollingElement === document.documentElement`)
+     — body never actually scrolls, so any sticky descendant computing its stuck position against
+     that non-scrolling container never sees a reason to un-stick, and just sits static instead.
+     `overflow-x: clip` fixes this: it contains overflow exactly like `hidden` (verified: zero
+     horizontal page overflow either way, `scrollWidth` stays within `innerWidth`), but per spec does
+     NOT establish a scroll container, so it doesn't create that same conflict. Verified before/after
+     with real `getBoundingClientRect()` numbers on a scrolled-past sticky card: with `hidden` on body,
+     the card's rectTop moved in exact lockstep with scrollY (i.e. not sticking at all); with `clip`,
+     it correctly clamped to its intended `top` offset. If this line is ever touched again, re-verify
+     both things together — zero page-level horizontal overflow AND that a `position:sticky` element
+     actually clamps once scrolled past — not just one or the other. */
   html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; overflow-x: hidden; }
-  body { @apply bg-background text-ink font-body; overflow-x: hidden; }
+  body { @apply bg-background text-ink font-body; overflow-x: clip; }
   ::selection { background-color: #FFC629; color: #0F0F12; }
   ::-webkit-scrollbar { width: 3px; }
   ::-webkit-scrollbar-track { background: #16161A; }

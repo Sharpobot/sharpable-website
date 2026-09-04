@@ -38,7 +38,7 @@ export default function Footer() {
         <div className="grid grid-cols-2 lg:grid-cols-5 gap-10">
           <div className="col-span-2">
             <div className="flex items-center gap-2 mb-4">
-              <Logo className="h-8" />
+              <Logo className="h-6" />
             </div>
             <p className="text-white/50 text-sm leading-relaxed max-w-xs">
               {t.footer.brandBlurb}

@@ -79,6 +79,7 @@ export default function Navbar() {
     { label: t.nav.process, href: '#process' },
     { label: t.nav.work, href: '#work' },
     { label: t.nav.transformation, href: '#transformation' },
+    { label: t.nav.testimonials, href: '#testimonials' },
     { label: t.nav.contact, href: '#contact' },
   ]
 
@@ -125,7 +126,7 @@ export default function Navbar() {
       >
         <div className="flex items-center justify-between gap-6">
           <a href="#home" className="flex items-center group">
-            <Logo className="h-8" />
+            <Logo className="h-6" />
           </a>
 
           <div className="hidden lg:flex items-center gap-6">
@@ -188,72 +189,95 @@ export default function Navbar() {
         </div>
       </nav>
 
-      {/* Mobile menu — the panel reveals like a frame dropping down (clip-path growing from the
-          top edge) rather than the whole rectangle sliding + fading in from off-screen; the dimmed
-          backdrop still gets its own simple opacity fade, decoupled from the panel's own animation. */}
+      {/* Mobile menu — "Editorial Index": a full-screen takeover (scale+fade in from its own resting
+          size, not a panel sliding over the page) rather than the old frame-drop-from-the-top-edge
+          reveal, picked from the Mobile Menu Concepts exploration gallery. Numbered rows (the numbers
+          are real — they're each link's actual position in the page, not decoration) replace the
+          plain list, and the graphic mark appears once, huge and barely-there, as a background
+          watermark instead of a small header logo — see the `mono` Logo variant above for why it's
+          recolored to a neutral tone instead of staying gold. Because the panel is fully opaque and
+          covers the entire screen (including the navbar's own hamburger-turned-X, which sits at a
+          lower z-index and gets visually covered once this opens), it needs its own explicit close
+          button — the exact bug this exploration's gallery hit and fixed, ported straight into the
+          real implementation rather than rediscovering it here. */}
       <div
         ref={menuRef}
         className={`fixed inset-0 z-[60] lg:hidden will-change-transform ${open ? 'pointer-events-auto' : 'pointer-events-none'}`}
       >
         <div
-          className={`absolute inset-0 bg-deep/90 backdrop-blur-2xl transition-opacity duration-300 ${
-            open ? 'opacity-100' : 'opacity-0'
+          className={`absolute inset-0 bg-background overflow-hidden transition-[opacity,transform] duration-[450ms] ease-out ${
+            open ? 'opacity-100 scale-100 pointer-events-auto' : 'opacity-0 scale-[0.97] pointer-events-none'
           }`}
-          onClick={() => setOpen(false)}
-        />
-        <div
-          className="absolute top-0 left-0 right-0 bg-background rounded-b-5xl px-6 pt-[clamp(1.25rem,3.4dvh,2rem)] pb-[clamp(1.5rem,5.2dvh,3rem)] max-h-[100dvh] overflow-y-auto"
-          style={{
-            clipPath: open ? 'inset(0 0 0% 0)' : 'inset(0 0 100% 0)',
-            transition: 'clip-path 0.55s cubic-bezier(0.65, 0, 0.35, 1)',
-          }}
         >
-          {/* Content fades/drops in a beat after the frame starts revealing (staggered per row),
-              rather than just appearing wherever the clip boundary happens to have reached — that
-              extra lag is what reads as depth instead of the content being flatly stuck to the frame.
-              Link font-size/padding and the header/CTA margins use clamp() tied to dvh rather than a
-              fixed size: on a short screen (e.g. a 667px-tall iPhone SE) the fixed sizing used to make
-              the whole 7-link list + CTA overflow into an immediate scroll, while the same fixed sizing
-              left a tall screen (e.g. 926px) looking spacious and well-proportioned. Scaling with
-              viewport height keeps the panel feeling similarly proportioned across both instead of
-              only being tuned for one. */}
+          {/* Background watermark: sized off viewport width (not height) so it scales down cleanly on
+              narrow phones without needing its own dvh clamp — it's purely decorative and doesn't
+              consume any of the vertical budget the content below is fighting for. `text-white/[0.035]`
+              (nudged down from an initial 0.06 on request — "a little more subtle") rather than any of
+              the site's real gold tokens is the "cemented in stone" ask — a plain lightness difference
+              against the dark background reads as carved texture, not a brand color trying to be noticed. */}
           <div
-            className={`flex items-center justify-between mb-[clamp(1.5rem,4.2dvh,2.5rem)] transition-all duration-[400ms] ease-out ${
-              open ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2'
-            }`}
-            style={{ transitionDelay: open ? '140ms' : '0ms' }}
+            aria-hidden="true"
+            className="pointer-events-none absolute -right-[14%] -bottom-[8%] w-[68vw] max-w-[380px] text-white/[0.035]"
           >
-            <Logo className="h-7" />
-            <button onClick={() => setOpen(false)} className="p-2 rounded-full bg-divider/40">
-              <X className="h-5 w-5" />
-            </button>
+            <Logo iconOnly mono alt="" className="w-full" />
           </div>
-          <div className="flex flex-col gap-1">
-            {NAV_LINKS.map((link, i) => (
-              <a
-                key={link.href}
-                href={link.href}
-                onClick={() => setOpen(false)}
-                className={`font-display text-[clamp(1.375rem,3.8dvh,1.875rem)] font-semibold text-ink py-[clamp(0.5rem,1.6dvh,0.75rem)] border-b border-divider transition-all duration-[400ms] ease-out ${
-                  open ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2'
-                }`}
-                style={{ transitionDelay: open ? `${180 + i * 40}ms` : '0ms' }}
-              >
-                {link.label}
-              </a>
-            ))}
-          </div>
-          <a
-            href="#contact"
+
+          {/* Positioned to land almost exactly where the hamburger-turned-X sits in the navbar itself
+              (measured via getBoundingClientRect: ~26px from the top, ~24px from the right, at every
+              scroll state) rather than a separately-eyeballed corner offset — so opening/closing the
+              menu doesn't read as the close control jumping to a different spot than the button that
+              opened it. */}
+          <button
             onClick={() => setOpen(false)}
-            className={`mt-[clamp(1rem,3.4dvh,2rem)] magnetic-btn flex items-center justify-center gap-2 bg-primary text-deep px-6 py-[clamp(0.625rem,1.8dvh,1rem)] rounded-full font-semibold w-full transition-all duration-[400ms] ease-out ${
-              open ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2'
+            aria-label="Close menu"
+            className={`absolute top-[26px] right-6 z-10 p-2 rounded-full bg-divider/40 transition-all duration-300 ease-out ${
+              open ? 'opacity-100 scale-100' : 'opacity-0 scale-90'
             }`}
-            style={{ transitionDelay: open ? `${180 + NAV_LINKS.length * 40 + 40}ms` : '0ms' }}
+            style={{ transitionDelay: open ? '120ms' : '0ms' }}
           >
-            {t.nav.cta}
-            <ArrowUpRight className="h-4 w-4" />
-          </a>
+            <X className="h-5 w-5 text-ink" />
+          </button>
+
+          {/* Vertically centers the link list + CTA as one group in the available height (rather than
+              anchoring it near the top, which read as "too high up" against the close button sitting
+              well above it) — `min-h-full` on the inner flex column is what lets `justify-center` work
+              at all inside a scrollable ancestor, and the scroll/overflow stays as a fallback for any
+              screen too short to fit everything centered, not the primary layout mechanism. */}
+          <div className="relative z-[1] h-full overflow-y-auto px-6">
+            <div className="min-h-full flex flex-col justify-center py-[clamp(4rem,14dvh,5rem)]">
+              <div className="flex flex-col">
+                {NAV_LINKS.map((link, i) => (
+                  <a
+                    key={link.href}
+                    href={link.href}
+                    onClick={() => setOpen(false)}
+                    className={`flex items-baseline gap-3 py-[clamp(0.45rem,1.7dvh,0.85rem)] border-b border-divider transition-all duration-[500ms] ease-out ${
+                      open ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4'
+                    }`}
+                    style={{ transitionDelay: open ? `${140 + i * 45}ms` : '0ms' }}
+                  >
+                    <span className="font-mono text-[clamp(0.68rem,1.7dvh,0.85rem)] text-primary-dark">
+                      {String(i + 1).padStart(2, '0')}
+                    </span>
+                    <span className="font-display font-semibold text-[clamp(1.2rem,3.35dvh,1.875rem)] text-ink">
+                      {link.label}
+                    </span>
+                  </a>
+                ))}
+              </div>
+              <a
+                href="#contact"
+                onClick={() => setOpen(false)}
+                className={`mt-[clamp(1rem,3.4dvh,2rem)] magnetic-btn flex items-center justify-center gap-2 bg-primary text-deep px-6 py-[clamp(0.5rem,1.6dvh,1rem)] rounded-full font-semibold w-full transition-all duration-[500ms] ease-out ${
+                  open ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4'
+                }`}
+                style={{ transitionDelay: open ? `${140 + NAV_LINKS.length * 45 + 40}ms` : '0ms' }}
+              >
+                {t.nav.cta}
+                <ArrowUpRight className="h-4 w-4" />
+              </a>
+            </div>
+          </div>
         </div>
       </div>
     </>

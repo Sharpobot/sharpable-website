@@ -15,7 +15,7 @@ export default function PrivacyPolicy() {
         </Link>
 
         <div className="flex items-center gap-2 mb-6">
-          <Logo className="h-8" />
+          <Logo className="h-6" />
         </div>
 
         <h1 className="font-display font-extrabold text-4xl sm:text-5xl tracking-tight mb-3">Privacy Policy</h1>

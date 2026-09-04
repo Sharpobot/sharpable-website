@@ -4,11 +4,20 @@ import { ArrowRight, Phone } from 'lucide-react'
 import { useLanguage } from '../useLanguage.js'
 import HeroShaderBackground from './HeroShaderBackground.jsx'
 
-export default function Hero() {
+export default function Hero({ canAnimate }) {
   const { t } = useLanguage()
   const heroRef = useRef(null)
 
+  // Gated on `canAnimate` (from App.jsx, via LoadingScreen's `onDone`) rather than firing
+  // unconditionally on mount — this section is above the fold, so unlike every other section's
+  // scroll-triggered reveal (`start: 'top 90%'`, only fires once actually scrolled to), this one
+  // used to start the instant the component mounted, which is *before* the page is even visible
+  // (`App.jsx` keeps everything `visibility: hidden` until layout settles). That meant this whole
+  // ~1.6s entrance was very likely finishing unseen, behind the hidden page, before anyone ever
+  // saw it. Now it starts exactly when it's safe to: once the loading screen (if one showed at
+  // all) has fully faded out, not a moment before.
   useEffect(() => {
+    if (!canAnimate) return
     const ctx = gsap.context(() => {
       gsap.from('.hero-line-1', { y: 40, opacity: 0, duration: 1, ease: 'power3.out', delay: 0.3 })
       gsap.from('.hero-line-2', { y: 60, opacity: 0, duration: 1.2, ease: 'power3.out', delay: 0.5 })
@@ -22,7 +31,7 @@ export default function Hero() {
       })
     }, heroRef)
     return () => ctx.revert()
-  }, [])
+  }, [canAnimate])
 
   return (
     <section id="home" ref={heroRef} className="relative min-h-[100dvh] w-full overflow-hidden">

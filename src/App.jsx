@@ -2,6 +2,7 @@ import { useEffect, useLayoutEffect, useState } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { HOME_SCROLL_KEY } from './scrollRestore.js'
+import LoadingScreen from './components/LoadingScreen.jsx'
 import Navbar from './components/Navbar.jsx'
 import Hero from './components/Hero.jsx'
 import Features from './components/Features.jsx'
@@ -23,6 +24,12 @@ export default function App() {
   // visibility. That's what makes the hidden state below actually prevent a flash rather than just
   // shorten one: by the time anything paints, this is already settled.
   const [ready, setReady] = useState(() => sessionStorage.getItem(HOME_SCROLL_KEY) === null)
+
+  // Gates entrance animations (currently just Hero's) so they never run underneath, or crossfade
+  // with, the loading screen — set true only once LoadingScreen has fully resolved (either it
+  // finished its own fade-out, or it never showed at all because the page was already ready before
+  // the loader's own show-delay elapsed). See CLAUDE.md's "Loading screen" entry.
+  const [canAnimate, setCanAnimate] = useState(false)
 
   // Restores the scroll position Footer.jsx stashed right before navigating to /privacy or /terms —
   // without this, coming back via "Back to home" always lands at the top instead of where the user
@@ -100,22 +107,25 @@ export default function App() {
   }, [])
 
   return (
-    <div className="relative" style={{ visibility: ready ? 'visible' : 'hidden' }}>
-      <div className="noise-overlay" />
-      <Navbar />
-      <main>
-        <Hero />
-        <Features />
-        <Pillars />
-        <Protocol />
-        <ServicesGrid />
-        <Work />
-        <Transformation />
-        <Testimonials />
-        <TrustSignals />
-        <ContactForm />
-      </main>
-      <Footer />
-    </div>
+    <>
+      <LoadingScreen appReady={ready} onDone={() => setCanAnimate(true)} />
+      <div className="relative" style={{ visibility: ready ? 'visible' : 'hidden' }}>
+        <div className="noise-overlay" />
+        <Navbar />
+        <main>
+          <Hero canAnimate={canAnimate} />
+          <Features />
+          <Pillars />
+          <Protocol />
+          <ServicesGrid />
+          <Work />
+          <Transformation />
+          <Testimonials />
+          <TrustSignals />
+          <ContactForm />
+        </main>
+        <Footer />
+      </div>
+    </>
   )
 }
