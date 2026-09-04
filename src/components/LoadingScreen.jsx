@@ -146,10 +146,10 @@ export default function LoadingScreen({ appReady, onDone }) {
       className="fixed inset-0 z-[100] bg-background flex flex-col items-center justify-center gap-2 pointer-events-none transition-opacity"
       style={{ opacity: fadingOut ? 0 : 1, transitionDuration: `${FADE_MS}ms` }}
     >
-      <div className="w-20 h-[2px] rounded-full bg-divider/50 overflow-hidden">
+      <div className="w-36 h-[3px] rounded-full bg-divider/50 overflow-hidden">
         <div className="h-full rounded-full bg-primary" style={{ width: `${pct}%` }} />
       </div>
-      <span className="font-mono text-[10px] tracking-wide text-muted tabular-nums">{pct}%</span>
+      <span className="font-mono text-sm tracking-wide text-muted tabular-nums">{pct}%</span>
     </div>
   )
 }
