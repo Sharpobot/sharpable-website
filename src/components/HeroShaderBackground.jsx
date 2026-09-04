@@ -180,6 +180,7 @@ export default function HeroShaderBackground() {
 
     let rafId = null
     let start = performance.now()
+    let visible = true
 
     const render = (now) => {
       const t = (now - start) / 1000
@@ -194,8 +195,21 @@ export default function HeroShaderBackground() {
       gl.uniform1f(uHover, state.hover)
       gl.drawArrays(gl.TRIANGLES, 0, 3)
 
-      if (!reducedMotion) rafId = requestAnimationFrame(render)
+      if (!reducedMotion && visible) rafId = requestAnimationFrame(render)
     }
+
+    // Stops the rAF loop once the hero scrolls out of view (e.g. deep into the page) so the GPU
+    // isn't kept busy on an animation nobody can see — resumes automatically when it scrolls back.
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        visible = entry.isIntersecting
+        if (visible && !reducedMotion && rafId === null) {
+          rafId = requestAnimationFrame(render)
+        }
+      },
+      { threshold: 0 }
+    )
+    observer.observe(canvas)
 
     if (reducedMotion) {
       render(start)
@@ -205,6 +219,7 @@ export default function HeroShaderBackground() {
 
     return () => {
       if (rafId) cancelAnimationFrame(rafId)
+      observer.disconnect()
       window.removeEventListener('resize', resize)
       window.removeEventListener('pointermove', onPointerMove)
       document.removeEventListener('pointerleave', onPointerLeaveDoc)

@@ -36,6 +36,7 @@ function Avatar({ src, name }) {
     <img
       src={src}
       alt={name}
+      loading="lazy"
       onError={() => setFailed(true)}
       className="h-12 w-12 rounded-full object-cover shrink-0"
     />
