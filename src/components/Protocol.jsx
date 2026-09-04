@@ -83,7 +83,14 @@ export default function Protocol() {
               </div>
 
               <div className="lg:col-span-2 relative overflow-hidden min-h-[300px] lg:min-h-full bg-deep">
-                <img src={step.image} alt={step.alt} loading="lazy" className="absolute inset-0 w-full h-full object-cover" />
+                <img
+                  src={step.image}
+                  srcSet={[400, 800, 1200].map((w) => `${step.image.replace('w=1200', `w=${w}`)} ${w}w`).join(', ')}
+                  sizes="(min-width: 1024px) 40vw, 100vw"
+                  alt={step.alt}
+                  loading="lazy"
+                  className="absolute inset-0 w-full h-full object-cover"
+                />
                 <div className="absolute inset-0 bg-gradient-to-t from-deep/60 via-transparent to-deep/15" />
                 <div className="absolute bottom-4 right-4 font-mono text-[10px] uppercase tracking-widest text-white/70">
                   {step.num} / Sharpable

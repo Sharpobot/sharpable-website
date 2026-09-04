@@ -4,7 +4,7 @@ import { useLanguage } from '../useLanguage.js'
 import SliderDots from './SliderDots.jsx'
 
 const AVATARS = [
-  'https://res.cloudinary.com/da3lqh4dl/image/upload/q_auto/f_auto/v1776045660/Export_Stuff_1_30_glivat.png',
+  'https://res.cloudinary.com/da3lqh4dl/image/upload/c_limit,w_100,f_auto,q_auto/v1776045660/Export_Stuff_1_30_glivat.png',
   null,
 ]
 

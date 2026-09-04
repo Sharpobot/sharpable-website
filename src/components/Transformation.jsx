@@ -4,35 +4,39 @@ import { useLanguage } from '../useLanguage.js'
 import SliderDots from './SliderDots.jsx'
 
 /* Real before/after screenshots from actual Sharpable client projects. */
+// c_limit,w_* caps each file to roughly what its own display size ever needs (desktop card face
+// tops out at 820px wide, mobile at 340px — capping at 1000/700 covers up to ~1.2x/2x pixel
+// density without shipping a full-resolution screenshot to every device); f_auto,q_auto is
+// Cloudinary's automatic format/quality compression.
 const CARD_IMAGES = [
   {
     after: {
-      desktop: 'https://res.cloudinary.com/da3lqh4dl/image/upload/v1776159682/website_portfolio_n8mmt5.jpg',
-      mobile: 'https://res.cloudinary.com/da3lqh4dl/image/upload/v1777362779/After_mobile_Sizara_xgrbsb.png',
+      desktop: 'https://res.cloudinary.com/da3lqh4dl/image/upload/c_limit,w_1000,f_auto,q_auto/v1776159682/website_portfolio_n8mmt5.jpg',
+      mobile: 'https://res.cloudinary.com/da3lqh4dl/image/upload/c_limit,w_700,f_auto,q_auto/v1777362779/After_mobile_Sizara_xgrbsb.png',
     },
     before: {
-      desktop: 'https://res.cloudinary.com/da3lqh4dl/image/upload/v1776765655/Export_Stuff_1_40_zmh897.png',
-      mobile: 'https://res.cloudinary.com/da3lqh4dl/image/upload/v1777362742/Before_mobile_Sizara_pmyuaj.png',
+      desktop: 'https://res.cloudinary.com/da3lqh4dl/image/upload/c_limit,w_1000,f_auto,q_auto/v1776765655/Export_Stuff_1_40_zmh897.png',
+      mobile: 'https://res.cloudinary.com/da3lqh4dl/image/upload/c_limit,w_700,f_auto,q_auto/v1777362742/Before_mobile_Sizara_pmyuaj.png',
     },
   },
   {
     after: {
-      desktop: 'https://res.cloudinary.com/da3lqh4dl/image/upload/v1776764796/Screenshot_2026-04-21_174541_kwmv84.png',
-      mobile: 'https://res.cloudinary.com/da3lqh4dl/image/upload/v1777360777/Atfer_mobile_Aidid_qxujt9.png',
+      desktop: 'https://res.cloudinary.com/da3lqh4dl/image/upload/c_limit,w_1000,f_auto,q_auto/v1776764796/Screenshot_2026-04-21_174541_kwmv84.png',
+      mobile: 'https://res.cloudinary.com/da3lqh4dl/image/upload/c_limit,w_700,f_auto,q_auto/v1777360777/Atfer_mobile_Aidid_qxujt9.png',
     },
     before: {
-      desktop: 'https://res.cloudinary.com/da3lqh4dl/image/upload/q_auto/f_auto/v1776667067/Screenshot_2026-04-20_143646_y8m4e8.png',
-      mobile: 'https://res.cloudinary.com/da3lqh4dl/image/upload/v1777360747/Before_mobile_Aidid_gl7n1l.png',
+      desktop: 'https://res.cloudinary.com/da3lqh4dl/image/upload/c_limit,w_1000,f_auto,q_auto/v1776667067/Screenshot_2026-04-20_143646_y8m4e8.png',
+      mobile: 'https://res.cloudinary.com/da3lqh4dl/image/upload/c_limit,w_700,f_auto,q_auto/v1777360747/Before_mobile_Aidid_gl7n1l.png',
     },
   },
   {
     after: {
-      desktop: 'https://res.cloudinary.com/da3lqh4dl/image/upload/v1776766907/Export_Stuff_1_41_xa6dvq.png',
-      mobile: 'https://res.cloudinary.com/da3lqh4dl/image/upload/v1777362869/After_mobile_TS_ycocrs.png',
+      desktop: 'https://res.cloudinary.com/da3lqh4dl/image/upload/c_limit,w_1000,f_auto,q_auto/v1776766907/Export_Stuff_1_41_xa6dvq.png',
+      mobile: 'https://res.cloudinary.com/da3lqh4dl/image/upload/c_limit,w_700,f_auto,q_auto/v1777362869/After_mobile_TS_ycocrs.png',
     },
     before: {
-      desktop: 'https://res.cloudinary.com/da3lqh4dl/image/upload/v1776766349/Screenshot_2026-04-21_181209_tli0ym.png',
-      mobile: 'https://res.cloudinary.com/da3lqh4dl/image/upload/v1777362832/Before_mobile_TS_jj4vzl.png',
+      desktop: 'https://res.cloudinary.com/da3lqh4dl/image/upload/c_limit,w_1000,f_auto,q_auto/v1776766349/Screenshot_2026-04-21_181209_tli0ym.png',
+      mobile: 'https://res.cloudinary.com/da3lqh4dl/image/upload/c_limit,w_700,f_auto,q_auto/v1777362832/Before_mobile_TS_jj4vzl.png',
     },
   },
 ]
