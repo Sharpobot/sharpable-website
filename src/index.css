@@ -39,6 +39,13 @@
     pointer-events: none; z-index: 1; opacity: 0.05; mix-blend-mode: overlay;
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
+  @media (max-width: 1023px) {
+    /* mix-blend-mode forces the browser to recomposite this full-viewport fixed layer against
+       everything moving beneath it (any scroll, the hero shader) on every single frame, sitewide
+       — a real GPU cost a weaker mobile GPU feels far more than a desktop one. The grain is a
+       subtle 5%-opacity decorative touch, not worth that cost below desktop. */
+    .noise-overlay { display: none; }
+  }
   .magnetic-btn { position: relative; overflow: hidden; transition: transform 0.4s cubic-bezier(0.25,0.46,0.45,0.94); }
   .magnetic-btn:hover { transform: scale(1.03) translateY(-1px); }
   .magnetic-btn:active { transform: scale(0.98); }
@@ -63,6 +70,12 @@
   .glass-dark {
     background: rgba(15,15,18,0.75);
     backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  }
+  @media (max-width: 1023px) {
+    /* backdrop-filter re-blurs whatever's moving underneath it on every scroll frame — halving
+       the radius cuts that cost substantially on weaker mobile/tablet GPUs while the fixed
+       navbar/menu still reads clearly as frosted glass, just slightly less diffused. */
+    .glass, .glass-dark { backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
   }
   .ring-pulse { box-shadow: 0 0 0 0 rgba(255,198,41,0.6); animation: ring-pulse 2s infinite; }
   @keyframes ring-pulse {

@@ -13,6 +13,11 @@ export default function Protocol() {
   const containerRef = useRef(null)
 
   useEffect(() => {
+    // Animating filter continuously via scrub re-rasterizes each card every scroll frame — cheap
+    // enough on desktop GPUs but a real cost on weaker mobile/tablet ones, so it's dropped below
+    // the same 1024px breakpoint the rest of the site treats as the mobile/desktop split; scale +
+    // opacity alone still reads as the card receding.
+    const isDesktop = window.matchMedia('(min-width: 1024px)').matches
     const ctx = gsap.context(() => {
       const cards = gsap.utils.toArray('.protocol-card')
       cards.forEach((card, i) => {
@@ -26,7 +31,7 @@ export default function Protocol() {
             scrub: 1,
           },
           scale: 0.92,
-          filter: 'blur(6px) saturate(0.7)',
+          filter: isDesktop ? 'blur(6px) saturate(0.7)' : 'none',
           opacity: 0.5,
           ease: 'none',
         })
