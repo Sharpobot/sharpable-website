@@ -153,7 +153,12 @@ export default function HeroShaderBackground() {
 
     const resize = () => {
       const rect = canvas.getBoundingClientRect()
-      const dpr = Math.min(window.devicePixelRatio || 1, 2)
+      // A full-screen shader's cost scales with pixel count, so capping at native (1x) resolution
+      // below the desktop breakpoint roughly quarters GPU work on a 2x-DPR phone — the flow-noise
+      // texture is already soft/out-of-focus by design, so the crispness loss is hard to notice
+      // next to that saving. Re-evaluated on every resize so rotating past the breakpoint updates it.
+      const maxDpr = window.innerWidth >= 1024 ? 2 : 1
+      const dpr = Math.min(window.devicePixelRatio || 1, maxDpr)
       state.width = Math.max(1, Math.round(rect.width * dpr))
       state.height = Math.max(1, Math.round(rect.height * dpr))
       canvas.width = state.width
