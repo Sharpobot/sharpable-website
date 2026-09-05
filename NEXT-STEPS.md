@@ -10,67 +10,49 @@ file as items get done or new ones come up — don't let it go stale.
 
 ---
 
-## 1. Performance pass (next up)
+## 1. Performance pass
 
-Full plan, agreed but **not yet started** — a later session should be able to execute this directly
-from what's written here without re-deriving anything. Ordered into three passes, cheapest/safest
-first, each one **measured before moving to the next** rather than doing everything in one
-unverifiable batch.
+**Passes 1–3 done** (see git log: "Performance pass 1/2/3" commits). What's left is optional
+(Pass 4) and a real Lighthouse measurement (Pass 0, never actually run yet).
 
-**Verified baseline (read-only, from a real `npm run build` this session):** one JS chunk,
-**450KB / 147KB gzipped**, CSS 42KB / 8KB gzipped. Dependencies are already lean and correctly
-imported (`gsap` core + `gsap/ScrollTrigger` as a separate named import — not pulling in the whole
-plugin set), so the weight is component code, not bloated libraries.
+**Baseline before any of this** (real `npm run build`, pre-Pass-1): one JS chunk, 450KB/147KB
+gzipped, CSS 42KB/8KB gzipped.
 
-**Pass 0 — get real numbers before changing anything.** Run the live URL through Google
-PageSpeed/Lighthouse (https://pagespeed.web.dev/analysis?url=https://sharpable.netlify.app) to get
-an actual score and a concrete list of what it flags heaviest — this replaces guesswork with real
-data on what to prioritize. (Tried once before this session; got stuck mid-analysis and never
-completed — retry.) Re-run after Pass 1 and again after Pass 2 to confirm each pass actually helped.
+- ✅ **Pass 1 (load-time, zero visual risk)** — legal pages code-split via `React.lazy`/`Suspense`
+  (now separate ~3.5KB chunks instead of bundled into main); `<link rel="preconnect">` added for
+  `res.cloudinary.com`; Hero's WebGL rAF loop now pauses via `IntersectionObserver` once scrolled
+  out of view; `loading="lazy"` confirmed on every image (only the testimonial avatar was missing
+  it).
+- ✅ **Pass 2 (payload size)** — Work/Protocol's Unsplash images now ship a `srcSet` with 400/800/1200w
+  tiers instead of the same 1200px file to every device; every remaining Cloudinary image
+  (Transformation's 12 case-study shots, Testimonials' avatar) now gets `c_limit,w_*,f_auto,q_auto`
+  — a width cap sized to its real display size plus auto-compression.
+- ✅ **Pass 3 (runtime/scroll smoothness, not just load time)** — a separate class of fix from 1–2,
+  prompted by "smoother but still some friction, especially likely on phones" feedback. Three
+  GPU-compositing costs that desktop GPUs absorb easily but phones feel much more, all now
+  disabled/reduced **below the 1024px breakpoint only** (desktop untouched): the sitewide
+  `mix-blend-mode` grain overlay (`.noise-overlay`, `index.css`) is hidden — it forces a full-page
+  recomposite every scroll/animation frame; the navbar/mobile-menu `backdrop-filter` blur
+  (`.glass`/`.glass-dark`, `index.css`) is halved 20px→10px; `Protocol.jsx`'s GSAP-scrubbed
+  `filter: blur()/saturate()` on the stacking cards is dropped (kept: scale+opacity), since
+  animating `filter` re-rasterizes on every scroll tick. Verified via `window.matchMedia` +
+  reading GSAP's actual inline `filter` style at a real mobile viewport (375px), not just visual
+  inspection — this tool's Browser pane can't reliably profile live frame timing (see CLAUDE.md's
+  rAF/`document.hidden` gotcha), so if scroll smoothness ever needs re-checking, verify the same way
+  (computed styles / matchMedia) rather than trusting `PerformanceObserver` numbers from in-pane.
 
-**Pass 1 — low risk, do first, no visual changes:**
-- **Code-split the legal pages.** `PrivacyPolicy.jsx` and `Terms.jsx` currently bundle into the same
-  main JS chunk as the homepage, even though almost nobody visits them. Wrap their routes in
-  `main.jsx` with `React.lazy()` + `<Suspense>` so that code only downloads when someone actually
-  navigates there. Zero visual risk, pure bundle-size win.
-- **Add a `<link rel="preconnect">` for `res.cloudinary.com`** in `index.html`, alongside the
-  existing Google Fonts preconnects. Every image and logo on the site comes from Cloudinary; this
-  lets the browser open that connection earlier instead of discovering it needs to mid-page-parse.
-- **Pause the Hero's WebGL animation loop when it's off-screen.** `HeroShaderBackground.jsx` runs a
-  continuous `requestAnimationFrame` loop that currently keeps going even after scrolling well past
-  the hero. Gate it behind an `IntersectionObserver` (same pattern already used for
-  `prefers-reduced-motion`, which renders one static frame instead of looping) so it stops rendering
-  once out of view — saves CPU/battery on mobile, no visual change.
-- **Confirm `loading="lazy"` on every image that doesn't already have it.** `WorkPreview.jsx` and
-  `Protocol.jsx` images already have it; double-check `Transformation.jsx`'s `CARD_IMAGES` and
-  `Testimonials.jsx`'s avatar images.
+**Pass 0 — still not actually run.** Run the live URL through Google PageSpeed/Lighthouse
+(https://pagespeed.web.dev/analysis?url=https://sharpable.netlify.app) for a real score and to
+confirm Passes 1–3 actually moved the needle, especially on the mobile score specifically (Pass 3
+targeted mobile smoothness, which Lighthouse's mobile CPU-throttled run should reflect better than
+its desktop one). Tried twice now across two sessions and got stuck/never completed either time —
+worth just doing manually in a real browser if it keeps failing here.
 
-**Pass 2 — the biggest real payload win, moderate effort (needs a visual re-check after):**
-- **Responsive images.** The Unsplash/Cloudinary images already use `?auto=format&fit=crop&w=1200&q=80`
-  (decent format/quality), but every image ships the same 1200px-wide file to every device — a phone
-  downloads the same bytes as a 4K monitor. This is almost certainly the single biggest byte-savings
-  opportunity on the site. Fix: add a `srcSet` with a couple of narrower width tiers (or `sizes` for
-  the Unsplash images; Cloudinary images can just add width params directly in the URL). Files:
-  - `src/components/Work.jsx` — `IMAGES` array (2 Unsplash stock photos)
-  - `src/components/Protocol.jsx` — `IMAGES` array (3 Unsplash stock photos, the "how we work" cards)
-  - `src/components/Transformation.jsx` — `CARD_IMAGES` (11 Cloudinary URLs on the `da3lqh4dl`
-    account, already has a `<picture>` mobile source — add width params to both sources)
-- **Apply `f_auto,q_auto` across every remaining Cloudinary reference sitewide** — already proven
-  this session on the OG image and the new logo assets (`e_trim,f_auto,q_auto`), just not yet
-  applied to the other ~15 Cloudinary images (Transformation's 11 case-study images, Testimonials'
-  avatar). Free compression; spot-check quality after.
-
-**Pass 3 — optional, only pursue if Pass 1+2 don't hit the target numbers:**
+**Pass 4 — optional, only if Pass 0's numbers still fall short:**
 - **Self-host fonts** (via `@fontsource` or downloaded woff2 files) instead of the Google Fonts
   `<link>` in `index.html`. Lower priority than it sounds — `font-display: swap` is already set, so
   the worst failure mode (invisible text while fonts load) is already handled; this would only shave
   the extra network round-trip to Google's servers, not fix a broken-looking load.
-
-**In plain terms, for context if this file is read cold:** Pass 1 is stuff that makes the site lighter
-without changing how anything looks or behaves — safe to just do. Pass 2 is where the real
-improvement is (especially on mobile), but touches more files and needs eyes on it afterward at a
-few screen sizes. Pass 3 is a nice-to-have, not a need-to-have — skip it unless Pass 1+2 leave us
-short of the goal.
 
 ---
 
