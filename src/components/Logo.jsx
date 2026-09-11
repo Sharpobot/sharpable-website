@@ -1,22 +1,25 @@
 const ICON_URL =
-  'https://res.cloudinary.com/da3lqh4dl/image/upload/e_trim,f_auto,q_auto/v1788265233/Sharpable_Custom_Graphic_V1_i6ku3u.png'
-const WORDMARK_URL =
-  'https://res.cloudinary.com/da3lqh4dl/image/upload/e_trim,f_auto,q_auto/v1788265176/Sharpable_Logo_V2_Cropped_No_Shadow_wtb6hj.png'
+  'https://res.cloudinary.com/da3lqh4dl/image/upload/f_auto,q_auto/v1789094977/Sharpable_Icon_Logo_qmakpn.webp'
+const TITLE_URL =
+  'https://res.cloudinary.com/da3lqh4dl/image/upload/e_trim,f_auto,q_auto/v1789094977/Sharpable_Title_Logo_z6tbdq.webp'
 
-// Real bounding-box ratios of the ink inside each trimmed source PNG (verified via canvas pixel
-// scan, then confirmed against Cloudinary's own e_trim output dimensions: 888x988 / 1831x356) —
-// used so the icon keeps its true proportions and the masked `gold` wordmark (no intrinsic size
-// of its own) sizes identically to the plain <img>.
-const ICON_RATIO = 888 / 988
-const WORDMARK_RATIO = 1831 / 356
+// Real dimensions: icon is a perfect square (500x500 source, already a self-contained circular
+// badge — no e_trim needed); title logo trimmed to 1884x349 (verified against Cloudinary's own
+// e_trim output, same convention as before). The title lockup already bakes the icon's arrow shape
+// into the wordmark's "a" — unlike the previous two-asset icon+wordmark combo, there's no separate
+// icon to position alongside it for the default lockup.
+const ICON_RATIO = 1
+const TITLE_RATIO = 1884 / 349
 
-// Both source assets are already gold in the art itself (no white variant exists anymore), so any
-// other color needs the same mask-on-currentColor trick: `gold` uses it on the wordmark (the
-// Footer's big accent heading, which must match the site's exact `text-primary` token rather than
-// the asset's own slightly-different gold), and `mono` uses it on the icon (the mobile Editorial
-// Index menu's background watermark, recolored to a barely-there stone grey via the consumer's own
-// `text-*` className rather than staying gold — gold at low opacity still reads as a brand color;
-// a neutral tone at low opacity reads as texture/emboss instead, which is the point of a watermark).
+// The icon is a solid-filled circle badge (opaque gold fill + opaque black arrow, transparent only
+// in the square's corners outside the circle) — unlike the old hexagon icon it replaced, which was
+// a transparent-background arrow silhouette purpose-built for `mask-image` recoloring. A `mask-image`
+// only reads alpha, not color, so masking this new icon renders a plain filled circle, not the arrow
+// shape — confirmed via a Cloudinary color-key strip attempt, which couldn't isolate the arrow either
+// (make_transparent keys off corner color, and the corners here are already transparent, not gold).
+// The `mono` watermark accepts this: a plain circle at the watermark's ~3.5% opacity reads as ambient
+// texture either way, so the softer shape isn't a visible regression, just a documented limitation —
+// revisit with a transparent arrow-only cutout of the new icon if the exact old silhouette matters later.
 function MaskedMark({ url, ratio, alt, className }) {
   return (
     <span
@@ -38,11 +41,7 @@ function MaskedMark({ url, ratio, alt, className }) {
   )
 }
 
-export default function Logo({ className = '', gold = false, mono = false, iconOnly = false, wordmarkOnly = false, alt = 'Sharpable' }) {
-  if (gold) {
-    return <MaskedMark url={WORDMARK_URL} ratio={WORDMARK_RATIO} alt={alt} className={className} />
-  }
-
+export default function Logo({ className = '', gold = false, mono = false, iconOnly = false, alt = 'Sharpable' }) {
   if (iconOnly) {
     if (mono) {
       return <MaskedMark url={ICON_URL} ratio={ICON_RATIO} alt={alt} className={className} />
@@ -50,29 +49,12 @@ export default function Logo({ className = '', gold = false, mono = false, iconO
     return <img src={ICON_URL} alt={alt} className={`w-auto ${className}`} style={{ aspectRatio: ICON_RATIO }} />
   }
 
-  if (wordmarkOnly) {
-    return <img src={WORDMARK_URL} alt={alt} className={`w-auto ${className}`} />
+  if (gold) {
+    return <MaskedMark url={TITLE_URL} ratio={TITLE_RATIO} alt={alt} className={className} />
   }
 
-  // Default: the graphic mark + wordmark side by side, sized off the container's own height so a
-  // single `h-*` className on the wrapper controls the whole lockup at once. The icon-to-wordmark
-  // proportions here aren't guessed — they're measured pixel-for-pixel off the official OG banner
-  // (Sharpable_OG_Thumbnail_V1), which is the reference lockup: icon 125x140 vs wordmark 791x153 in
-  // that asset, so the icon sits at ~92% of the wordmark's height (not equal height, which read as
-  // the icon overpowering the wordmark), a ~4px gap at navbar scale (proportional to the banner's
-  // 16px gap at its much larger size — the old gap-2/8px read as way too loose by comparison), and
-  // nudged up slightly (translateY, a percentage of the icon's own box per the CSS transform spec,
-  // not of the row height) since the banner's icon sits above the wordmark's own vertical center,
-  // not centered on it — the wordmark's descenders (the "p" tail) pull its own bbox center down.
-  return (
-    <span role="img" aria-label={alt} className={`inline-flex items-center gap-1 ${className}`}>
-      <img
-        src={ICON_URL}
-        alt=""
-        className="w-auto"
-        style={{ aspectRatio: ICON_RATIO, height: '92%', transform: 'translateY(-15%)' }}
-      />
-      <img src={WORDMARK_URL} alt="" className="h-full w-auto" />
-    </span>
-  )
+  // Default: the title lockup already reads as a complete wordmark+mark unit on its own (the arrow
+  // is baked into the "a"), so there's no separate icon to combine it with like the old two-asset
+  // combo used to need.
+  return <img src={TITLE_URL} alt={alt} className={`w-auto ${className}`} style={{ aspectRatio: TITLE_RATIO }} />
 }
