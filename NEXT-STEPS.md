@@ -70,6 +70,13 @@ against the actual deployed `sharpable.netlify.app` URL** via the real pagespeed
 infrastructure (not this machine) — that would be a cleaner, less noisy read if precise before/after
 numbers are ever needed.
 
+**If mobile performance is ever raised again after all of the above**, don't re-derive new ideas —
+**`PERFORMANCE-TRADEOFFS.md`** (repo root) has three specific, ready-to-execute options already
+scoped out (simplify the Hero shader's noise detail, cap it to 30fps, or drop Protocol's
+sticky-stacking on mobile), each with exact file/line targets, expected gain, the real visual cost,
+and how to verify it worked. Deliberately not applied yet — each trades away something visible, so
+confirm with the user which trade-off (if any) they actually want before touching code.
+
 - ✅ **Pass 4 — self-host fonts.** Turned out to matter more than expected: a real Lighthouse run
   flagged the Google Fonts `<link>` as the single biggest render-blocking cost on the page (778ms of
   the page's 1,800ms total render-blocking estimate, just for the round trip to fetch its CSS before
