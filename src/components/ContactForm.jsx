@@ -1,21 +1,52 @@
 import { useRef, useState } from 'react'
 import { ArrowRight, CheckCircle2, ChevronDown, Lock, Mail, MapPin, Phone, Upload } from 'lucide-react'
+import { Turnstile } from '@marsidev/react-turnstile'
 import { useLanguage } from '../useLanguage.js'
 import Field from './Field.jsx'
+import { submitContactForm } from '../contactFormApi.js'
+
+const TURNSTILE_SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY
 
 export default function ContactForm() {
   const { t } = useLanguage()
-  const [form, setForm] = useState({ name: '', email: '', phone: '', company: '', message: '' })
+  const [form, setForm] = useState({ name: '', email: '', phone: '', company: '', message: '', website: '' })
   const [files, setFiles] = useState([])
   const [status, setStatus] = useState('idle')
   const [privacyOpen, setPrivacyOpen] = useState(false)
+  const [turnstileToken, setTurnstileToken] = useState('')
+  const [errorMessage, setErrorMessage] = useState('')
   const dropRef = useRef(null)
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     if (!form.name || !form.email || !form.message) return
     setStatus('sending')
-    setTimeout(() => setStatus('sent'), 1200)
+    setErrorMessage('')
+
+    const result = await submitContactForm({
+      name: form.name,
+      email: form.email,
+      phone: form.phone,
+      company: form.company,
+      message: form.message,
+      honeypot: form.website,
+      turnstileToken,
+      files,
+    })
+
+    if (result.ok) {
+      setStatus('sent')
+      return
+    }
+
+    setStatus('idle')
+    if (result.status === 429) {
+      setErrorMessage(t.contact.errors.rateLimited)
+    } else if (result.status === 400) {
+      setErrorMessage(t.contact.errors.verificationFailed)
+    } else {
+      setErrorMessage(t.contact.errors.generic)
+    }
   }
 
   const handleFiles = (newFiles) => {
@@ -109,6 +140,18 @@ export default function ContactForm() {
                     <Field label={t.contact.form.company} value={form.company} onChange={(v) => setForm({ ...form, company: v })} />
                   </div>
 
+                  {/* Honeypot: hidden off-screen (not display:none, which bots increasingly skip). Real visitors never see or fill it. */}
+                  <input
+                    type="text"
+                    name="website"
+                    value={form.website}
+                    onChange={(e) => setForm({ ...form, website: e.target.value })}
+                    tabIndex={-1}
+                    autoComplete="off"
+                    aria-hidden="true"
+                    className="fixed -left-[9999px] top-0 w-px h-px overflow-hidden opacity-0 pointer-events-none"
+                  />
+
                   <div className="mt-5">
                     <label className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted mb-2 block">
                       {t.contact.form.message}
@@ -157,10 +200,21 @@ export default function ContactForm() {
                     </label>
                   </div>
 
+                  <div className="mt-5 flex justify-center">
+                    <Turnstile
+                      siteKey={TURNSTILE_SITE_KEY}
+                      onSuccess={setTurnstileToken}
+                      onExpire={() => setTurnstileToken('')}
+                      options={{ theme: 'dark', size: 'flexible' }}
+                    />
+                  </div>
+
+                  {errorMessage && <p className="mt-4 text-sm text-red-400 text-center">{errorMessage}</p>}
+
                   <div className="mt-7 flex flex-col items-center gap-3">
                     <button
                       type="submit"
-                      disabled={status === 'sending'}
+                      disabled={status === 'sending' || !turnstileToken}
                       className="magnetic-btn w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-primary text-deep font-semibold px-7 py-3.5 rounded-full shadow-lg shadow-primary/30 disabled:opacity-50"
                     >
                       {status === 'sending' ? t.contact.form.sending : t.contact.form.submit}
