@@ -249,6 +249,11 @@ export const translations = {
         title: "Thanks — we'll be in touch",
         text: "We'll review your message and get back to you within one business day.",
       },
+      errors: {
+        rateLimited: "You've sent a few messages recently — please wait a bit before sending another.",
+        verificationFailed: "We couldn't verify your submission. Please try again.",
+        generic: 'Something went wrong on our end. Please try again, or email us directly.',
+      },
     },
     testimonials: {
       eyebrow: 'Client Feedback',
@@ -554,6 +559,11 @@ export const translations = {
       sent: {
         title: 'Terima kasih — kami akan hubungi anda',
         text: 'Kami akan semak mesej anda dan hubungi anda dalam tempoh satu hari bekerja.',
+      },
+      errors: {
+        rateLimited: 'Anda telah menghantar beberapa mesej baru-baru ini — sila tunggu sebentar sebelum menghantar lagi.',
+        verificationFailed: 'Kami tidak dapat mengesahkan penghantaran anda. Sila cuba lagi.',
+        generic: 'Terdapat masalah di pihak kami. Sila cuba lagi, atau e-mel kami secara terus.',
       },
     },
     testimonials: {
