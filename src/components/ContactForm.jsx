@@ -1,5 +1,5 @@
-import { useRef, useState } from 'react'
-import { ArrowRight, CheckCircle2, ChevronDown, Lock, Mail, MapPin, Phone, Upload } from 'lucide-react'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { ArrowRight, CheckCircle2, ChevronDown, Loader2, Lock, Mail, MapPin, Phone, Upload, X } from 'lucide-react'
 import { Turnstile } from '@marsidev/react-turnstile'
 import { useLanguage } from '../useLanguage.js'
 import Field from './Field.jsx'
@@ -15,7 +15,29 @@ export default function ContactForm() {
   const [privacyOpen, setPrivacyOpen] = useState(false)
   const [turnstileToken, setTurnstileToken] = useState('')
   const [errorMessage, setErrorMessage] = useState('')
+  const [fileError, setFileError] = useState('')
+  const [previewIndex, setPreviewIndex] = useState(null)
   const dropRef = useRef(null)
+
+  const previewUrls = useMemo(
+    () => files.map((f) => (f.type?.startsWith('image/') ? URL.createObjectURL(f) : null)),
+    [files]
+  )
+
+  useEffect(() => {
+    return () => {
+      previewUrls.forEach((url) => url && URL.revokeObjectURL(url))
+    }
+  }, [previewUrls])
+
+  useEffect(() => {
+    if (previewIndex === null) return
+    const onKeyDown = (e) => {
+      if (e.key === 'Escape') setPreviewIndex(null)
+    }
+    window.addEventListener('keydown', onKeyDown)
+    return () => window.removeEventListener('keydown', onKeyDown)
+  }, [previewIndex])
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -50,7 +72,16 @@ export default function ContactForm() {
   }
 
   const handleFiles = (newFiles) => {
-    setFiles((prev) => [...prev, ...Array.from(newFiles)].slice(0, 5))
+    setFiles((prev) => {
+      const combined = [...prev, ...Array.from(newFiles)]
+      setFileError(combined.length > 5 ? t.contact.form.maxFilesReached : '')
+      return combined.slice(0, 5)
+    })
+  }
+
+  const removeFile = (index) => {
+    setFiles((prev) => prev.filter((_, i) => i !== index))
+    setFileError('')
   }
 
   return (
@@ -187,18 +218,41 @@ export default function ContactForm() {
                       <Upload className="h-6 w-6 mx-auto text-primary-dark mb-2" />
                       <p className="font-display font-semibold text-ink text-sm">{t.contact.form.upload}</p>
                       <p className="text-xs text-muted mt-1">{t.contact.form.uploadHint}</p>
-                      {files.length > 0 && (
-                        <div className="mt-4 flex flex-wrap gap-2 justify-center">
-                          {files.map((f, i) => (
-                            <span key={i} className="inline-flex items-center gap-1.5 bg-primary/10 text-primary-dark text-xs px-3 py-1.5 rounded-full font-mono">
-                              <CheckCircle2 className="h-3 w-3" />
-                              {f.name.length > 22 ? f.name.slice(0, 22) + '…' : f.name}
-                            </span>
-                          ))}
-                        </div>
-                      )}
                     </label>
                   </div>
+
+                  {files.length > 0 && (
+                    <div className="mt-4 grid grid-cols-4 sm:grid-cols-5 gap-2.5">
+                      {files.map((file, i) => (
+                        <div key={i} className="relative">
+                          <button
+                            type="button"
+                            onClick={() => previewUrls[i] && setPreviewIndex(i)}
+                            disabled={!previewUrls[i]}
+                            className="block w-full aspect-square rounded-xl overflow-hidden border border-divider bg-background focus:outline-none focus:ring-4 focus:ring-primary/15"
+                          >
+                            {previewUrls[i] ? (
+                              <img src={previewUrls[i]} alt={file.name} className="w-full h-full object-cover" />
+                            ) : (
+                              <span className="flex items-center justify-center h-full px-1 text-center text-[9px] text-muted leading-tight">
+                                {file.name}
+                              </span>
+                            )}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => removeFile(i)}
+                            aria-label={t.contact.form.removeFile}
+                            className="absolute -top-1.5 -right-1.5 h-5 w-5 rounded-full bg-deep border border-divider flex items-center justify-center text-muted hover:text-ink hover:border-primary transition"
+                          >
+                            <X className="h-3 w-3" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {fileError && <p className="mt-2 text-xs text-red-400">{fileError}</p>}
 
                   <div className="mt-5 flex justify-center">
                     <Turnstile
@@ -217,8 +271,17 @@ export default function ContactForm() {
                       disabled={status === 'sending' || !turnstileToken}
                       className="magnetic-btn w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-primary text-deep font-semibold px-7 py-3.5 rounded-full shadow-lg shadow-primary/30 disabled:opacity-50"
                     >
-                      {status === 'sending' ? t.contact.form.sending : t.contact.form.submit}
-                      <ArrowRight className="h-4 w-4" />
+                      {status === 'sending' ? (
+                        <>
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                          {t.contact.form.sending}
+                        </>
+                      ) : (
+                        <>
+                          {t.contact.form.submit}
+                          <ArrowRight className="h-4 w-4" />
+                        </>
+                      )}
                     </button>
                     <p className="text-xs text-muted">{t.contact.form.note}</p>
                   </div>
@@ -238,6 +301,32 @@ export default function ContactForm() {
           </div>
         </div>
       </div>
+
+      {previewIndex !== null && previewUrls[previewIndex] && (
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-deep/90 backdrop-blur-sm p-4 sm:p-8"
+          onClick={() => setPreviewIndex(null)}
+        >
+          <div
+            className="relative w-full max-w-lg aspect-square sm:aspect-[4/3] bg-surface border border-divider rounded-3xl overflow-hidden flex items-center justify-center"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <img
+              src={previewUrls[previewIndex]}
+              alt={files[previewIndex]?.name}
+              className="max-w-full max-h-full w-auto h-auto object-contain"
+            />
+            <button
+              type="button"
+              onClick={() => setPreviewIndex(null)}
+              aria-label={t.contact.form.closePreview}
+              className="absolute top-3 right-3 h-9 w-9 rounded-full bg-deep/80 border border-divider flex items-center justify-center text-ink hover:border-primary transition"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+        </div>
+      )}
     </section>
   )
 }
