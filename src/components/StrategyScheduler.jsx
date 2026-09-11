@@ -1,18 +1,21 @@
 import { useEffect, useState } from 'react'
 import { useLanguage } from '../useLanguage.js'
+import { useOnScreen } from '../useOnScreen.js'
 
 export default function StrategyScheduler() {
   const { t } = useLanguage()
   const days = t.features.scheduler.days
   const [step, setStep] = useState(0) // 0..4
   const activeDay = 3
+  const [ref, isVisible] = useOnScreen()
 
   useEffect(() => {
+    if (!isVisible) return
     const interval = setInterval(() => {
       setStep((prev) => (prev + 1) % 5)
     }, 1400)
     return () => clearInterval(interval)
-  }, [])
+  }, [isVisible])
 
   const cursorPos = (() => {
     switch (step) {
@@ -32,7 +35,7 @@ export default function StrategyScheduler() {
   })()
 
   return (
-    <div className="relative h-44 w-full bg-white border border-divider rounded-3xl p-5 overflow-hidden">
+    <div ref={ref} className="relative h-44 w-full bg-white border border-divider rounded-3xl p-5 overflow-hidden">
       <div className="flex items-center justify-between mb-3">
         <span className="font-mono text-[10px] uppercase tracking-widest text-muted">
           {t.features.scheduler.week}

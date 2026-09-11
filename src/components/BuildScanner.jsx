@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useLanguage } from '../useLanguage.js'
+import { useOnScreen } from '../useOnScreen.js'
 
 const TONES = ['primary', 'accent', 'primary', 'emerald']
 const SHIPPED_INDEX = 3
@@ -8,10 +9,12 @@ export default function BuildScanner() {
   const { t } = useLanguage()
   const [statusIdx, setStatusIdx] = useState(0)
   const [count, setCount] = useState(7)
+  const [ref, isVisible] = useOnScreen()
 
   const statuses = t.features.scanner.statuses.map((s, i) => ({ ...s, tone: TONES[i] }))
 
   useEffect(() => {
+    if (!isVisible) return
     const interval = setInterval(() => {
       setStatusIdx((idx) => {
         const next = (idx + 1) % statuses.length
@@ -22,7 +25,7 @@ export default function BuildScanner() {
       })
     }, 2300)
     return () => clearInterval(interval)
-  }, [statuses.length])
+  }, [statuses.length, isVisible])
 
   // Falling code-bracket particles
   const drops = [
@@ -54,6 +57,7 @@ export default function BuildScanner() {
 
   return (
     <div
+      ref={ref}
       className="relative h-44 w-full rounded-3xl overflow-hidden border border-primary/15"
       style={{
         background: 'linear-gradient(180deg, #1A1610 0%, #2A2008 65%, #3D2E08 100%)',

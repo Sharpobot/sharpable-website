@@ -1,12 +1,15 @@
 import { useEffect, useState } from 'react'
 import { useLanguage } from '../useLanguage.js'
+import { useOnScreen } from '../useOnScreen.js'
 
 export default function DesignShuffler() {
   const { t } = useLanguage()
   const items = t.features.shuffler.items
   const [order, setOrder] = useState([0, 1, 2])
+  const [ref, isVisible] = useOnScreen()
 
   useEffect(() => {
+    if (!isVisible) return
     const interval = setInterval(() => {
       setOrder((prev) => {
         const next = [...prev]
@@ -15,10 +18,10 @@ export default function DesignShuffler() {
       })
     }, 3000)
     return () => clearInterval(interval)
-  }, [])
+  }, [isVisible])
 
   return (
-    <div className="relative h-44 w-full">
+    <div ref={ref} className="relative h-44 w-full">
       {order.map((itemIdx, i) => {
         const item = items[itemIdx] || items[0]
         const offset = i
