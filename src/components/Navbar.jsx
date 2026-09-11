@@ -126,7 +126,12 @@ export default function Navbar() {
       >
         <div className="flex items-center justify-between gap-6">
           <a href="#home" className="flex items-center group">
-            <Logo className="h-6" />
+            {/* The wordmark's "p" descender pulls the letterforms' optical center above the image's
+                own geometric center (the trimmed bounding box includes that descender's empty space
+                below the baseline, which nothing above it balances out) — reads as sitting slightly
+                too high against the nav links/buttons beside it, which don't have that asymmetry. A
+                small downward nudge, scoped to just this navbar-scale usage. */}
+            <Logo className="h-6 translate-y-[2px]" />
           </a>
 
           <div className="hidden lg:flex items-center gap-6">
@@ -220,6 +225,21 @@ export default function Navbar() {
             className="pointer-events-none absolute -right-[14%] -bottom-[8%] w-[68vw] max-w-[380px] text-white/[0.035]"
           >
             <Logo iconOnly mono alt="" className="w-full" />
+          </div>
+
+          {/* Wordmark, same subtle carved-texture tone as the icon watermark above (not a real header
+              logo — this panel already has its own close button, so it's purely a continuity cue).
+              Positioned at the navbar's own real logo position (measured via getBoundingClientRect at
+              top:32/left:32 px, `h-6` to match its actual navbar height), same reasoning as the close
+              button's own positioning below — so opening the menu doesn't read as the logo jumping to
+              a different spot than where it just was. */}
+          <div
+            aria-hidden="true"
+            className={`pointer-events-none absolute top-8 left-8 transition-opacity duration-300 ease-out ${
+              open ? 'opacity-100' : 'opacity-0'
+            }`}
+          >
+            <Logo gold alt="" className="h-6 text-white/[0.035]" />
           </div>
 
           {/* Positioned to land almost exactly where the hamburger-turned-X sits in the navbar itself
