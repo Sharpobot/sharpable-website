@@ -6,6 +6,7 @@ import Field from './Field.jsx'
 import { submitContactForm } from '../contactFormApi.js'
 
 const TURNSTILE_SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY
+const MAX_MESSAGE_LENGTH = 5000
 
 export default function ContactForm() {
   const { t } = useLanguage()
@@ -21,6 +22,17 @@ export default function ContactForm() {
   const [uploadAreaHeight, setUploadAreaHeight] = useState(0)
   const dropRef = useRef(null)
   const uploadContentRef = useRef(null)
+  const errorRef = useRef(null)
+
+  // Moves keyboard/screen-reader focus to the error message the moment it appears,
+  // so assistive tech announces it immediately rather than leaving the user to
+  // discover a silent, purely-visual error (role="alert" below announces the text;
+  // this ensures focus is actually there too, per WCAG error-handling guidance).
+  useEffect(() => {
+    if (errorMessage) {
+      errorRef.current?.focus()
+    }
+  }, [errorMessage])
 
   // Measures the attachments row's real content height so the dropzone can smoothly
   // animate to/from that exact size (an explicit `height`, not `max-height` — in this
@@ -190,10 +202,10 @@ export default function ContactForm() {
               {status !== 'sent' ? (
                 <>
                   <div className="grid sm:grid-cols-2 gap-5">
-                    <Field label={t.contact.form.name} required value={form.name} onChange={(v) => setForm({ ...form, name: v })} />
-                    <Field label={t.contact.form.email} type="email" required value={form.email} onChange={(v) => setForm({ ...form, email: v })} />
-                    <Field label={t.contact.form.phone} type="tel" value={form.phone} onChange={(v) => setForm({ ...form, phone: v })} />
-                    <Field label={t.contact.form.company} value={form.company} onChange={(v) => setForm({ ...form, company: v })} />
+                    <Field id="contact-name" label={t.contact.form.name} required value={form.name} onChange={(v) => setForm({ ...form, name: v })} autoComplete="name" />
+                    <Field id="contact-email" label={t.contact.form.email} type="email" required value={form.email} onChange={(v) => setForm({ ...form, email: v })} autoComplete="email" />
+                    <Field id="contact-phone" label={t.contact.form.phone} type="tel" value={form.phone} onChange={(v) => setForm({ ...form, phone: v })} autoComplete="tel" />
+                    <Field id="contact-company" label={t.contact.form.company} value={form.company} onChange={(v) => setForm({ ...form, company: v })} autoComplete="organization" />
                   </div>
 
                   {/* Honeypot: hidden off-screen (not display:none, which bots increasingly skip). Real visitors never see or fill it. */}
@@ -209,13 +221,20 @@ export default function ContactForm() {
                   />
 
                   <div className="mt-5">
-                    <label className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted mb-2 block">
-                      {t.contact.form.message}
-                    </label>
+                    <div className="flex items-baseline justify-between mb-2">
+                      <label htmlFor="contact-message" className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted block">
+                        {t.contact.form.message}
+                      </label>
+                      <span className="font-mono text-[10px] text-muted/70 tabular-nums">
+                        {form.message.length.toLocaleString()} / {MAX_MESSAGE_LENGTH.toLocaleString()}
+                      </span>
+                    </div>
                     <textarea
+                      id="contact-message"
                       value={form.message}
                       onChange={(e) => setForm({ ...form, message: e.target.value })}
                       required
+                      maxLength={MAX_MESSAGE_LENGTH}
                       rows={5}
                       placeholder={t.contact.form.messagePlaceholder}
                       className="w-full bg-background border border-divider rounded-2xl px-4 py-3.5 text-ink placeholder-muted/60 focus:border-primary focus:ring-4 focus:ring-primary/15 outline-none transition resize-none font-body"
@@ -306,7 +325,11 @@ export default function ContactForm() {
                     />
                   </div>
 
-                  {errorMessage && <p className="mt-4 text-sm text-red-400 text-center">{errorMessage}</p>}
+                  {errorMessage && (
+                    <p ref={errorRef} role="alert" tabIndex={-1} className="mt-4 text-sm text-red-400 text-center outline-none">
+                      {errorMessage}
+                    </p>
+                  )}
 
                   <div className="mt-7 flex flex-col items-center gap-3">
                     <button
