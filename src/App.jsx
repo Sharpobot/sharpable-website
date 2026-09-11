@@ -1,20 +1,26 @@
-import { useEffect, useLayoutEffect, useState } from 'react'
+import { useEffect, useLayoutEffect, useState, Suspense, lazy } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { HOME_SCROLL_KEY } from './scrollRestore.js'
 import LoadingScreen from './components/LoadingScreen.jsx'
 import Navbar from './components/Navbar.jsx'
 import Hero from './components/Hero.jsx'
-import Features from './components/Features.jsx'
-import Pillars from './components/Pillars.jsx'
-import Protocol from './components/Protocol.jsx'
-import ServicesGrid from './components/ServicesGrid.jsx'
-import Work from './components/Work.jsx'
-import Transformation from './components/Transformation.jsx'
-import Testimonials from './components/Testimonials.jsx'
-import TrustSignals from './components/TrustSignals.jsx'
-import ContactForm from './components/ContactForm.jsx'
-import Footer from './components/Footer.jsx'
+
+// Everything below the fold is code-split so its JS doesn't have to parse/execute before Hero (the
+// only thing visible on first paint, since it's min-h-[100dvh]) becomes interactive. The existing
+// ScrollTrigger.refresh() calls below (200ms/1000ms/window-load) already re-measure pin/scrub
+// ranges once the real page height is known, which is exactly the mechanism a late-mounting lazy
+// section also needs — no separate handling required for that.
+const Features = lazy(() => import('./components/Features.jsx'))
+const Pillars = lazy(() => import('./components/Pillars.jsx'))
+const Protocol = lazy(() => import('./components/Protocol.jsx'))
+const ServicesGrid = lazy(() => import('./components/ServicesGrid.jsx'))
+const Work = lazy(() => import('./components/Work.jsx'))
+const Transformation = lazy(() => import('./components/Transformation.jsx'))
+const Testimonials = lazy(() => import('./components/Testimonials.jsx'))
+const TrustSignals = lazy(() => import('./components/TrustSignals.jsx'))
+const ContactForm = lazy(() => import('./components/ContactForm.jsx'))
+const Footer = lazy(() => import('./components/Footer.jsx'))
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -114,17 +120,21 @@ export default function App() {
         <Navbar />
         <main>
           <Hero canAnimate={canAnimate} />
-          <Features />
-          <Pillars />
-          <Protocol />
-          <ServicesGrid />
-          <Work />
-          <Transformation />
-          <Testimonials />
-          <TrustSignals />
-          <ContactForm />
+          <Suspense fallback={null}>
+            <Features />
+            <Pillars />
+            <Protocol />
+            <ServicesGrid />
+            <Work />
+            <Transformation />
+            <Testimonials />
+            <TrustSignals />
+            <ContactForm />
+          </Suspense>
         </main>
-        <Footer />
+        <Suspense fallback={null}>
+          <Footer />
+        </Suspense>
       </div>
     </>
   )
