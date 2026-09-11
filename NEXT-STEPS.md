@@ -53,18 +53,35 @@ gzipped, CSS 42KB/8KB gzipped.
     High-Level Architecture section for why `Hero` specifically has to stay outside the Suspense
     boundary (it would otherwise wait on every lazy chunk too).
 
-**Pass 0 — still not actually run.** Run the live URL through Google PageSpeed/Lighthouse
-(https://pagespeed.web.dev/analysis?url=https://sharpable.netlify.app) for a real score and to
-confirm Passes 1–3 actually moved the needle, especially on the mobile score specifically (Pass 3
-targeted mobile smoothness, which Lighthouse's mobile CPU-throttled run should reflect better than
-its desktop one). Tried twice now across two sessions and got stuck/never completed either time —
-worth just doing manually in a real browser if it keeps failing here.
+**Pass 0 — done, but only locally, and only via CLI.** `pagespeed.web.dev` in the Browser pane tool
+failed twice across two sessions and was never actually completed that way — worked around by
+installing `lighthouse` via `npx` and running it as a CLI against a local `vite preview` build
+instead (`npx lighthouse http://localhost:PORT --preset=perf --form-factor=mobile
+--screenEmulation.mobile --throttling-method=simulate --chrome-flags="--headless --no-sandbox"`).
+**One Windows gotcha**: it always throws an `EPERM` cleaning up its own temp Chrome profile
+afterward (same Controlled Folder Access class of issue as the documented Netlify deploy gotcha) —
+harmless, the report JSON is already written by the time that error fires, just check the output
+file exists rather than trusting the exit code. **Bigger caveat**: this dev machine's Lighthouse
+numbers are noisy — two back-to-back runs of the exact same build swung Total Blocking Time
+1237ms↔737ms and the Performance score 64↔73 with zero code changes between them. Trust large,
+consistent, repeated-across-runs signals (a metric moving by 800ms+, or an audit item disappearing
+entirely) from this path; don't trust small swings in one single run. **Still not done: a real run
+against the actual deployed `sharpable.netlify.app` URL** via the real pagespeed.web.dev
+infrastructure (not this machine) — that would be a cleaner, less noisy read if precise before/after
+numbers are ever needed.
 
-**Pass 4 — optional, only if Pass 0's numbers still fall short:**
-- **Self-host fonts** (via `@fontsource` or downloaded woff2 files) instead of the Google Fonts
-  `<link>` in `index.html`. Lower priority than it sounds — `font-display: swap` is already set, so
-  the worst failure mode (invisible text while fonts load) is already handled; this would only shave
-  the extra network round-trip to Google's servers, not fix a broken-looking load.
+- ✅ **Pass 4 — self-host fonts.** Turned out to matter more than expected: a real Lighthouse run
+  flagged the Google Fonts `<link>` as the single biggest render-blocking cost on the page (778ms of
+  the page's 1,800ms total render-blocking estimate, just for the round trip to fetch its CSS before
+  any font file could even be requested) — `font-display: swap` avoids invisible text but doesn't
+  avoid that round trip. Fixed by auditing every `font-*` weight class actually used in the codebase
+  (Plus Jakarta Sans: only 600/700/800; Cormorant Garamond: only *italic* 400/500 — matches
+  CLAUDE.md's own note it's always used italic, so every upright variant was dead weight; Inter: only
+  400/500/600; JetBrains Mono: only 400, never has a weight override anywhere) and switching to
+  `@fontsource`'s `latin-*` subset files (skips bundling cyrillic/greek/vietnamese `@font-face`
+  declarations this English/Bahasa-Melayu site never needs) imported directly in `main.jsx`. Real
+  result: FCP 3.5s→2.7s, LCP 4.1s→3.2s, and the Google Fonts entry is gone from the render-blocking
+  list entirely.
 
 ---
 
