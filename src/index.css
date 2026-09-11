@@ -109,8 +109,14 @@
      at the end of a translateY+opacity move like this one. */
   .animate-page-in { animation: fade-up-in 0.55s cubic-bezier(0.16, 1, 0.3, 1) both; }
   .animate-page-out { animation: fade-down-out 0.32s cubic-bezier(0.7, 0, 0.84, 0) both; }
+  /* Same fade-up-in/fade-down-out keyframes as the page transitions above, just re-timed for
+     small, quick UI moments (a thumbnail appearing/disappearing, a modal opening) rather than
+     a full-page transition. */
+  .animate-thumb-in { animation: fade-up-in 0.28s cubic-bezier(0.16, 1, 0.3, 1) both; }
+  .animate-thumb-out { animation: fade-down-out 0.2s cubic-bezier(0.7, 0, 0.84, 0) both; }
+  .animate-modal-in { animation: fade-up-in 0.35s cubic-bezier(0.16, 1, 0.3, 1) both; }
   @media (prefers-reduced-motion: reduce) {
-    .animate-page-in, .animate-page-out { animation: none; }
+    .animate-page-in, .animate-page-out, .animate-thumb-in, .animate-thumb-out, .animate-modal-in { animation: none; }
   }
 }
 

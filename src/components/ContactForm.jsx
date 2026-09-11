@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { ArrowRight, CheckCircle2, ChevronDown, Loader2, Lock, Mail, MapPin, Phone, Upload, X } from 'lucide-react'
 import { Turnstile } from '@marsidev/react-turnstile'
 import { useLanguage } from '../useLanguage.js'
@@ -16,8 +16,22 @@ export default function ContactForm() {
   const [turnstileToken, setTurnstileToken] = useState('')
   const [errorMessage, setErrorMessage] = useState('')
   const [fileError, setFileError] = useState('')
-  const [previewIndex, setPreviewIndex] = useState(null)
+  const [previewFile, setPreviewFile] = useState(null)
+  const [removingFiles, setRemovingFiles] = useState(() => new Set())
+  const [uploadAreaHeight, setUploadAreaHeight] = useState(0)
   const dropRef = useRef(null)
+  const uploadContentRef = useRef(null)
+
+  // Measures the attachments row's real content height so the dropzone can smoothly
+  // animate to/from that exact size (an explicit `height`, not `max-height` — in this
+  // exact environment `max-height` transitions on this element mysteriously compute to
+  // 0 regardless of the value set, confirmed by isolating every other suspect; a plain
+  // `height` driven by a real measurement does not have that problem).
+  useLayoutEffect(() => {
+    if (uploadContentRef.current) {
+      setUploadAreaHeight(uploadContentRef.current.scrollHeight)
+    }
+  }, [files, fileError])
 
   const previewUrls = useMemo(
     () => files.map((f) => (f.type?.startsWith('image/') ? URL.createObjectURL(f) : null)),
@@ -30,14 +44,17 @@ export default function ContactForm() {
     }
   }, [previewUrls])
 
+  const previewFileIndex = previewFile ? files.indexOf(previewFile) : -1
+  const previewUrl = previewFileIndex >= 0 ? previewUrls[previewFileIndex] : null
+
   useEffect(() => {
-    if (previewIndex === null) return
+    if (!previewFile) return
     const onKeyDown = (e) => {
-      if (e.key === 'Escape') setPreviewIndex(null)
+      if (e.key === 'Escape') setPreviewFile(null)
     }
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
-  }, [previewIndex])
+  }, [previewFile])
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -79,9 +96,17 @@ export default function ContactForm() {
     })
   }
 
-  const removeFile = (index) => {
-    setFiles((prev) => prev.filter((_, i) => i !== index))
-    setFileError('')
+  const removeFile = (file) => {
+    setRemovingFiles((prev) => new Set(prev).add(file))
+    setTimeout(() => {
+      setFiles((prev) => prev.filter((f) => f !== file))
+      setRemovingFiles((prev) => {
+        const next = new Set(prev)
+        next.delete(file)
+        return next
+      })
+      setFileError('')
+    }, 200)
   }
 
   return (
@@ -219,40 +244,58 @@ export default function ContactForm() {
                       <p className="font-display font-semibold text-ink text-sm">{t.contact.form.upload}</p>
                       <p className="text-xs text-muted mt-1">{t.contact.form.uploadHint}</p>
                     </label>
-                  </div>
 
-                  {files.length > 0 && (
-                    <div className="mt-4 grid grid-cols-4 sm:grid-cols-5 gap-2.5">
-                      {files.map((file, i) => (
-                        <div key={i} className="relative">
-                          <button
-                            type="button"
-                            onClick={() => previewUrls[i] && setPreviewIndex(i)}
-                            disabled={!previewUrls[i]}
-                            className="block w-full aspect-square rounded-xl overflow-hidden border border-divider bg-background focus:outline-none focus:ring-4 focus:ring-primary/15"
-                          >
-                            {previewUrls[i] ? (
-                              <img src={previewUrls[i]} alt={file.name} className="w-full h-full object-cover" />
-                            ) : (
-                              <span className="flex items-center justify-center h-full px-1 text-center text-[9px] text-muted leading-tight">
-                                {file.name}
-                              </span>
-                            )}
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => removeFile(i)}
-                            aria-label={t.contact.form.removeFile}
-                            className="absolute -top-1.5 -right-1.5 h-5 w-5 rounded-full bg-deep border border-divider flex items-center justify-center text-muted hover:text-ink hover:border-primary transition"
-                          >
-                            <X className="h-3 w-3" />
-                          </button>
+                    {/* Smoothly extends/collapses the dropzone as images are added/removed, instead
+                        of the box snapping to a new height. Height is measured from the real
+                        content (uploadContentRef) rather than a guessed fixed number, so it always
+                        matches exactly — no wasted empty space, no risk of clipping. */}
+                    <div
+                      className="overflow-hidden transition-[height] duration-300 ease-out"
+                      style={{ height: files.length > 0 ? `${uploadAreaHeight}px` : '0px' }}
+                    >
+                      <div ref={uploadContentRef}>
+                        {files.length > 0 && (
+                        <div className="mt-4 pt-4 border-t border-divider/60 grid grid-cols-5 gap-2">
+                          {files.map((file, i) => {
+                            const url = previewUrls[i]
+                            const isRemoving = removingFiles.has(file)
+                            return (
+                              <div
+                                key={`${file.name}-${file.size}-${file.lastModified}`}
+                                className={`relative ${isRemoving ? 'animate-thumb-out pointer-events-none' : 'animate-thumb-in'}`}
+                              >
+                                <button
+                                  type="button"
+                                  onClick={() => url && setPreviewFile(file)}
+                                  disabled={!url}
+                                  className="block w-full aspect-square rounded-lg overflow-hidden border border-divider bg-deep focus:outline-none focus:ring-4 focus:ring-primary/15"
+                                >
+                                  {url ? (
+                                    <img src={url} alt={file.name} className="w-full h-full object-cover" />
+                                  ) : (
+                                    <span className="flex items-center justify-center h-full px-1 text-center text-[8px] text-muted leading-tight">
+                                      {file.name}
+                                    </span>
+                                  )}
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => removeFile(file)}
+                                  aria-label={t.contact.form.removeFile}
+                                  className="absolute -top-1.5 -right-1.5 h-5 w-5 rounded-full bg-deep border border-divider flex items-center justify-center text-muted hover:text-ink hover:border-primary transition"
+                                >
+                                  <X className="h-3 w-3" />
+                                </button>
+                              </div>
+                            )
+                          })}
                         </div>
-                      ))}
-                    </div>
-                  )}
+                        )}
 
-                  {fileError && <p className="mt-2 text-xs text-red-400">{fileError}</p>}
+                        {fileError && <p className="mt-3 text-xs text-red-400">{fileError}</p>}
+                      </div>
+                    </div>
+                  </div>
 
                   <div className="mt-5 flex justify-center">
                     <Turnstile
@@ -302,28 +345,31 @@ export default function ContactForm() {
         </div>
       </div>
 
-      {previewIndex !== null && previewUrls[previewIndex] && (
+      {previewFile && previewUrl && (
         <div
           className="fixed inset-0 z-[100] flex items-center justify-center bg-deep/90 backdrop-blur-sm p-4 sm:p-8"
-          onClick={() => setPreviewIndex(null)}
+          onClick={() => setPreviewFile(null)}
         >
           <div
-            className="relative w-full max-w-lg aspect-square sm:aspect-[4/3] bg-surface border border-divider rounded-3xl overflow-hidden flex items-center justify-center"
+            className="animate-modal-in relative w-full max-w-lg aspect-square sm:aspect-[4/3] bg-surface border border-divider rounded-3xl overflow-hidden flex items-center justify-center"
             onClick={(e) => e.stopPropagation()}
           >
             <img
-              src={previewUrls[previewIndex]}
-              alt={files[previewIndex]?.name}
+              src={previewUrl}
+              alt={previewFile.name}
               className="max-w-full max-h-full w-auto h-auto object-contain"
             />
             <button
               type="button"
-              onClick={() => setPreviewIndex(null)}
+              onClick={() => setPreviewFile(null)}
               aria-label={t.contact.form.closePreview}
               className="absolute top-3 right-3 h-9 w-9 rounded-full bg-deep/80 border border-divider flex items-center justify-center text-ink hover:border-primary transition"
             >
               <X className="h-4 w-4" />
             </button>
+            <p className="absolute bottom-0 inset-x-0 bg-deep/80 backdrop-blur-sm px-4 py-2.5 text-xs text-muted truncate">
+              {previewFile.name}
+            </p>
           </div>
         </div>
       )}
