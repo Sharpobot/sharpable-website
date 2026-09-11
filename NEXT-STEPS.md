@@ -40,6 +40,18 @@ gzipped, CSS 42KB/8KB gzipped.
   inspection — this tool's Browser pane can't reliably profile live frame timing (see CLAUDE.md's
   rAF/`document.hidden` gotcha), so if scroll smoothness ever needs re-checking, verify the same way
   (computed styles / matchMedia) rather than trusting `PerformanceObserver` numbers from in-pane.
+- ✅ **Pass 3.5 — three more adjustments after Pass 3, same "phones struggle more" thread:**
+  - Hero shader capped to 1x pixel density below 1024px (`HeroShaderBackground.jsx`) — a full-screen
+    fragment shader's cost scales with pixel count, so allowing up to 2x on a retina phone roughly
+    quadruples GPU work for a texture that's already soft/out-of-focus by design. Desktop unaffected.
+  - `DesignShuffler`/`BuildScanner`/`StrategyScheduler` (the Features widgets) now pause their
+    `setInterval` auto-cycle via a shared `useOnScreen()` hook once scrolled out of view — they used
+    to run forever in the background, unlike the Hero shader which already had this. Zero visual
+    change while visible.
+  - Every section below `Hero` (`Features` through `Footer`) is now `React.lazy`-loaded behind
+    `Suspense` — main JS chunk 447KB→378KB (130.6KB gzip). See the `App.jsx` entry in CLAUDE.md's
+    High-Level Architecture section for why `Hero` specifically has to stay outside the Suspense
+    boundary (it would otherwise wait on every lazy chunk too).
 
 **Pass 0 — still not actually run.** Run the live URL through Google PageSpeed/Lighthouse
 (https://pagespeed.web.dev/analysis?url=https://sharpable.netlify.app) for a real score and to
