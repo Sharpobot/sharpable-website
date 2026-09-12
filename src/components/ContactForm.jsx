@@ -18,11 +18,13 @@ export default function ContactForm() {
   const [errorMessage, setErrorMessage] = useState('')
   const [fileError, setFileError] = useState('')
   const [previewFile, setPreviewFile] = useState(null)
+  const [isPreviewClosing, setIsPreviewClosing] = useState(false)
   const [removingFiles, setRemovingFiles] = useState(() => new Set())
   const [uploadAreaHeight, setUploadAreaHeight] = useState(0)
   const dropRef = useRef(null)
   const uploadContentRef = useRef(null)
   const errorRef = useRef(null)
+  const previewCloseTimeoutRef = useRef(null)
 
   // Moves keyboard/screen-reader focus to the error message the moment it appears,
   // so assistive tech announces it immediately rather than leaving the user to
@@ -41,7 +43,16 @@ export default function ContactForm() {
   // `height` driven by a real measurement does not have that problem).
   useLayoutEffect(() => {
     if (uploadContentRef.current) {
-      setUploadAreaHeight(uploadContentRef.current.scrollHeight)
+      // offsetHeight, not scrollHeight: a newly-added thumbnail plays its own entrance animation
+      // (animate-thumb-in, a translateY(14px)->0 transform), and this effect fires synchronously
+      // at the exact moment that transform is still at its starting 14px offset. scrollHeight
+      // factors in that transform-shifted (paint-time) extent, so it over-measures by 14px right
+      // when a new thumbnail is added — and since nothing re-measures once the animation settles,
+      // that phantom 14px of empty space sticks around permanently (confirmed via rAF-by-rAF
+      // sampling: scrollHeight read 110 at frame 0 while offsetHeight read the correct 96 the
+      // entire time). offsetHeight is purely layout-based and ignores transform altogether, so it
+      // reports the settled size from the first frame regardless of what's still animating.
+      setUploadAreaHeight(uploadContentRef.current.offsetHeight)
     }
   }, [files, fileError])
 
@@ -59,10 +70,31 @@ export default function ContactForm() {
   const previewFileIndex = previewFile ? files.indexOf(previewFile) : -1
   const previewUrl = previewFileIndex >= 0 ? previewUrls[previewFileIndex] : null
 
+  // Opens a new preview (from any state, including mid-close) — cancels a pending close so it
+  // can't null out the freshly-opened file out from under it.
+  const openPreview = (file) => {
+    clearTimeout(previewCloseTimeoutRef.current)
+    setIsPreviewClosing(false)
+    setPreviewFile(file)
+  }
+
+  // Mirrors the thumbnail-removal pattern: play the fade-down-out animation first, then actually
+  // unmount (clear previewFile) once it's finished, matching animate-modal-out's 0.25s duration.
+  const closePreview = () => {
+    setIsPreviewClosing(true)
+    clearTimeout(previewCloseTimeoutRef.current)
+    previewCloseTimeoutRef.current = setTimeout(() => {
+      setPreviewFile(null)
+      setIsPreviewClosing(false)
+    }, 250)
+  }
+
+  useEffect(() => () => clearTimeout(previewCloseTimeoutRef.current), [])
+
   useEffect(() => {
     if (!previewFile) return
     const onKeyDown = (e) => {
-      if (e.key === 'Escape') setPreviewFile(null)
+      if (e.key === 'Escape') closePreview()
     }
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
@@ -272,9 +304,17 @@ export default function ContactForm() {
                       className="overflow-hidden transition-[height] duration-300 ease-out"
                       style={{ height: files.length > 0 ? `${uploadAreaHeight}px` : '0px' }}
                     >
-                      <div ref={uploadContentRef}>
+                      {/* flow-root: without this, the grid row's mt-4 top margin collapses straight
+                          through this div and escapes into the overflow-hidden wrapper above, so
+                          this element's own scrollHeight silently under-reports the true content
+                          height by exactly that margin (confirmed via direct DOM measurement — the
+                          margin lands inside the wrapper's scrollHeight but not this div's own).
+                          That under-measurement is what was clipping the bottom of the thumbnail
+                          row/error text. flow-root establishes a block formatting context so the
+                          margin stays inside this box's own measured height, with no visual change. */}
+                      <div ref={uploadContentRef} className="flow-root">
                         {files.length > 0 && (
-                        <div className="mt-4 pt-4 border-t border-divider/60 grid grid-cols-5 gap-2">
+                        <div className="mt-4 pt-4 px-2 border-t border-divider/60 grid grid-cols-5 gap-2">
                           {files.map((file, i) => {
                             const url = previewUrls[i]
                             const isRemoving = removingFiles.has(file)
@@ -285,7 +325,7 @@ export default function ContactForm() {
                               >
                                 <button
                                   type="button"
-                                  onClick={() => url && setPreviewFile(file)}
+                                  onClick={() => url && openPreview(file)}
                                   disabled={!url}
                                   className="block w-full aspect-square rounded-lg overflow-hidden border border-divider bg-deep focus:outline-none focus:ring-4 focus:ring-primary/15"
                                 >
@@ -371,10 +411,10 @@ export default function ContactForm() {
       {previewFile && previewUrl && (
         <div
           className="fixed inset-0 z-[100] flex items-center justify-center bg-deep/90 backdrop-blur-sm p-4 sm:p-8"
-          onClick={() => setPreviewFile(null)}
+          onClick={closePreview}
         >
           <div
-            className="animate-modal-in relative w-full max-w-lg aspect-square sm:aspect-[4/3] bg-surface border border-divider rounded-3xl overflow-hidden flex items-center justify-center"
+            className={`${isPreviewClosing ? 'animate-modal-out' : 'animate-modal-in'} relative w-full max-w-lg aspect-square sm:aspect-[4/3] bg-surface border border-divider rounded-3xl overflow-hidden flex items-center justify-center`}
             onClick={(e) => e.stopPropagation()}
           >
             <img
@@ -384,7 +424,7 @@ export default function ContactForm() {
             />
             <button
               type="button"
-              onClick={() => setPreviewFile(null)}
+              onClick={closePreview}
               aria-label={t.contact.form.closePreview}
               className="absolute top-3 right-3 h-9 w-9 rounded-full bg-deep/80 border border-divider flex items-center justify-center text-ink hover:border-primary transition"
             >

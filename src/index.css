@@ -63,7 +63,10 @@
     -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
   }
   .glass {
-    background: rgba(32,32,36,0.65);
+    /* Raised from 0.65 — at that opacity the blur read as barely-there/"ghostlike" against busy
+       content scrolling underneath (real feedback); still genuinely translucent + blurred, just
+       reads as solid frosted glass instead of a faint tint. */
+    background: rgba(28,28,32,0.88);
     backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
     border: 1px solid rgba(255,198,41,0.18);
   }
@@ -115,8 +118,9 @@
   .animate-thumb-in { animation: fade-up-in 0.28s cubic-bezier(0.16, 1, 0.3, 1) both; }
   .animate-thumb-out { animation: fade-down-out 0.2s cubic-bezier(0.7, 0, 0.84, 0) both; }
   .animate-modal-in { animation: fade-up-in 0.35s cubic-bezier(0.16, 1, 0.3, 1) both; }
+  .animate-modal-out { animation: fade-down-out 0.25s cubic-bezier(0.7, 0, 0.84, 0) both; }
   @media (prefers-reduced-motion: reduce) {
-    .animate-page-in, .animate-page-out, .animate-thumb-in, .animate-thumb-out, .animate-modal-in { animation: none; }
+    .animate-page-in, .animate-page-out, .animate-thumb-in, .animate-thumb-out, .animate-modal-in, .animate-modal-out { animation: none; }
   }
 }
 

@@ -219,27 +219,14 @@ export default function Navbar() {
               consume any of the vertical budget the content below is fighting for. `text-white/[0.035]`
               (nudged down from an initial 0.06 on request — "a little more subtle") rather than any of
               the site's real gold tokens is the "cemented in stone" ask — a plain lightness difference
-              against the dark background reads as carved texture, not a brand color trying to be noticed. */}
+              against the dark background reads as carved texture, not a brand color trying to be noticed.
+              Position restored to the original -14%/-8% corner offset (a further push tried once read
+              as "too shoved" per feedback) — only the size is trimmed down from the original 68vw/380px. */}
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute -right-[14%] -bottom-[8%] w-[68vw] max-w-[380px] text-white/[0.035]"
+            className="pointer-events-none absolute -right-[14%] -bottom-[8%] w-[60vw] max-w-[340px] text-white/[0.035]"
           >
             <Logo iconOnly mono alt="" className="w-full" />
-          </div>
-
-          {/* Wordmark, same subtle carved-texture tone as the icon watermark above (not a real header
-              logo — this panel already has its own close button, so it's purely a continuity cue).
-              Positioned at the navbar's own real logo position (measured via getBoundingClientRect at
-              top:32/left:32 px, `h-6` to match its actual navbar height), same reasoning as the close
-              button's own positioning below — so opening the menu doesn't read as the logo jumping to
-              a different spot than where it just was. */}
-          <div
-            aria-hidden="true"
-            className={`pointer-events-none absolute top-8 left-8 transition-opacity duration-300 ease-out ${
-              open ? 'opacity-100' : 'opacity-0'
-            }`}
-          >
-            <Logo gold alt="" className="h-6 text-white/[0.035]" />
           </div>
 
           {/* Positioned to land almost exactly where the hamburger-turned-X sits in the navbar itself
