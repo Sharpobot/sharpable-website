@@ -97,12 +97,11 @@ export default function Navbar() {
           without compensating, the icon reads as having more breathing room than the logo despite
           identical container padding. Measured via getBoundingClientRect before this fix: 16px from
           the container edge to the logo's visible pixels vs 24px to the hamburger icon's.
-          The pill's own radius is an explicit 28px, not `rounded-full`: at this pill's ~56px height,
-          `rounded-full` (9999px) already renders as exactly 28px (browsers clamp it to half the
-          shorter side), so this looks identical at rest — but animating a `border-radius` transition
-          FROM 9999px barely reads as smooth, because the rendered value stays clamped at ~28px for
-          nearly the whole transition and only visibly drops in the last sliver of it. Starting from
-          the real 28px instead makes the radius interpolate evenly across the full 500ms.
+          The pill's radius is an explicit 10px (`rounded-[10px]`), not `rounded-full` — part of the
+          site-wide "unround" pass (a later session): the old very-rounded pill vibe didn't fit
+          "Sharpable", so every corner radius site-wide was compressed into a slightly-rounded 6-16px
+          band instead. Desktop's `lg:` variant uses the same explicit 10px so the pill and the mobile
+          unscrolled bar share one consistent corner radius rather than two different values.
           Positioned via `inset-x` + `max-w-6xl mx-auto`, not `left-1/2` + a `translateX(-50%)` +
           `width: calc(100% - 2rem)`. The old approach depends on percentage-width math resolving
           against the true viewport — but this page has decorative blur/glow elements that bleed past
@@ -117,10 +116,10 @@ export default function Navbar() {
         ref={navRef}
         className={`fixed max-w-6xl mx-auto z-50 will-change-transform
           transition-[background-color,box-shadow,border-color,left,right,padding,border-radius,top] duration-500 ease-out
-          lg:inset-x-4 lg:top-4 lg:rounded-full lg:px-4 lg:py-2.5 ${
+          lg:inset-x-4 lg:top-4 lg:rounded-[10px] lg:px-4 lg:py-2.5 ${
           scrolled
             ? 'glass border-transparent lg:border-[rgba(255,198,41,0.18)] shadow-lg shadow-primary/10 top-0 inset-x-0 rounded-none pl-5 pr-3 sm:pl-6 sm:pr-4 py-3'
-            : 'bg-transparent top-4 inset-x-4 rounded-[28px] pl-4 pr-2 sm:pl-6 sm:pr-4 py-2.5'
+            : 'bg-transparent top-4 inset-x-4 rounded-[10px] pl-4 pr-2 sm:pl-6 sm:pr-4 py-2.5'
         }`}
         style={{ transform: 'translate3d(0, 0, 0)' }}
       >
@@ -152,7 +151,7 @@ export default function Navbar() {
             <button
               onClick={toggleLang}
               aria-label="Toggle language"
-              className={`lift-on-hover inline-flex items-center gap-1.5 border px-3 py-2 rounded-full text-xs font-mono uppercase tracking-widest transition-colors ${
+              className={`lift-on-hover inline-flex items-center gap-1.5 border px-3 py-2 rounded-lg text-xs font-mono uppercase tracking-widest transition-colors ${
                 scrolled
                   ? 'border-divider text-ink/70 hover:text-primary hover:border-primary/40'
                   : 'border-white/25 text-white/80 hover:text-white hover:border-white/50'
@@ -163,7 +162,7 @@ export default function Navbar() {
             </button>
             <a
               href="#contact"
-              className="magnetic-btn inline-flex items-center gap-1.5 bg-primary text-deep px-4 py-2 rounded-full text-sm font-semibold shadow-lg shadow-primary/30"
+              className="magnetic-btn inline-flex items-center gap-1.5 bg-primary text-deep px-4 py-2 rounded-lg text-sm font-semibold shadow-lg shadow-primary/30"
             >
               {t.nav.cta}
               <ArrowUpRight className="h-4 w-4" strokeWidth={2.5} />
@@ -174,7 +173,7 @@ export default function Navbar() {
             <button
               onClick={toggleLang}
               aria-label="Toggle language"
-              className={`inline-flex items-center gap-1 border px-2.5 py-1.5 rounded-full text-[11px] font-mono uppercase tracking-widest transition-colors ${
+              className={`inline-flex items-center gap-1 border px-2.5 py-1.5 rounded-lg text-[11px] font-mono uppercase tracking-widest transition-colors ${
                 scrolled
                   ? 'border-divider text-ink/70'
                   : 'border-white/25 text-white/80'
@@ -275,7 +274,7 @@ export default function Navbar() {
               <a
                 href="#contact"
                 onClick={() => setOpen(false)}
-                className={`mt-[clamp(1rem,3.4dvh,2rem)] magnetic-btn flex items-center justify-center gap-2 bg-primary text-deep px-6 py-[clamp(0.5rem,1.6dvh,1rem)] rounded-full font-semibold w-full transition-all duration-[500ms] ease-out ${
+                className={`mt-[clamp(1rem,3.4dvh,2rem)] magnetic-btn flex items-center justify-center gap-2 bg-primary text-deep px-6 py-[clamp(0.5rem,1.6dvh,1rem)] rounded-lg font-semibold w-full transition-all duration-[500ms] ease-out ${
                   open ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4'
                 }`}
                 style={{ transitionDelay: open ? `${140 + NAV_LINKS.length * 45 + 40}ms` : '0ms' }}

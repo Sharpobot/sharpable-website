@@ -10,9 +10,18 @@ import { LanguageProvider } from './i18n.jsx'
 // to fetch fonts.googleapis.com's CSS, before any font file was even requested). `latin-*` variants
 // specifically (not the combined per-weight file, which bundles cyrillic/greek/vietnamese @font-face
 // declarations we never need) — this site is English/Bahasa Melayu only, both plain Latin script.
-import '@fontsource/plus-jakarta-sans/latin-600.css'
-import '@fontsource/plus-jakarta-sans/latin-700.css'
-import '@fontsource/plus-jakarta-sans/latin-800.css'
+//
+// Headings font swapped from Plus Jakarta Sans to Archivo (a later session, to match the new logo's
+// wordmark, which is set in Archivo SemiExpanded) — `wdth.css` is the variable-width build, the only
+// one that supports `font-stretch: semi-expanded` (see index.css's `.font-display` rule); Archivo has
+// no separately-published "SemiExpanded" static family, width is a variable axis on the one family.
+// It still only ships 3 unicode-range-gated subsets (vietnamese/latin-ext/latin) same as any
+// fontsource package — the browser only ever fetches the "latin" one for this site's actual text, so
+// this isn't a regression from the old latin-only static files despite importing the combined file
+// (fontsource doesn't publish a pre-split latin-only variant of its variable-font builds). One file
+// now covers every weight (100-900) and width (62%-125%) this project uses, instead of 3 separate
+// per-weight downloads.
+import '@fontsource-variable/archivo/wdth.css'
 import '@fontsource/cormorant-garamond/latin-400-italic.css'
 import '@fontsource/cormorant-garamond/latin-500-italic.css'
 import '@fontsource/inter/latin-400.css'

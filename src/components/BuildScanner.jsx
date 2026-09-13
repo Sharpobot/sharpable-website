@@ -90,12 +90,12 @@ export default function BuildScanner() {
 
       {/* Browser window bar at top */}
       <svg className="absolute left-3 right-3 top-9 h-5" viewBox="0 0 400 20" preserveAspectRatio="none">
-        <rect x="0" y="2" width="400" height="16" rx="6" fill="#FFC629" fillOpacity="0.12" />
-        <rect x="0" y="2" width="400" height="16" rx="6" fill="none" stroke="#FFC629" strokeOpacity="0.25" strokeWidth="1" />
+        <rect x="0" y="2" width="400" height="16" rx="2" fill="#FFC629" fillOpacity="0.12" />
+        <rect x="0" y="2" width="400" height="16" rx="2" fill="none" stroke="#FFC629" strokeOpacity="0.25" strokeWidth="1" />
         <circle cx="14" cy="10" r="2.4" fill="#FFDD70" fillOpacity="0.8" />
         <circle cx="24" cy="10" r="2.4" fill="#F5E6C8" fillOpacity="0.6" />
         <circle cx="34" cy="10" r="2.4" fill="#F0B300" fillOpacity="0.6" />
-        <rect x="48" y="6.5" width="180" height="7" rx="3.5" fill="#FFC629" fillOpacity="0.18" />
+        <rect x="48" y="6.5" width="180" height="7" rx="1.5" fill="#FFC629" fillOpacity="0.18" />
       </svg>
 
       {/* Falling code-bracket field */}

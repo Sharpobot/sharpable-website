@@ -71,7 +71,7 @@ export default function Work() {
                 <WorkPreview image={p.image} alt={p.title} />
               </div>
               <div className="work-copy">
-                <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-primary-dark bg-primary/10 px-2.5 py-1 rounded-full">
+                <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-primary-dark bg-primary/10 px-2.5 py-1 rounded-lg">
                   {p.tag}
                 </span>
                 <h3 className="font-display font-bold text-3xl sm:text-4xl text-ink leading-tight mt-5">

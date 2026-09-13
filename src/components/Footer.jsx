@@ -28,7 +28,7 @@ export default function Footer() {
             <p className="text-white/50 max-w-md">
               {t.footer.tagline}
             </p>
-            <a href="#contact" className="magnetic-btn inline-flex items-center gap-2 bg-primary text-deep font-semibold px-7 py-3.5 rounded-full self-start sm:self-auto">
+            <a href="#contact" className="magnetic-btn inline-flex items-center gap-2 bg-primary text-deep font-semibold px-7 py-3.5 rounded-lg self-start sm:self-auto">
               {t.trust.cta}
               <ArrowRight className="h-4 w-4" />
             </a>

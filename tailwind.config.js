@@ -17,17 +17,35 @@ export default {
         deep: '#0F0F12',
       },
       fontFamily: {
-        display: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+        // 'Archivo Variable' is the actual @font-face family name @fontsource-variable/archivo
+        // registers (see main.jsx) — paired with `font-stretch: semi-expanded` on `.font-display`
+        // itself (index.css) to match the new logo's wordmark, rather than a separate named family
+        // (Archivo ships width as a variable axis, not a standalone "SemiExpanded" font family).
+        display: ['"Archivo Variable"', 'system-ui', 'sans-serif'],
         serif: ['"Cormorant Garamond"', 'serif'],
         body: ['"Inter"', 'system-ui', 'sans-serif'],
         mono: ['"JetBrains Mono"', 'monospace'],
       },
+      // Site-wide "unround" pass (a later session): every radius tier compressed into a tight,
+      // consistent 6px-16px band instead of the old 8px-64px spread — the old scale read as "very
+      // rounded", off-brand for "Sharpable". Kept as a graduated scale (not one flat value) so a
+      // small button and a huge card still read as different tiers, just all subtly, not
+      // dramatically, rounded. Standard Tailwind tiers (lg/xl/2xl/3xl) are overridden here too, not
+      // just the custom 2.5xl-7xl ones — `rounded-full` is deliberately left untouched since it's
+      // used throughout for actual circles (avatars, dots, icon buttons), not "rounded corners".
+      // Wide pill-shaped buttons/badges that used `rounded-full` for a stadium shape were changed
+      // in their own component files instead (see the "unround" commit) since overriding `full`
+      // itself would have broken every genuine circle on the site.
       borderRadius: {
-        '2.5xl': '1.25rem',
-        '4xl': '2rem',
-        '5xl': '2.5rem',
-        '6xl': '3rem',
-        '7xl': '4rem',
+        lg: '0.375rem',
+        xl: '0.5rem',
+        '2xl': '0.625rem',
+        '3xl': '0.75rem',
+        '2.5xl': '0.75rem',
+        '4xl': '0.875rem',
+        '5xl': '0.875rem',
+        '6xl': '1rem',
+        '7xl': '1rem',
       },
       animation: {
         'pulse-slow': 'pulse 3s ease-in-out infinite',

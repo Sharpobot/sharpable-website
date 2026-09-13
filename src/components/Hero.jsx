@@ -75,14 +75,14 @@ export default function Hero({ canAnimate }) {
           <div className="hero-cta mt-10 flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
             <a
               href="#contact"
-              className="magnetic-btn group inline-flex items-center justify-center gap-2 bg-primary text-deep font-semibold px-7 py-4 rounded-full shadow-2xl shadow-primary/40"
+              className="magnetic-btn group inline-flex items-center justify-center gap-2 bg-primary text-deep font-semibold px-7 py-4 rounded-lg shadow-2xl shadow-primary/40"
             >
               {t.hero.ctaPrimary}
               <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
             </a>
             <a
               href="tel:+60195806090"
-              className="lift-on-hover inline-flex items-center justify-center gap-2 bg-white/10 backdrop-blur-md text-white border border-white/20 font-medium px-7 py-4 rounded-full"
+              className="lift-on-hover inline-flex items-center justify-center gap-2 bg-white/10 backdrop-blur-md text-white border border-white/20 font-medium px-7 py-4 rounded-lg"
             >
               <Phone className="h-4 w-4" />
               +6019 580 6090

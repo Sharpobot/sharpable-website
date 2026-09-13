@@ -128,10 +128,10 @@ function TransformCard({ card, images, position, flipped, onFlip, before, after 
               if (!lockedRef.current) setPos(Number(e.target.value))
             }}
           />
-          <span className="absolute top-3 sm:top-4 left-3 sm:left-4 font-mono text-[9px] sm:text-[10px] uppercase tracking-widest text-white bg-black/50 backdrop-blur-sm px-2.5 py-1 rounded-full pointer-events-none">
+          <span className="absolute top-3 sm:top-4 left-3 sm:left-4 font-mono text-[9px] sm:text-[10px] uppercase tracking-widest text-white bg-black/50 backdrop-blur-sm px-2.5 py-1 rounded-lg pointer-events-none">
             {before}
           </span>
-          <span className="absolute top-3 sm:top-4 right-3 sm:right-4 font-mono text-[9px] sm:text-[10px] uppercase tracking-widest text-white bg-black/50 backdrop-blur-sm px-2.5 py-1 rounded-full pointer-events-none">
+          <span className="absolute top-3 sm:top-4 right-3 sm:right-4 font-mono text-[9px] sm:text-[10px] uppercase tracking-widest text-white bg-black/50 backdrop-blur-sm px-2.5 py-1 rounded-lg pointer-events-none">
             {after}
           </span>
         </div>
@@ -142,7 +142,7 @@ function TransformCard({ card, images, position, flipped, onFlip, before, after 
           style={{ transform: 'rotateY(180deg)' }}
           onClick={() => position === 'center' && onFlip()}
         >
-          <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-primary-dark bg-primary/10 px-2.5 py-1 rounded-full">
+          <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-primary-dark bg-primary/10 px-2.5 py-1 rounded-lg">
             {card.tag}
           </span>
           <h3 className="font-display font-bold text-2xl sm:text-3xl text-ink leading-tight">{card.title}</h3>
@@ -150,7 +150,7 @@ function TransformCard({ card, images, position, flipped, onFlip, before, after 
           <a
             href="#contact"
             onClick={(e) => e.stopPropagation()}
-            className="magnetic-btn inline-flex items-center gap-2 bg-primary text-deep font-semibold px-6 py-3 rounded-full shadow-lg shadow-primary/30 mt-1"
+            className="magnetic-btn inline-flex items-center gap-2 bg-primary text-deep font-semibold px-6 py-3 rounded-lg shadow-lg shadow-primary/30 mt-1"
           >
             {card.cta}
           </a>

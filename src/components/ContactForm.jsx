@@ -375,7 +375,7 @@ export default function ContactForm() {
                     <button
                       type="submit"
                       disabled={status === 'sending' || !turnstileToken}
-                      className="magnetic-btn w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-primary text-deep font-semibold px-7 py-3.5 rounded-full shadow-lg shadow-primary/30 disabled:opacity-50"
+                      className="magnetic-btn w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-primary text-deep font-semibold px-7 py-3.5 rounded-lg shadow-lg shadow-primary/30 disabled:opacity-50"
                     >
                       {status === 'sending' ? (
                         <>

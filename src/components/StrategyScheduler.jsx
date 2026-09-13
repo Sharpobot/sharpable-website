@@ -40,7 +40,7 @@ export default function StrategyScheduler() {
         <span className="font-mono text-[10px] uppercase tracking-widest text-muted">
           {t.features.scheduler.week}
         </span>
-        <span className="font-mono text-[10px] uppercase tracking-widest text-primary-dark bg-primary/10 px-2 py-0.5 rounded-full">
+        <span className="font-mono text-[10px] uppercase tracking-widest text-primary-dark bg-primary/10 px-2 py-0.5 rounded-lg">
           {t.features.scheduler.booking}
         </span>
       </div>

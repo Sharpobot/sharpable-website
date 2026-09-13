@@ -62,6 +62,10 @@
     background: linear-gradient(135deg, #FFDD70 0%, #F0B300 100%);
     -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
   }
+  /* Archivo (self-hosted as a variable font, main.jsx) exposes width as a variable axis rather than
+     a separate "SemiExpanded" family — this is what actually selects that width, paired with the
+     `font-display` font-family utility Tailwind already generates from theme.fontFamily.display. */
+  .font-display { font-stretch: semi-expanded; }
   .glass {
     /* Raised from 0.65 — at that opacity the blur read as barely-there/"ghostlike" against busy
        content scrolling underneath (real feedback); still genuinely translucent + blurred, just
