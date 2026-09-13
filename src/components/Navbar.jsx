@@ -97,13 +97,13 @@ export default function Navbar() {
           without compensating, the icon reads as having more breathing room than the logo despite
           identical container padding. Measured via getBoundingClientRect before this fix: 16px from
           the container edge to the logo's visible pixels vs 24px to the hamburger icon's.
-          The pill's radius is an explicit 5px (`rounded-[5px]`), not `rounded-full` — part of the
-          site-wide "unround" pass (a later session): the old very-rounded pill vibe didn't fit
-          "Sharpable", so every corner radius site-wide was compressed into a subtly-rounded band
-          instead (tightened twice — first to 6-16px, then to 3-8px per follow-up feedback; this
-          pill's own 5px tracks that same second pass). Desktop's `lg:` variant uses the same
-          explicit 5px so the pill and the mobile unscrolled bar share one consistent corner radius
-          rather than two different values.
+          The pill's radius is an explicit 7.5px (`rounded-[7.5px]`), not `rounded-full` — part of
+          the site-wide "unround" pass (a later session, now on its third tuning round: 10px, then
+          5px, settled at 7.5px — the midpoint between those two, picked while comparing all three
+          live). The old very-rounded pill vibe didn't fit "Sharpable", so every corner radius
+          site-wide was compressed into a subtly-rounded band instead. Desktop's `lg:` variant uses
+          the same explicit 7.5px so the pill and the mobile unscrolled bar share one consistent
+          corner radius rather than two different values.
           Positioned via `inset-x` + `max-w-6xl mx-auto`, not `left-1/2` + a `translateX(-50%)` +
           `width: calc(100% - 2rem)`. The old approach depends on percentage-width math resolving
           against the true viewport — but this page has decorative blur/glow elements that bleed past
@@ -118,10 +118,10 @@ export default function Navbar() {
         ref={navRef}
         className={`fixed max-w-6xl mx-auto z-50 will-change-transform
           transition-[background-color,box-shadow,border-color,left,right,padding,border-radius,top] duration-500 ease-out
-          lg:inset-x-4 lg:top-4 lg:rounded-[5px] lg:px-4 lg:py-2.5 ${
+          lg:inset-x-4 lg:top-4 lg:rounded-[7.5px] lg:px-4 lg:py-2.5 ${
           scrolled
             ? 'glass border-transparent lg:border-[rgba(255,198,41,0.18)] shadow-lg shadow-primary/10 top-0 inset-x-0 rounded-none pl-5 pr-3 sm:pl-6 sm:pr-4 py-3'
-            : 'bg-transparent top-4 inset-x-4 rounded-[5px] pl-4 pr-2 sm:pl-6 sm:pr-4 py-2.5'
+            : 'bg-transparent top-4 inset-x-4 rounded-[7.5px] pl-4 pr-2 sm:pl-6 sm:pr-4 py-2.5'
         }`}
         style={{ transform: 'translate3d(0, 0, 0)' }}
       >

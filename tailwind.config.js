@@ -28,26 +28,27 @@ export default {
       },
       // Site-wide "unround" pass (a later session): every radius tier compressed into a tight,
       // consistent band instead of the old 8px-64px spread — the old scale read as "very rounded",
-      // off-brand for "Sharpable". Tightened a second time (3px-8px, down from an initial 6px-16px
-      // pass) per "even sharper, but not fully square" feedback. Kept as a graduated scale (not one
-      // flat value) so a small button and a huge card still read as different tiers, just all
-      // subtly, not dramatically, rounded. Standard Tailwind tiers (lg/xl/2xl/3xl) are overridden
-      // here too, not just the custom 2.5xl-7xl ones — `rounded-full` is deliberately left untouched
-      // since it's used throughout for actual circles (avatars, dots, icon buttons), not "rounded
+      // off-brand for "Sharpable". Went through three rounds of feedback: 6px-16px first, then
+      // 3px-8px ("even sharper"), then settled here at 4.5px-12px — the exact midpoint between
+      // those two, picked while comparing all three live. Kept as a graduated scale (not one flat
+      // value) so a small button and a huge card still read as different tiers, just all subtly,
+      // not dramatically, rounded. Standard Tailwind tiers (lg/xl/2xl/3xl) are overridden here too,
+      // not just the custom 2.5xl-7xl ones — `rounded-full` is deliberately left untouched since
+      // it's used throughout for actual circles (avatars, dots, icon buttons), not "rounded
       // corners". Wide pill-shaped buttons/badges that used `rounded-full` for a stadium shape were
       // changed to `rounded-lg` in their own component files instead (see the "unround" commit)
       // since overriding `full` itself would have broken every genuine circle on the site — they
-      // track this same scale via that shared `lg` token, so they tighten automatically too.
+      // track this same scale via that shared `lg` token, so they retune automatically too.
       borderRadius: {
-        lg: '0.1875rem',
-        xl: '0.25rem',
-        '2xl': '0.3125rem',
-        '3xl': '0.375rem',
-        '2.5xl': '0.375rem',
-        '4xl': '0.4375rem',
-        '5xl': '0.4375rem',
-        '6xl': '0.5rem',
-        '7xl': '0.5rem',
+        lg: '0.28125rem',
+        xl: '0.375rem',
+        '2xl': '0.46875rem',
+        '3xl': '0.5625rem',
+        '2.5xl': '0.5625rem',
+        '4xl': '0.65625rem',
+        '5xl': '0.65625rem',
+        '6xl': '0.75rem',
+        '7xl': '0.75rem',
       },
       animation: {
         'pulse-slow': 'pulse 3s ease-in-out infinite',
