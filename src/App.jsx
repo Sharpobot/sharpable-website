@@ -115,7 +115,18 @@ export default function App() {
   return (
     <>
       <LoadingScreen appReady={ready} onDone={() => setCanAnimate(true)} />
-      <div className="relative" style={{ visibility: ready ? 'visible' : 'hidden' }}>
+      {/* Gated on `canAnimate` too, not just `ready` — `ready` alone is only true immediately on a
+          normal first visit (nothing to scroll-restore), which used to reveal the real page from
+          frame 1 regardless of whether LoadingScreen was about to show its own overlay on top of
+          it. On a fast localhost load that's invisible, but on a real deployed site (self-hosted
+          variable fonts, the WebGL hero shader, several JS chunks) window.load routinely takes
+          longer than LoadingScreen's own SHOW_DELAY_MS — so the already-visible real page would
+          flash, then get hard-covered the instant the overlay mounted (it only fades on the way
+          *out*, not in), then reveal a second time once the overlay finished fading. `canAnimate`
+          only flips once LoadingScreen actually resolves (immediately if it never showed; after its
+          fade-out if it did), so tying the page's own reveal to it keeps both in lockstep — nothing
+          is ever visible before the exact moment the loader is gone, on a fast load or a slow one. */}
+      <div className="relative" style={{ visibility: ready && canAnimate ? 'visible' : 'hidden' }}>
         <div className="noise-overlay" />
         <Navbar />
         <main>
