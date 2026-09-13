@@ -8,6 +8,15 @@ const EASE_DURATION_MS = 900
 const FINISH_DURATION_MS = 220
 const HOLD_MS = 200
 const FADE_MS = 350
+// Hard failsafe: if real readiness (`trulyReady` below) never arrives at all — window.load never
+// fires because a sub-resource hangs indefinitely, a service worker misbehaves, whatever — this
+// forces the same finish-and-reveal sequence anyway. This matters more than it used to: the page
+// itself now stays `visibility: hidden` (App.jsx) until this component resolves, so without a bound
+// here, a readiness signal that never arrives would leave the entire site permanently invisible,
+// not just an overlay stuck spinning on top of an already-visible page. Mirrors the same pattern
+// App.jsx's own scroll-restore effect already uses for the identical class of risk (a rAF/event
+// chain that could in principle never tick again) — see its `fallback = setTimeout(finish, 700)`.
+const MAX_WAIT_MS = 8000
 
 function easeOutCubic(t) {
   return 1 - Math.pow(1 - t, 3)
@@ -43,6 +52,29 @@ export default function LoadingScreen({ appReady, onDone }) {
   const trulyReadyRef = useRef(trulyReady)
   const pctRef = useRef(0)
   const resolvedRef = useRef(false)
+  // Every setTimeout this component schedules gets tracked here and cleared as a group on unmount —
+  // several of them are nested two levels deep (finish the fill, THEN hold, THEN fade), and clearing
+  // only the outer one of a chain like that leaves the inner ones free to fire later and call
+  // setState on an already-unmounted instance. Harmless in modern React (state updates on an
+  // unmounted component are silently ignored, not an error), but still a real, avoidable leak.
+  const timeoutsRef = useRef(new Set())
+
+  const setManagedTimeout = (fn, ms) => {
+    const id = setTimeout(() => {
+      timeoutsRef.current.delete(id)
+      fn()
+    }, ms)
+    timeoutsRef.current.add(id)
+    return id
+  }
+
+  useEffect(() => {
+    const timeouts = timeoutsRef.current
+    return () => {
+      timeouts.forEach(clearTimeout)
+      timeouts.clear()
+    }
+  }, [])
 
   // Refs are updated in an effect (after render/commit), not in the render body itself — mutating
   // a ref during render is unsafe under concurrent rendering, since a render can be discarded and
@@ -63,6 +95,18 @@ export default function LoadingScreen({ appReady, onDone }) {
     onDone()
   }
 
+  // Forces the same finish-and-reveal sequence real readiness would have triggered — used by the
+  // hard failsafe below, and safe to call from anywhere since `resolve()` itself is idempotent.
+  const forceFinish = () => {
+    if (resolvedRef.current) return
+    setPct(100)
+    setFadingOut(true)
+    setManagedTimeout(() => {
+      setMounted(false)
+      resolve()
+    }, FADE_MS)
+  }
+
   // The real browser-load half of readiness.
   useEffect(() => {
     if (pageLoaded) return
@@ -79,11 +123,21 @@ export default function LoadingScreen({ appReady, onDone }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  // Hard failsafe — see MAX_WAIT_MS above. Independent of every other effect here, and of whether
+  // the loader ever became visible, so a hang in any of them still can't leave the page hidden
+  // forever.
+  useEffect(() => {
+    if (reducedMotion) return
+    const timer = setManagedTimeout(forceFinish, MAX_WAIT_MS)
+    return () => clearTimeout(timer)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   // Never flash anything for a wait shorter than SHOW_DELAY_MS — per the research this was built
   // from, an indicator for a sub-~200ms wait is pure noise, not information.
   useEffect(() => {
     if (reducedMotion) return
-    const timer = setTimeout(() => {
+    const timer = setManagedTimeout(() => {
       if (!trulyReadyRef.current) setVisible(true)
     }, SHOW_DELAY_MS)
     return () => clearTimeout(timer)
@@ -125,9 +179,9 @@ export default function LoadingScreen({ appReady, onDone }) {
       if (t < 1) {
         raf = requestAnimationFrame(tick)
       } else {
-        setTimeout(() => {
+        setManagedTimeout(() => {
           setFadingOut(true)
-          setTimeout(() => {
+          setManagedTimeout(() => {
             setMounted(false)
             resolve()
           }, FADE_MS)
@@ -145,11 +199,19 @@ export default function LoadingScreen({ appReady, onDone }) {
     <div
       className="fixed inset-0 z-[100] bg-background flex flex-col items-center justify-center gap-2 pointer-events-none transition-opacity"
       style={{ opacity: fadingOut ? 0 : 1, transitionDuration: `${FADE_MS}ms` }}
+      // `role="status"`/`aria-live="polite"` so assistive tech gets *some* signal a load is in
+      // progress — previously nothing here announced anything. The fast-changing percentage stays
+      // `aria-hidden` (a screen reader re-announcing a new number several times a second would be
+      // pure noise); the one thing actually announced is a static, unchanging label, spoken once
+      // when this first mounts and never repeated.
+      role="status"
+      aria-live="polite"
     >
-      <div className="w-36 h-[3px] rounded-full bg-divider/50 overflow-hidden">
+      <span className="sr-only">Loading</span>
+      <div className="w-36 h-[3px] rounded-full bg-divider/50 overflow-hidden" aria-hidden="true">
         <div className="h-full rounded-full bg-primary" style={{ width: `${pct}%` }} />
       </div>
-      <span className="font-mono text-sm tracking-wide text-muted tabular-nums">{pct}%</span>
+      <span className="font-mono text-sm tracking-wide text-muted tabular-nums" aria-hidden="true">{pct}%</span>
     </div>
   )
 }

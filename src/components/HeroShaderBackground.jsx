@@ -113,32 +113,44 @@ export default function HeroShaderBackground() {
     const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl')
     if (!gl) return
 
-    const vertexShader = compileShader(gl, gl.VERTEX_SHADER, VERTEX_SRC)
-    const fragmentShader = compileShader(gl, gl.FRAGMENT_SHADER, FRAGMENT_SRC)
-    if (!vertexShader || !fragmentShader) return
+    // Pulled out of the effect body so it can run again after a lost context is restored — a real,
+    // expected occurrence in production (GPU driver crash/reset, mobile OS reclaiming GPU memory
+    // under pressure, a laptop switching between integrated/discrete GPUs), not a rare edge case.
+    // Everything a lost context invalidates (compiled shaders, the linked program, the buffer, every
+    // uniform location) gets rebuilt from scratch; nothing here is reused across calls.
+    let uniforms = null
+    const setupGL = () => {
+      const vertexShader = compileShader(gl, gl.VERTEX_SHADER, VERTEX_SRC)
+      const fragmentShader = compileShader(gl, gl.FRAGMENT_SHADER, FRAGMENT_SRC)
+      if (!vertexShader || !fragmentShader) return false
 
-    const program = gl.createProgram()
-    gl.attachShader(program, vertexShader)
-    gl.attachShader(program, fragmentShader)
-    gl.linkProgram(program)
-    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) return
-    gl.useProgram(program)
+      const program = gl.createProgram()
+      gl.attachShader(program, vertexShader)
+      gl.attachShader(program, fragmentShader)
+      gl.linkProgram(program)
+      if (!gl.getProgramParameter(program, gl.LINK_STATUS)) return false
+      gl.useProgram(program)
 
-    const positionBuffer = gl.createBuffer()
-    gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer)
-    gl.bufferData(
-      gl.ARRAY_BUFFER,
-      new Float32Array([-1, -1, 3, -1, -1, 3]),
-      gl.STATIC_DRAW
-    )
-    const aPosition = gl.getAttribLocation(program, 'aPosition')
-    gl.enableVertexAttribArray(aPosition)
-    gl.vertexAttribPointer(aPosition, 2, gl.FLOAT, false, 0, 0)
+      const positionBuffer = gl.createBuffer()
+      gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer)
+      gl.bufferData(
+        gl.ARRAY_BUFFER,
+        new Float32Array([-1, -1, 3, -1, -1, 3]),
+        gl.STATIC_DRAW
+      )
+      const aPosition = gl.getAttribLocation(program, 'aPosition')
+      gl.enableVertexAttribArray(aPosition)
+      gl.vertexAttribPointer(aPosition, 2, gl.FLOAT, false, 0, 0)
 
-    const uResolution = gl.getUniformLocation(program, 'uResolution')
-    const uTime = gl.getUniformLocation(program, 'uTime')
-    const uMouse = gl.getUniformLocation(program, 'uMouse')
-    const uHover = gl.getUniformLocation(program, 'uHover')
+      uniforms = {
+        uResolution: gl.getUniformLocation(program, 'uResolution'),
+        uTime: gl.getUniformLocation(program, 'uTime'),
+        uMouse: gl.getUniformLocation(program, 'uMouse'),
+        uHover: gl.getUniformLocation(program, 'uHover'),
+      }
+      return true
+    }
+    if (!setupGL()) return
 
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
@@ -186,6 +198,7 @@ export default function HeroShaderBackground() {
     let rafId = null
     let start = performance.now()
     let visible = true
+    let contextLost = false
 
     const render = (now) => {
       const t = (now - start) / 1000
@@ -194,13 +207,21 @@ export default function HeroShaderBackground() {
       state.mouse[1] += (state.mouseTarget[1] - state.mouse[1]) * 0.07
       state.hover += (state.hoverTarget - state.hover) * 0.08
 
-      gl.uniform2f(uResolution, state.width, state.height)
-      gl.uniform1f(uTime, t)
-      gl.uniform2f(uMouse, state.mouse[0], state.mouse[1])
-      gl.uniform1f(uHover, state.hover)
+      gl.uniform2f(uniforms.uResolution, state.width, state.height)
+      gl.uniform1f(uniforms.uTime, t)
+      gl.uniform2f(uniforms.uMouse, state.mouse[0], state.mouse[1])
+      gl.uniform1f(uniforms.uHover, state.hover)
       gl.drawArrays(gl.TRIANGLES, 0, 3)
 
-      if (!reducedMotion && visible) rafId = requestAnimationFrame(render)
+      // Reset to null (not left holding a stale, already-fired id) whenever this loop decides not
+      // to continue — the IntersectionObserver below only restarts it when it finds `rafId === null`,
+      // so leaving a stale non-null id here means it silently never restarts: scroll the hero out of
+      // view and back and the background would freeze on whatever frame it stopped on, forever.
+      if (!reducedMotion && visible && !contextLost) {
+        rafId = requestAnimationFrame(render)
+      } else {
+        rafId = null
+      }
     }
 
     // Stops the rAF loop once the hero scrolls out of view (e.g. deep into the page) so the GPU
@@ -208,13 +229,40 @@ export default function HeroShaderBackground() {
     const observer = new IntersectionObserver(
       ([entry]) => {
         visible = entry.isIntersecting
-        if (visible && !reducedMotion && rafId === null) {
+        if (visible && !reducedMotion && !contextLost && rafId === null) {
           rafId = requestAnimationFrame(render)
         }
       },
       { threshold: 0 }
     )
     observer.observe(canvas)
+
+    // A lost WebGL context is a normal, expected occurrence in production (GPU driver crash/reset,
+    // mobile OS reclaiming GPU memory under pressure, a laptop switching graphics adapters) — not a
+    // rare edge case, and one this component previously did nothing about. Per spec, draw calls on a
+    // lost context silently no-op rather than throwing, so without this the background would just
+    // freeze on its last frame with no way back. `preventDefault()` on the loss event is what tells
+    // the browser this app knows how to recover and to actually attempt restoring the context at all
+    // — without it, most browsers won't fire `webglcontextrestored` afterward.
+    const onContextLost = (e) => {
+      e.preventDefault()
+      contextLost = true
+      if (rafId) cancelAnimationFrame(rafId)
+      rafId = null
+    }
+    const onContextRestored = () => {
+      contextLost = false
+      if (!setupGL()) return
+      resize()
+      start = performance.now()
+      if (reducedMotion) {
+        render(start)
+      } else if (visible) {
+        rafId = requestAnimationFrame(render)
+      }
+    }
+    canvas.addEventListener('webglcontextlost', onContextLost)
+    canvas.addEventListener('webglcontextrestored', onContextRestored)
 
     if (reducedMotion) {
       render(start)
@@ -228,8 +276,21 @@ export default function HeroShaderBackground() {
       window.removeEventListener('resize', resize)
       window.removeEventListener('pointermove', onPointerMove)
       document.removeEventListener('pointerleave', onPointerLeaveDoc)
+      canvas.removeEventListener('webglcontextlost', onContextLost)
+      canvas.removeEventListener('webglcontextrestored', onContextRestored)
     }
   }, [])
 
-  return <canvas ref={canvasRef} className="absolute inset-0 h-full w-full" />
+  return (
+    <canvas
+      ref={canvasRef}
+      className="absolute inset-0 h-full w-full"
+      // Static fallback, matching the shader's own base grey tones — invisible once WebGL is
+      // actually drawing (its opaque output fully covers the canvas every frame), but this is what
+      // shows through instead of a flat, characterless void on the cases nothing here can recover
+      // from: WebGL unsupported/disabled, a shader compile/link failure, or the brief gap between a
+      // context loss and its restoration completing.
+      style={{ background: 'linear-gradient(160deg, #0D0D0F 0%, #24242A 100%)' }}
+    />
+  )
 }
