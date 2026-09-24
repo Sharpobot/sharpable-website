@@ -1,8 +1,25 @@
 # PERFORMANCE-TRADEOFFS.md
 
+## How performance is measured here (moved from the old NEXT-STEPS.md, which no longer exists in that form)
+
+`pagespeed.web.dev` never worked from the Browser pane, so use the CLI against a local production
+preview: `npm run build`, `npm run preview`, then
+`npx lighthouse http://localhost:PORT --preset=perf --form-factor=mobile --screenEmulation.mobile --throttling-method=simulate --chrome-flags="--headless --no-sandbox"`.
+It always throws `EPERM` cleaning up its temp Chrome profile on Windows (Controlled Folder Access) —
+harmless; check the report file exists rather than the exit code. This machine's numbers are noisy
+(back-to-back runs of the same build swung Total Blocking Time 737↔1237ms and the score 64↔73), so
+trust only large, repeated signals (a metric moving 800ms+, an audit disappearing) and average 2–3
+runs. A real run against the deployed URL via the actual PageSpeed infrastructure has never been done.
+Already shipped and free of visual cost: legal-page code-splitting, image `srcSet`/width caps,
+preconnect to Cloudinary, IntersectionObserver pauses (Hero shader, Features widgets), below-the-fold
+lazy loading, self-hosted fonts (FCP 3.5s→2.7s, LCP 4.1s→3.2s), and the sub-1024px GPU trims
+(no grain overlay, halved backdrop blur, no `filter` on Protocol's scrub, 1x shader DPR).
+
+---
+
 Optional performance adjustments that were deliberately **not** applied — each one trades away a
 real, visible piece of the site's polish for a real performance gain. Passes 1–3 plus the shader
-DPR cap and font/lazy-load work (see `NEXT-STEPS.md`) were all "free" — zero visual cost. These
+DPR cap and font/lazy-load work (see the measurement notes at the top of this file) were all "free" — zero visual cost. These
 three are not free. Don't apply any of these speculatively; only reach for this file when there's
 an actual, current complaint ("still feels laggy on phones," a real low mobile Lighthouse score)
 that the free passes didn't fully resolve.
@@ -51,8 +68,8 @@ cursor-glow behavior — just less richly detailed. Desktop is unaffected if sco
   than at desktop width — compare a screenshot at each width.
 - Correctness: `gl.getUniformLocation(program, 'uOctaves')` should resolve to a valid location (not
   `null`) — if the shader failed to compile with the new uniform, this returns `null` silently.
-- Performance: re-run the CLI Lighthouse workflow documented in `NEXT-STEPS.md`'s Pass 0 entry,
-  averaging 2-3 runs (this dev machine's numbers are noisy run-to-run — see that same entry).
+- Performance: re-run the CLI Lighthouse workflow described at the top of this file,
+  averaging 2-3 runs (this dev machine's numbers are noisy run-to-run — see the notes at the top).
   Expect a measurable drop in `mainthread-work-breakdown`'s `paintCompositeRender`/`Rendering` group
   specifically, since this is a GPU-bound cost, not a JS one.
 
@@ -87,6 +104,8 @@ const render = (now) => {
   if (!reducedMotion && visible) rafId = requestAnimationFrame(render)
 }
 ```
+**Note (added after the shader-freeze fix):** the snippet above predates it. In the real file, `render()`'s re-schedule now reads `if (!reducedMotion && visible && !contextLost) rafId = requestAnimationFrame(render) else rafId = null`, and uniforms are read via `uniforms.uResolution` etc. Keep that `else rafId = null` and the `uniforms.*` names when applying this option — dropping the reset reintroduces the permanent freeze after scrolling away and back.
+
 Keep the uniform-update block (mouse easing, `uTime`, `gl.drawArrays`) exactly as it is today —
 just wrap it in the interval check above. Don't gate the `requestAnimationFrame(render)` re-schedule
 call itself behind the interval check, or the loop stops entirely instead of just skipping draws.
@@ -145,7 +164,7 @@ specific trade before doing it, don't apply it just because it's technically the
   not just visually similar.
 - Correctness: `ScrollTrigger.getAll().length` (GSAP's own registry) should be 2 fewer at a mobile
   viewport than at desktop width (the 2 non-last cards no longer get a scrub tween created at all).
-- Performance: re-run the CLI Lighthouse workflow (`NEXT-STEPS.md`'s Pass 0 entry), averaging
+- Performance: re-run the CLI Lighthouse workflow (described at the top of this file), averaging
   multiple runs. Expect the clearest win of these three options in `total-blocking-time` and
   `mainthread-work-breakdown`'s `styleLayout` group specifically, since this removes continuous
   scroll-driven layout recalculation, not just a GPU paint cost.
